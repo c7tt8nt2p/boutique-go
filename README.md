@@ -1,51 +1,37 @@
-# Kratos Project Template
+# [WIP] beer-shop
+An online shop application, mono-repo microservices demo for kratos.
 
-## Install Kratos
-```
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
-```
-## Create a service
-```
-# Create a template project
-kratos new server
+本项目为一个使用kratos框架创建的，简单的微服务电商项目。
 
-cd server
-# Add a proto template
-kratos proto add api/server/server.proto
-# Generate the proto code
-kratos proto client api/server/server.proto
-# Generate the source code of service by proto file
-kratos proto server api/server/server.proto -t internal/service
+由于example较碎片化，未能体现出完整的项目的样子，因此我们创建了本项目，以完成如下目标：
 
-go generate ./...
-go build -o ./bin/ ./...
-./bin/server -conf ./configs
-```
-## Generate other auxiliary files by Makefile
-```
-# Download and update dependencies
-make init
-# Generate API files (include: pb.go, http, grpc, validate, swagger) by proto file
-make api
-# Generate all files
-make all
-```
-## Automated Initialization (wire)
-```
-# install wire
-go get github.com/google/wire/cmd/wire
+* 演示kratos在mono-repo中的项目结构实践（与layout创建出来的略有不同）
+* 提供多个微服务之间互相依赖调用和样例
+* 提供与各种基础设施集成和部署的样例
+* 主要为kratos框架使用演示，很多组件的设计做了简化或模拟处理，与实际的电商项目有一定出入，仅供参考
 
-# generate wire
-cd cmd/server
-wire
+具体架构请参考文档：[Docs](https://go-kratos.github.io/beer-shop/#/)
+
+**ATTENTION: This project is a Work-in-Progress.**
+
+**注意，目前尚在开发，暂时无法运行，仅供代码参考。**
+
+## Kratos Mono-Repo structure
 ```
+.
+├── api  // API&Error Proto files & Generated codes
+│   ├── foo
+│   │   ├── job
+│   │   └── service
+│   └── bar
+│       └── interface
+├── app  // kratos microservices projects
+│   ├── foo
+│   │   ├── job
+│   │   └── service
+│   └── bar
+│       └── interface
+├── pkg  // common used packages
+└── docs
 
-## Docker
-```bash
-# build
-docker build -t <your-docker-image-name> .
-
-# run
-docker run --rm -p 8000:8000 -p 9000:9000 -v </path/to/your/configs>:/data/conf <your-docker-image-name>
 ```
-
