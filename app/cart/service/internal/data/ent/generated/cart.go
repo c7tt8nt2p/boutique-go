@@ -8,14 +8,18 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 )
 
 // Cart is the model entity for the Cart schema.
 type Cart struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
-	ID           int `json:"id,omitempty"`
+	ID int64 `json:"id,omitempty"`
+	// ItemID holds the value of the "item_id" field.
+	ItemID int64 `json:"item_id,omitempty"`
+	// Count holds the value of the "count" field.
+	Count        int64 `json:"count,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -24,7 +28,7 @@ func (*Cart) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case cart.FieldID:
+		case cart.FieldID, cart.FieldItemID, cart.FieldCount:
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -46,7 +50,19 @@ func (c *Cart) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			c.ID = int(value.Int64)
+			c.ID = int64(value.Int64)
+		case cart.FieldItemID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field item_id", values[i])
+			} else if value.Valid {
+				c.ItemID = value.Int64
+			}
+		case cart.FieldCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field count", values[i])
+			} else if value.Valid {
+				c.Count = value.Int64
+			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
 		}
@@ -82,7 +98,12 @@ func (c *Cart) Unwrap() *Cart {
 func (c *Cart) String() string {
 	var builder strings.Builder
 	builder.WriteString("Cart(")
-	builder.WriteString(fmt.Sprintf("id=%v", c.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
+	builder.WriteString("item_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.ItemID))
+	builder.WriteString(", ")
+	builder.WriteString("count=")
+	builder.WriteString(fmt.Sprintf("%v", c.Count))
 	builder.WriteByte(')')
 	return builder.String()
 }

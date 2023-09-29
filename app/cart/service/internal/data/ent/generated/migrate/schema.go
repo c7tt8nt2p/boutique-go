@@ -10,7 +10,9 @@ import (
 var (
 	// CartsColumns holds the columns for the "carts" table.
 	CartsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "item_id", Type: field.TypeInt64},
+		{Name: "count", Type: field.TypeInt64},
 	}
 	// CartsTable holds the schema information for the "carts" table.
 	CartsTable = &schema.Table{

@@ -9,12 +9,12 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/migrate"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 )
 
 // Client is the client that holds all ent builders.
@@ -252,7 +252,7 @@ func (c *CartClient) UpdateOne(ca *Cart) *CartUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *CartClient) UpdateOneID(id int) *CartUpdateOne {
+func (c *CartClient) UpdateOneID(id int64) *CartUpdateOne {
 	mutation := newCartMutation(c.config, OpUpdateOne, withCartID(id))
 	return &CartUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -269,7 +269,7 @@ func (c *CartClient) DeleteOne(ca *Cart) *CartDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *CartClient) DeleteOneID(id int) *CartDeleteOne {
+func (c *CartClient) DeleteOneID(id int64) *CartDeleteOne {
 	builder := c.Delete().Where(cart.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -286,12 +286,12 @@ func (c *CartClient) Query() *CartQuery {
 }
 
 // Get returns a Cart entity by its id.
-func (c *CartClient) Get(ctx context.Context, id int) (*Cart, error) {
+func (c *CartClient) Get(ctx context.Context, id int64) (*Cart, error) {
 	return c.Query().Where(cart.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *CartClient) GetX(ctx context.Context, id int) *Cart {
+func (c *CartClient) GetX(ctx context.Context, id int64) *Cart {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

@@ -4,52 +4,142 @@ package cart
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/predicate"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.Cart {
+func ID(id int64) predicate.Cart {
 	return predicate.Cart(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.Cart {
+func IDEQ(id int64) predicate.Cart {
 	return predicate.Cart(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.Cart {
+func IDNEQ(id int64) predicate.Cart {
 	return predicate.Cart(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.Cart {
+func IDIn(ids ...int64) predicate.Cart {
 	return predicate.Cart(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.Cart {
+func IDNotIn(ids ...int64) predicate.Cart {
 	return predicate.Cart(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.Cart {
+func IDGT(id int64) predicate.Cart {
 	return predicate.Cart(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.Cart {
+func IDGTE(id int64) predicate.Cart {
 	return predicate.Cart(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.Cart {
+func IDLT(id int64) predicate.Cart {
 	return predicate.Cart(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.Cart {
+func IDLTE(id int64) predicate.Cart {
 	return predicate.Cart(sql.FieldLTE(FieldID, id))
+}
+
+// ItemID applies equality check predicate on the "item_id" field. It's identical to ItemIDEQ.
+func ItemID(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldEQ(FieldItemID, v))
+}
+
+// Count applies equality check predicate on the "count" field. It's identical to CountEQ.
+func Count(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldEQ(FieldCount, v))
+}
+
+// ItemIDEQ applies the EQ predicate on the "item_id" field.
+func ItemIDEQ(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldEQ(FieldItemID, v))
+}
+
+// ItemIDNEQ applies the NEQ predicate on the "item_id" field.
+func ItemIDNEQ(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldNEQ(FieldItemID, v))
+}
+
+// ItemIDIn applies the In predicate on the "item_id" field.
+func ItemIDIn(vs ...int64) predicate.Cart {
+	return predicate.Cart(sql.FieldIn(FieldItemID, vs...))
+}
+
+// ItemIDNotIn applies the NotIn predicate on the "item_id" field.
+func ItemIDNotIn(vs ...int64) predicate.Cart {
+	return predicate.Cart(sql.FieldNotIn(FieldItemID, vs...))
+}
+
+// ItemIDGT applies the GT predicate on the "item_id" field.
+func ItemIDGT(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldGT(FieldItemID, v))
+}
+
+// ItemIDGTE applies the GTE predicate on the "item_id" field.
+func ItemIDGTE(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldGTE(FieldItemID, v))
+}
+
+// ItemIDLT applies the LT predicate on the "item_id" field.
+func ItemIDLT(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldLT(FieldItemID, v))
+}
+
+// ItemIDLTE applies the LTE predicate on the "item_id" field.
+func ItemIDLTE(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldLTE(FieldItemID, v))
+}
+
+// CountEQ applies the EQ predicate on the "count" field.
+func CountEQ(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldEQ(FieldCount, v))
+}
+
+// CountNEQ applies the NEQ predicate on the "count" field.
+func CountNEQ(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldNEQ(FieldCount, v))
+}
+
+// CountIn applies the In predicate on the "count" field.
+func CountIn(vs ...int64) predicate.Cart {
+	return predicate.Cart(sql.FieldIn(FieldCount, vs...))
+}
+
+// CountNotIn applies the NotIn predicate on the "count" field.
+func CountNotIn(vs ...int64) predicate.Cart {
+	return predicate.Cart(sql.FieldNotIn(FieldCount, vs...))
+}
+
+// CountGT applies the GT predicate on the "count" field.
+func CountGT(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldGT(FieldCount, v))
+}
+
+// CountGTE applies the GTE predicate on the "count" field.
+func CountGTE(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldGTE(FieldCount, v))
+}
+
+// CountLT applies the LT predicate on the "count" field.
+func CountLT(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldLT(FieldCount, v))
+}
+
+// CountLTE applies the LTE predicate on the "count" field.
+func CountLTE(v int64) predicate.Cart {
+	return predicate.Cart(sql.FieldLTE(FieldCount, v))
 }
 
 // And groups predicates with the AND operator between them.

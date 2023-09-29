@@ -4,11 +4,12 @@ package generated
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 )
 
 // CartCreate is the builder for creating a Cart entity.
@@ -16,6 +17,24 @@ type CartCreate struct {
 	config
 	mutation *CartMutation
 	hooks    []Hook
+}
+
+// SetItemID sets the "item_id" field.
+func (cc *CartCreate) SetItemID(i int64) *CartCreate {
+	cc.mutation.SetItemID(i)
+	return cc
+}
+
+// SetCount sets the "count" field.
+func (cc *CartCreate) SetCount(i int64) *CartCreate {
+	cc.mutation.SetCount(i)
+	return cc
+}
+
+// SetID sets the "id" field.
+func (cc *CartCreate) SetID(i int64) *CartCreate {
+	cc.mutation.SetID(i)
+	return cc
 }
 
 // Mutation returns the CartMutation object of the builder.
@@ -52,6 +71,12 @@ func (cc *CartCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (cc *CartCreate) check() error {
+	if _, ok := cc.mutation.ItemID(); !ok {
+		return &ValidationError{Name: "item_id", err: errors.New(`generated: missing required field "Cart.item_id"`)}
+	}
+	if _, ok := cc.mutation.Count(); !ok {
+		return &ValidationError{Name: "count", err: errors.New(`generated: missing required field "Cart.count"`)}
+	}
 	return nil
 }
 
@@ -66,8 +91,10 @@ func (cc *CartCreate) sqlSave(ctx context.Context) (*Cart, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = int64(id)
+	}
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
 	return _node, nil
@@ -76,8 +103,20 @@ func (cc *CartCreate) sqlSave(ctx context.Context) (*Cart, error) {
 func (cc *CartCreate) createSpec() (*Cart, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Cart{config: cc.config}
-		_spec = sqlgraph.NewCreateSpec(cart.Table, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(cart.Table, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt64))
 	)
+	if id, ok := cc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := cc.mutation.ItemID(); ok {
+		_spec.SetField(cart.FieldItemID, field.TypeInt64, value)
+		_node.ItemID = value
+	}
+	if value, ok := cc.mutation.Count(); ok {
+		_spec.SetField(cart.FieldCount, field.TypeInt64, value)
+		_node.Count = value
+	}
 	return _node, _spec
 }
 
@@ -125,9 +164,9 @@ func (ccb *CartCreateBulk) Save(ctx context.Context) ([]*Cart, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = int64(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

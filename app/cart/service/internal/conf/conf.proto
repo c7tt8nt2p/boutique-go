@@ -6,7 +6,6 @@ option go_package = "app/cart/service/internal/conf;conf";
 import "google/protobuf/duration.proto";
 
 message Bootstrap {
-    Trace trace = 1;
     Server server = 2;
     Data data = 3;
 }
@@ -31,17 +30,9 @@ message Server {
 }
 
 message Data {
-    message MongoDB {
-        string uri = 1;
-        string database = 2;
+    message Database {
+        string driver = 1;
+        string source = 2;
     }
-    MongoDB mongodb = 1;
-}
-
-message Registry {
-    message Consul {
-        string address = 1;
-        string scheme = 2;
-    }
-    Consul consul = 1;
+    Database database = 1;
 }

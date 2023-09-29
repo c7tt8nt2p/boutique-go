@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-kratos/kratos/v2"
 
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/conf"
 	"github.com/go-kratos/kratos/v2/registry"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -65,12 +65,7 @@ func main() {
 		panic(err)
 	}
 
-	var rc conf.Registry
-	if err := c.Scan(&rc); err != nil {
-		panic(err)
-	}
-
-	app, err := initApp(bc.Server, &rc, logger)
+	app, err := initApp(bc.Server, logger)
 	if err != nil {
 		panic(err)
 	}

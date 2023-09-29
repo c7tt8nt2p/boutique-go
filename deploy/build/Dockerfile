@@ -1,11 +1,12 @@
-FROM golang:1.16 AS builder
+FROM golang:1.21.1 AS builder
 
 ARG APP_RELATIVE_PATH
 
 COPY . /src
 WORKDIR /src/app/${APP_RELATIVE_PATH}
 
-RUN GOPROXY=https://goproxy.cn make build
+#RUN GOPROXY=https://goproxy.cn make build
+RUN make build
 
 FROM debian:stable-slim
 

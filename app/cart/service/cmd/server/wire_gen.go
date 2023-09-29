@@ -7,19 +7,19 @@
 package main
 
 import (
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/biz"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/conf"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/server"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/service"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/biz"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/conf"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/server"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/service"
 )
 
 // Injectors from wire.go:
 
 // initApp init kratos application.
-func initApp(confServer *conf.Server, registry *conf.Registry, logger log.Logger) (*kratos.App, error) {
+func initApp(confServer *conf.Server, logger log.Logger) (*kratos.App, error) {
 	cartRepo := data.NewCartRepo(logger)
 	cartUseCase := biz.NewCartUseCase(cartRepo, logger)
 	cartService := service.NewCartService(cartUseCase, logger)

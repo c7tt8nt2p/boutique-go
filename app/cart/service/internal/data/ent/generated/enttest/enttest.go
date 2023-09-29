@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated"
 	// required by schema hooks.
-	_ "github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/runtime"
+	_ "github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/migrate"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/migrate"
 )
 
 type (

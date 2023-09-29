@@ -11,6 +11,10 @@ const (
 	Label = "cart"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldItemID holds the string denoting the item_id field in the database.
+	FieldItemID = "item_id"
+	// FieldCount holds the string denoting the count field in the database.
+	FieldCount = "count"
 	// Table holds the table name of the cart in the database.
 	Table = "carts"
 )
@@ -18,6 +22,8 @@ const (
 // Columns holds all SQL columns for cart fields.
 var Columns = []string{
 	FieldID,
+	FieldItemID,
+	FieldCount,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -36,4 +42,14 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByItemID orders the results by the item_id field.
+func ByItemID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldItemID, opts...).ToFunc()
+}
+
+// ByCount orders the results by the count field.
+func ByCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCount, opts...).ToFunc()
 }

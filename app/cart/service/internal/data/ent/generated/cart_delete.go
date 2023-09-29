@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/cart"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/predicate"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
 )
 
 // CartDelete is the builder for deleting a Cart entity.
@@ -40,7 +40,7 @@ func (cd *CartDelete) ExecX(ctx context.Context) int {
 }
 
 func (cd *CartDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(cart.Table, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(cart.Table, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt64))
 	if ps := cd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

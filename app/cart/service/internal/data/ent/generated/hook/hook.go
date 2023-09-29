@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated"
 )
 
 // The CartFunc type is an adapter to allow the use of ordinary

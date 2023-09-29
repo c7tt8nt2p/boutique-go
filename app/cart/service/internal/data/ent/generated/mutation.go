@@ -10,7 +10,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/predicate"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
 )
 
 const (
@@ -30,7 +31,11 @@ type CartMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *int64
+	item_id       *int64
+	additem_id    *int64
+	count         *int64
+	addcount      *int64
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Cart, error)
@@ -57,7 +62,7 @@ func newCartMutation(c config, op Op, opts ...cartOption) *CartMutation {
 }
 
 // withCartID sets the ID field of the mutation.
-func withCartID(id int) cartOption {
+func withCartID(id int64) cartOption {
 	return func(m *CartMutation) {
 		var (
 			err   error
@@ -107,9 +112,15 @@ func (m CartMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Cart entities.
+func (m *CartMutation) SetID(id int64) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *CartMutation) ID() (id int, exists bool) {
+func (m *CartMutation) ID() (id int64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -120,12 +131,12 @@ func (m *CartMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *CartMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *CartMutation) IDs(ctx context.Context) ([]int64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []int64{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -133,6 +144,118 @@ func (m *CartMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetItemID sets the "item_id" field.
+func (m *CartMutation) SetItemID(i int64) {
+	m.item_id = &i
+	m.additem_id = nil
+}
+
+// ItemID returns the value of the "item_id" field in the mutation.
+func (m *CartMutation) ItemID() (r int64, exists bool) {
+	v := m.item_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldItemID returns the old "item_id" field's value of the Cart entity.
+// If the Cart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CartMutation) OldItemID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldItemID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldItemID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldItemID: %w", err)
+	}
+	return oldValue.ItemID, nil
+}
+
+// AddItemID adds i to the "item_id" field.
+func (m *CartMutation) AddItemID(i int64) {
+	if m.additem_id != nil {
+		*m.additem_id += i
+	} else {
+		m.additem_id = &i
+	}
+}
+
+// AddedItemID returns the value that was added to the "item_id" field in this mutation.
+func (m *CartMutation) AddedItemID() (r int64, exists bool) {
+	v := m.additem_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetItemID resets all changes to the "item_id" field.
+func (m *CartMutation) ResetItemID() {
+	m.item_id = nil
+	m.additem_id = nil
+}
+
+// SetCount sets the "count" field.
+func (m *CartMutation) SetCount(i int64) {
+	m.count = &i
+	m.addcount = nil
+}
+
+// Count returns the value of the "count" field in the mutation.
+func (m *CartMutation) Count() (r int64, exists bool) {
+	v := m.count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCount returns the old "count" field's value of the Cart entity.
+// If the Cart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CartMutation) OldCount(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCount: %w", err)
+	}
+	return oldValue.Count, nil
+}
+
+// AddCount adds i to the "count" field.
+func (m *CartMutation) AddCount(i int64) {
+	if m.addcount != nil {
+		*m.addcount += i
+	} else {
+		m.addcount = &i
+	}
+}
+
+// AddedCount returns the value that was added to the "count" field in this mutation.
+func (m *CartMutation) AddedCount() (r int64, exists bool) {
+	v := m.addcount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCount resets all changes to the "count" field.
+func (m *CartMutation) ResetCount() {
+	m.count = nil
+	m.addcount = nil
 }
 
 // Where appends a list predicates to the CartMutation builder.
@@ -169,7 +292,13 @@ func (m *CartMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CartMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 2)
+	if m.item_id != nil {
+		fields = append(fields, cart.FieldItemID)
+	}
+	if m.count != nil {
+		fields = append(fields, cart.FieldCount)
+	}
 	return fields
 }
 
@@ -177,6 +306,12 @@ func (m *CartMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *CartMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case cart.FieldItemID:
+		return m.ItemID()
+	case cart.FieldCount:
+		return m.Count()
+	}
 	return nil, false
 }
 
@@ -184,6 +319,12 @@ func (m *CartMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *CartMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case cart.FieldItemID:
+		return m.OldItemID(ctx)
+	case cart.FieldCount:
+		return m.OldCount(ctx)
+	}
 	return nil, fmt.Errorf("unknown Cart field %s", name)
 }
 
@@ -192,6 +333,20 @@ func (m *CartMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *CartMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case cart.FieldItemID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetItemID(v)
+		return nil
+	case cart.FieldCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Cart field %s", name)
 }
@@ -199,13 +354,26 @@ func (m *CartMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *CartMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.additem_id != nil {
+		fields = append(fields, cart.FieldItemID)
+	}
+	if m.addcount != nil {
+		fields = append(fields, cart.FieldCount)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *CartMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case cart.FieldItemID:
+		return m.AddedItemID()
+	case cart.FieldCount:
+		return m.AddedCount()
+	}
 	return nil, false
 }
 
@@ -213,6 +381,22 @@ func (m *CartMutation) AddedField(name string) (ent.Value, bool) {
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *CartMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case cart.FieldItemID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddItemID(v)
+		return nil
+	case cart.FieldCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCount(v)
+		return nil
+	}
 	return fmt.Errorf("unknown Cart numeric field %s", name)
 }
 
@@ -238,6 +422,14 @@ func (m *CartMutation) ClearField(name string) error {
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *CartMutation) ResetField(name string) error {
+	switch name {
+	case cart.FieldItemID:
+		m.ResetItemID()
+		return nil
+	case cart.FieldCount:
+		m.ResetCount()
+		return nil
+	}
 	return fmt.Errorf("unknown Cart field %s", name)
 }
 

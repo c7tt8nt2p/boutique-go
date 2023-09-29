@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/cart"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/predicate"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
 )
 
 // CartUpdate is the builder for updating Cart entities.
@@ -24,6 +24,32 @@ type CartUpdate struct {
 // Where appends a list predicates to the CartUpdate builder.
 func (cu *CartUpdate) Where(ps ...predicate.Cart) *CartUpdate {
 	cu.mutation.Where(ps...)
+	return cu
+}
+
+// SetItemID sets the "item_id" field.
+func (cu *CartUpdate) SetItemID(i int64) *CartUpdate {
+	cu.mutation.ResetItemID()
+	cu.mutation.SetItemID(i)
+	return cu
+}
+
+// AddItemID adds i to the "item_id" field.
+func (cu *CartUpdate) AddItemID(i int64) *CartUpdate {
+	cu.mutation.AddItemID(i)
+	return cu
+}
+
+// SetCount sets the "count" field.
+func (cu *CartUpdate) SetCount(i int64) *CartUpdate {
+	cu.mutation.ResetCount()
+	cu.mutation.SetCount(i)
+	return cu
+}
+
+// AddCount adds i to the "count" field.
+func (cu *CartUpdate) AddCount(i int64) *CartUpdate {
+	cu.mutation.AddCount(i)
 	return cu
 }
 
@@ -60,13 +86,25 @@ func (cu *CartUpdate) ExecX(ctx context.Context) {
 }
 
 func (cu *CartUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(cart.Table, cart.Columns, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(cart.Table, cart.Columns, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt64))
 	if ps := cu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := cu.mutation.ItemID(); ok {
+		_spec.SetField(cart.FieldItemID, field.TypeInt64, value)
+	}
+	if value, ok := cu.mutation.AddedItemID(); ok {
+		_spec.AddField(cart.FieldItemID, field.TypeInt64, value)
+	}
+	if value, ok := cu.mutation.Count(); ok {
+		_spec.SetField(cart.FieldCount, field.TypeInt64, value)
+	}
+	if value, ok := cu.mutation.AddedCount(); ok {
+		_spec.AddField(cart.FieldCount, field.TypeInt64, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -86,6 +124,32 @@ type CartUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *CartMutation
+}
+
+// SetItemID sets the "item_id" field.
+func (cuo *CartUpdateOne) SetItemID(i int64) *CartUpdateOne {
+	cuo.mutation.ResetItemID()
+	cuo.mutation.SetItemID(i)
+	return cuo
+}
+
+// AddItemID adds i to the "item_id" field.
+func (cuo *CartUpdateOne) AddItemID(i int64) *CartUpdateOne {
+	cuo.mutation.AddItemID(i)
+	return cuo
+}
+
+// SetCount sets the "count" field.
+func (cuo *CartUpdateOne) SetCount(i int64) *CartUpdateOne {
+	cuo.mutation.ResetCount()
+	cuo.mutation.SetCount(i)
+	return cuo
+}
+
+// AddCount adds i to the "count" field.
+func (cuo *CartUpdateOne) AddCount(i int64) *CartUpdateOne {
+	cuo.mutation.AddCount(i)
+	return cuo
 }
 
 // Mutation returns the CartMutation object of the builder.
@@ -134,7 +198,7 @@ func (cuo *CartUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (cuo *CartUpdateOne) sqlSave(ctx context.Context) (_node *Cart, err error) {
-	_spec := sqlgraph.NewUpdateSpec(cart.Table, cart.Columns, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(cart.Table, cart.Columns, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt64))
 	id, ok := cuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`generated: missing "Cart.id" for update`)}
@@ -158,6 +222,18 @@ func (cuo *CartUpdateOne) sqlSave(ctx context.Context) (_node *Cart, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := cuo.mutation.ItemID(); ok {
+		_spec.SetField(cart.FieldItemID, field.TypeInt64, value)
+	}
+	if value, ok := cuo.mutation.AddedItemID(); ok {
+		_spec.AddField(cart.FieldItemID, field.TypeInt64, value)
+	}
+	if value, ok := cuo.mutation.Count(); ok {
+		_spec.SetField(cart.FieldCount, field.TypeInt64, value)
+	}
+	if value, ok := cuo.mutation.AddedCount(); ok {
+		_spec.AddField(cart.FieldCount, field.TypeInt64, value)
 	}
 	_node = &Cart{config: cuo.config}
 	_spec.Assign = _node.assignValues

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	v1 "github.com/go-kratos/beer-shop/api/cart/service/v1"
+	v1 "github.com/go-kratos/kx-boutique/api/cart/service/v1"
 )
 
 func (s *CartService) ViewCart(ctx context.Context, req *v1.ViewCartReq) (reply *v1.ViewCartReply, err error) {

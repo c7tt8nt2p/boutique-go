@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/cart"
-	"github.com/go-kratos/beer-shop/app/cart/service/internal/data/ent/generated/predicate"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
 )
 
 // CartQuery is the builder for querying Cart entities.
@@ -81,8 +81,8 @@ func (cq *CartQuery) FirstX(ctx context.Context) *Cart {
 
 // FirstID returns the first Cart ID from the query.
 // Returns a *NotFoundError when no Cart ID was found.
-func (cq *CartQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *CartQuery) FirstID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (cq *CartQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *CartQuery) FirstIDX(ctx context.Context) int {
+func (cq *CartQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +132,8 @@ func (cq *CartQuery) OnlyX(ctx context.Context) *Cart {
 // OnlyID is like Only, but returns the only Cart ID in the query.
 // Returns a *NotSingularError when more than one Cart ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *CartQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *CartQuery) OnlyID(ctx context.Context) (id int64, err error) {
+	var ids []int64
 	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (cq *CartQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *CartQuery) OnlyIDX(ctx context.Context) int {
+func (cq *CartQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +177,7 @@ func (cq *CartQuery) AllX(ctx context.Context) []*Cart {
 }
 
 // IDs executes the query and returns a list of Cart IDs.
-func (cq *CartQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (cq *CartQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if cq.ctx.Unique == nil && cq.path != nil {
 		cq.Unique(true)
 	}
@@ -189,7 +189,7 @@ func (cq *CartQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *CartQuery) IDsX(ctx context.Context) []int {
+func (cq *CartQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -257,6 +257,18 @@ func (cq *CartQuery) Clone() *CartQuery {
 
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		ItemID int64 `json:"item_id,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.Cart.Query().
+//		GroupBy(cart.FieldItemID).
+//		Aggregate(generated.Count()).
+//		Scan(ctx, &v)
 func (cq *CartQuery) GroupBy(field string, fields ...string) *CartGroupBy {
 	cq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &CartGroupBy{build: cq}
@@ -268,6 +280,16 @@ func (cq *CartQuery) GroupBy(field string, fields ...string) *CartGroupBy {
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		ItemID int64 `json:"item_id,omitempty"`
+//	}
+//
+//	client.Cart.Query().
+//		Select(cart.FieldItemID).
+//		Scan(ctx, &v)
 func (cq *CartQuery) Select(fields ...string) *CartSelect {
 	cq.ctx.Fields = append(cq.ctx.Fields, fields...)
 	sbuild := &CartSelect{CartQuery: cq}
@@ -342,7 +364,7 @@ func (cq *CartQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *CartQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(cart.Table, cart.Columns, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(cart.Table, cart.Columns, sqlgraph.NewFieldSpec(cart.FieldID, field.TypeInt64))
 	_spec.From = cq.sql
 	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
