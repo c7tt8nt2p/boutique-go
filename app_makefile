@@ -82,7 +82,7 @@ run:
 
 .PHONY: ent
 ent:
-	cd internal/data/ && ent generate ./ent/schema
+	cd internal/data/ && ent generate ./ent/schema --target ./ent/generated
 
 .PHONY: docker
 docker:

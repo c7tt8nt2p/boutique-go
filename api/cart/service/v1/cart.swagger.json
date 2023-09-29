@@ -17,6 +17,19 @@
   ],
   "paths": {},
   "definitions": {
+    "ViewCartReplyItem": {
+      "type": "object",
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "quantity": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -45,106 +58,15 @@
         }
       }
     },
-    "v1AddItemReply": {
+    "v1ViewCartReply": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1AddItemReplyItem"
+            "$ref": "#/definitions/ViewCartReplyItem"
           }
-        }
-      }
-    },
-    "v1AddItemReplyItem": {
-      "type": "object",
-      "properties": {
-        "itemId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "quantity": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "v1DeleteCartReply": {
-      "type": "object"
-    },
-    "v1DeleteItemReply": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1DeleteItemReplyItem"
-          }
-        }
-      }
-    },
-    "v1DeleteItemReplyItem": {
-      "type": "object",
-      "properties": {
-        "itemId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "quantity": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "v1GetCartReply": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1GetCartReplyItem"
-          }
-        }
-      }
-    },
-    "v1GetCartReplyItem": {
-      "type": "object",
-      "properties": {
-        "itemId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "quantity": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "v1UpdateItemReply": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1UpdateItemReplyItem"
-          }
-        }
-      }
-    },
-    "v1UpdateItemReplyItem": {
-      "type": "object",
-      "properties": {
-        "itemId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "quantity": {
-          "type": "string",
-          "format": "int64"
         }
       }
     }

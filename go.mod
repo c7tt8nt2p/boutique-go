@@ -3,6 +3,7 @@ module github.com/go-kratos/beer-shop
 go 1.16
 
 require (
+	entgo.io/ent v0.12.4 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20230830131453-6c026bce56a9
 	github.com/go-kratos/kratos/v2 v2.7.0
