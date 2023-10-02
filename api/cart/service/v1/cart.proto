@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package cart.service.v1;
 
-option go_package = "api/cart/service/v1;v1";
+option go_package = "github.com/kx-boutique/api/cart/service/v1;v1";
 
 service Cart {
     rpc ViewCart (ViewCartReq) returns (ViewCartResp) {}
