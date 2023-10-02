@@ -27,8 +27,7 @@ func NewUserUseCase(repo UserRepo, logger log.Logger) *UserUseCase {
 }
 
 func (uc *UserUseCase) SaveUser(ctx context.Context, u *User) (*User, error) {
-	err := uc.repo.SaveUser(ctx, &u)
-	return err, nil
+	return uc.repo.SaveUser(ctx, u)
 }
 
 //func (uc *UserUseCase) GetUser(ctx context.Context, uid int64) (*User, error) {

@@ -7,6 +7,7 @@ require (
 	github.com/go-kratos/kratos/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
+	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.31.0

@@ -6,5 +6,5 @@ data:
   database:
     url: localhost:5432
     user: user
-    password: 1234
+    password: '1234'
     db_name: kx_boutique

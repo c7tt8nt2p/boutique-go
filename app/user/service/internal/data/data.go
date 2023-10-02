@@ -9,6 +9,7 @@ import (
 	"github.com/kx-boutique/app/user/service/internal/conf"
 	ent "github.com/kx-boutique/app/user/service/internal/data/ent/generated"
 	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/migrate"
+	_ "github.com/lib/pq"
 )
 
 var ProviderSet = wire.NewSet(NewEntClient, NewData, NewUserRepo)
@@ -21,7 +22,7 @@ type Data struct {
 func NewEntClient(conf *conf.Data, logger log.Logger) *ent.Client {
 	log := log.NewHelper(log.With(logger, "module", "user-service/data/ent"))
 
-	dataSource := fmt.Sprintf("postgresql://%s:%s@%s/%s",
+	dataSource := fmt.Sprintf("postgresql://%s:%s@%s/%s?sslmode=disable",
 		conf.Database.User,
 		conf.Database.Password,
 		conf.Database.Url,
