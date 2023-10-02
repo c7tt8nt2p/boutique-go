@@ -61,11 +61,6 @@ proto:
            --go_out=paths=source_relative:. \
            $(INTERNAL_PROTO_FILES)
 
-.PHONY: generate
-# generate client code
-generate:
-	go generate ./...
-
 .PHONY: build
 # build
 build:
@@ -82,7 +77,7 @@ run:
 
 .PHONY: ent
 ent:
-	cd internal/data/ent && go generate ./
+	cd internal/data/ent && ent generate ./schema --target ./generated
 
 .PHONY: docker
 docker:
@@ -99,7 +94,7 @@ api: grpc http swagger errors
 
 .PHONY: all
 # generate all
-all: grpc http proto generate build test
+all: grpc http proto build test
 
 # show help
 help:

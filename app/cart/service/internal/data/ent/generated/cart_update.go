@@ -10,9 +10,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
-	"github.com/google/uuid"
 )
 
 // CartUpdate is the builder for updating Cart entities.

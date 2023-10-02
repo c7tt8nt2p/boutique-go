@@ -4,8 +4,8 @@ package cart
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
 )
 
 // ID filters vertices based on their ID field.

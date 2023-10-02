@@ -2,15 +2,12 @@ package main
 
 import (
 	"flag"
+	"github.com/go-kratos/kratos/v2"
+	"github.com/go-kratos/kratos/v2/config"
+	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/kx-boutique/app/user/service/internal/conf"
 	"os"
 
-	"github.com/go-kratos/kratos/v2"
-
-	"github.com/go-kratos/kratos/v2/registry"
-
-	"github.com/go-kratos/kratos/v2/config"
-	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 )
@@ -29,7 +26,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "./app/cart/service/configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.App {
+func newApp(logger log.Logger, gs *grpc.Server) *kratos.App {
 	return kratos.New(
 		kratos.Name(Name),
 		kratos.Version(Version),
@@ -38,7 +35,6 @@ func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.A
 		kratos.Server(
 			gs,
 		),
-		kratos.Registrar(rr),
 	)
 }
 
@@ -65,10 +61,12 @@ func main() {
 		panic(err)
 	}
 
-	app, err := initApp(bc.Server, logger)
+	app, cleanup, err := initApp(bc.Data, bc.Server, logger)
 	if err != nil {
 		panic(err)
 	}
+
+	defer cleanup()
 
 	// start and wait for stop signal
 	if err := app.Run(); err != nil {

@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
-	"github.com/google/uuid"
 )
 
 const (

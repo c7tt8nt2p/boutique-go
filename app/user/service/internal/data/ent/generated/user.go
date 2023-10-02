@@ -8,8 +8,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/user"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/user"
 )
 
 // User is the model entity for the User schema.

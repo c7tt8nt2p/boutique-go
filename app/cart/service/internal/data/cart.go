@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-
 	"github.com/go-kratos/kratos/v2/log"
 
 	"github.com/kx-boutique/app/cart/service/internal/biz"
@@ -15,11 +14,10 @@ type cartRepo struct {
 	log  *log.Helper
 }
 
-func NewCartRepo(logger log.Logger) biz.CartRepo {
+func NewCartRepo(data *Data, logger log.Logger) biz.CartRepo {
 	return &cartRepo{
-		//data:     data,
-		//cartColl: data.db.Collection("cart"),
-		//log:      log.NewHelper(log.With(logger, "module", "repo/beer")),
+		data: data,
+		log:  log.NewHelper(log.With(logger, "module", "repo/cart")),
 	}
 }
 
@@ -32,14 +30,25 @@ type Cart struct {
 }
 
 func (r *cartRepo) GetCart(ctx context.Context, uid int64) (*biz.Cart, error) {
-	po, err := r.data.db.Cart.Get(ctx, id)
+	po, err := r.data.db.Cart.Get(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
 	return &biz.Cart{
-		UserId:  po.ID,
-		CardNo:  po.CardNo,
-		CCV:     po.Ccv,
-		Expires: po.Expires,
+		UserId: po.ID,
 	}, nil
+}
+
+func (r *cartRepo) DeleteCart(ctx context.Context, uid int64) error {
+	//_, err := r.cartColl.DeleteOne(ctx, bson.M{"s": uid})
+	return nil
+}
+func (r *cartRepo) SaveCart(ctx context.Context, c *biz.Cart) error {
+	//items := bson.A{}
+	//for _, x := range c.Items {
+	//	items = append(items, bson.M{"item_id": x.Id, "quantity": x.Quantity})
+	//}
+	//result := r.cartColl.FindOneAndUpdate(ctx, bson.M{"s": c.UserId},
+	//	bson.D{{"user_id", c.UserId}, {"items", items}})
+	return nil
 }

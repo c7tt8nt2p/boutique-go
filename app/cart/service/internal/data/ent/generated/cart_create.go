@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 )
 
 // CartCreate is the builder for creating a Cart entity.

@@ -11,16 +11,23 @@ import (
 type UserService struct {
 	pb.UnimplementedUserServer
 
-	cc  *biz.UserUseCase
+	uc  *biz.UserUseCase
 	log *log.Helper
 }
 
-func NewUserService(cc *biz.UserUseCase, logger log.Logger) *UserService {
+func NewUserService(uc *biz.UserUseCase, logger log.Logger) *UserService {
 	return &UserService{
-		cc:  cc,
+		uc:  uc,
 		log: log.NewHelper(log.With(logger, "module", "service/user"))}
 }
 
 func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*pb.CreateUserResp, error) {
-	return &pb.CreateUserResp{}, nil
+	user, err := s.uc.SaveUser(ctx, &biz.User{Name: req.Name})
+	if err != nil {
+		return nil, err
+	}
+	return &pb.CreateUserResp{
+		Id:   user.Id,
+		Name: user.Name,
+	}, nil
 }

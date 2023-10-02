@@ -9,8 +9,8 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/migrate"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
