@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
+	"github.com/google/uuid"
 )
 
 const (
@@ -36,6 +37,7 @@ type CartMutation struct {
 	additem_id    *int64
 	count         *int64
 	addcount      *int64
+	user_id       *uuid.UUID
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Cart, error)
@@ -258,6 +260,42 @@ func (m *CartMutation) ResetCount() {
 	m.addcount = nil
 }
 
+// SetUserID sets the "user_id" field.
+func (m *CartMutation) SetUserID(u uuid.UUID) {
+	m.user_id = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *CartMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Cart entity.
+// If the Cart object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CartMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *CartMutation) ResetUserID() {
+	m.user_id = nil
+}
+
 // Where appends a list predicates to the CartMutation builder.
 func (m *CartMutation) Where(ps ...predicate.Cart) {
 	m.predicates = append(m.predicates, ps...)
@@ -292,12 +330,15 @@ func (m *CartMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CartMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 3)
 	if m.item_id != nil {
 		fields = append(fields, cart.FieldItemID)
 	}
 	if m.count != nil {
 		fields = append(fields, cart.FieldCount)
+	}
+	if m.user_id != nil {
+		fields = append(fields, cart.FieldUserID)
 	}
 	return fields
 }
@@ -311,6 +352,8 @@ func (m *CartMutation) Field(name string) (ent.Value, bool) {
 		return m.ItemID()
 	case cart.FieldCount:
 		return m.Count()
+	case cart.FieldUserID:
+		return m.UserID()
 	}
 	return nil, false
 }
@@ -324,6 +367,8 @@ func (m *CartMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldItemID(ctx)
 	case cart.FieldCount:
 		return m.OldCount(ctx)
+	case cart.FieldUserID:
+		return m.OldUserID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Cart field %s", name)
 }
@@ -346,6 +391,13 @@ func (m *CartMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCount(v)
+		return nil
+	case cart.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Cart field %s", name)
@@ -428,6 +480,9 @@ func (m *CartMutation) ResetField(name string) error {
 		return nil
 	case cart.FieldCount:
 		m.ResetCount()
+		return nil
+	case cart.FieldUserID:
+		m.ResetUserID()
 		return nil
 	}
 	return fmt.Errorf("unknown Cart field %s", name)

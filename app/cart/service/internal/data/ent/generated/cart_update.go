@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/predicate"
+	"github.com/google/uuid"
 )
 
 // CartUpdate is the builder for updating Cart entities.
@@ -50,6 +51,12 @@ func (cu *CartUpdate) SetCount(i int64) *CartUpdate {
 // AddCount adds i to the "count" field.
 func (cu *CartUpdate) AddCount(i int64) *CartUpdate {
 	cu.mutation.AddCount(i)
+	return cu
+}
+
+// SetUserID sets the "user_id" field.
+func (cu *CartUpdate) SetUserID(u uuid.UUID) *CartUpdate {
+	cu.mutation.SetUserID(u)
 	return cu
 }
 
@@ -106,6 +113,9 @@ func (cu *CartUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := cu.mutation.AddedCount(); ok {
 		_spec.AddField(cart.FieldCount, field.TypeInt64, value)
 	}
+	if value, ok := cu.mutation.UserID(); ok {
+		_spec.SetField(cart.FieldUserID, field.TypeUUID, value)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{cart.Label}
@@ -149,6 +159,12 @@ func (cuo *CartUpdateOne) SetCount(i int64) *CartUpdateOne {
 // AddCount adds i to the "count" field.
 func (cuo *CartUpdateOne) AddCount(i int64) *CartUpdateOne {
 	cuo.mutation.AddCount(i)
+	return cuo
+}
+
+// SetUserID sets the "user_id" field.
+func (cuo *CartUpdateOne) SetUserID(u uuid.UUID) *CartUpdateOne {
+	cuo.mutation.SetUserID(u)
 	return cuo
 }
 
@@ -234,6 +250,9 @@ func (cuo *CartUpdateOne) sqlSave(ctx context.Context) (_node *Cart, err error) 
 	}
 	if value, ok := cuo.mutation.AddedCount(); ok {
 		_spec.AddField(cart.FieldCount, field.TypeInt64, value)
+	}
+	if value, ok := cuo.mutation.UserID(); ok {
+		_spec.SetField(cart.FieldUserID, field.TypeUUID, value)
 	}
 	_node = &Cart{config: cuo.config}
 	_spec.Assign = _node.assignValues

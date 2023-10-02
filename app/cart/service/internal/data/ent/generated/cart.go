@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/google/uuid"
 )
 
 // Cart is the model entity for the Cart schema.
@@ -19,7 +20,9 @@ type Cart struct {
 	// ItemID holds the value of the "item_id" field.
 	ItemID int64 `json:"item_id,omitempty"`
 	// Count holds the value of the "count" field.
-	Count        int64 `json:"count,omitempty"`
+	Count int64 `json:"count,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID       uuid.UUID `json:"user_id,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -30,6 +33,8 @@ func (*Cart) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case cart.FieldID, cart.FieldItemID, cart.FieldCount:
 			values[i] = new(sql.NullInt64)
+		case cart.FieldUserID:
+			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -62,6 +67,12 @@ func (c *Cart) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field count", values[i])
 			} else if value.Valid {
 				c.Count = value.Int64
+			}
+		case cart.FieldUserID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value != nil {
+				c.UserID = *value
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
@@ -104,6 +115,9 @@ func (c *Cart) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("count=")
 	builder.WriteString(fmt.Sprintf("%v", c.Count))
+	builder.WriteString(", ")
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.UserID))
 	builder.WriteByte(')')
 	return builder.String()
 }

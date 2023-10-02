@@ -15,6 +15,8 @@ const (
 	FieldItemID = "item_id"
 	// FieldCount holds the string denoting the count field in the database.
 	FieldCount = "count"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// Table holds the table name of the cart in the database.
 	Table = "carts"
 )
@@ -24,6 +26,7 @@ var Columns = []string{
 	FieldID,
 	FieldItemID,
 	FieldCount,
+	FieldUserID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -52,4 +55,9 @@ func ByItemID(opts ...sql.OrderTermOption) OrderOption {
 // ByCount orders the results by the count field.
 func ByCount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCount, opts...).ToFunc()
+}
+
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }

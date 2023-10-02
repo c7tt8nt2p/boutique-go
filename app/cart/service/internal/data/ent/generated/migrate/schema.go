@@ -13,6 +13,7 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true},
 		{Name: "item_id", Type: field.TypeInt64},
 		{Name: "count", Type: field.TypeInt64},
+		{Name: "user_id", Type: field.TypeUUID},
 	}
 	// CartsTable holds the schema information for the "carts" table.
 	CartsTable = &schema.Table{

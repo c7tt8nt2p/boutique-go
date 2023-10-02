@@ -5,17 +5,17 @@ services:
     hostname: catalog-service
     depends_on:
       - catalog-db
-  cart-db:
-    image: mysql:latest
-    container_name: cart-db
-    hostname: cart-db
+  db:
+    image: postgres:latest
+    container_name: db
+    hostname: db
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: cart_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: 1234
+      POSTGRES_DB: kx_boutique
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 1234
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - /Users/chantapat.t/Desktop/mysql-data:/var/lib/mysql:rw
-    user: mysql
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:

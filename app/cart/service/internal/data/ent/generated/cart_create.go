@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/google/uuid"
 )
 
 // CartCreate is the builder for creating a Cart entity.
@@ -28,6 +29,12 @@ func (cc *CartCreate) SetItemID(i int64) *CartCreate {
 // SetCount sets the "count" field.
 func (cc *CartCreate) SetCount(i int64) *CartCreate {
 	cc.mutation.SetCount(i)
+	return cc
+}
+
+// SetUserID sets the "user_id" field.
+func (cc *CartCreate) SetUserID(u uuid.UUID) *CartCreate {
+	cc.mutation.SetUserID(u)
 	return cc
 }
 
@@ -77,6 +84,9 @@ func (cc *CartCreate) check() error {
 	if _, ok := cc.mutation.Count(); !ok {
 		return &ValidationError{Name: "count", err: errors.New(`generated: missing required field "Cart.count"`)}
 	}
+	if _, ok := cc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`generated: missing required field "Cart.user_id"`)}
+	}
 	return nil
 }
 
@@ -116,6 +126,10 @@ func (cc *CartCreate) createSpec() (*Cart, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.Count(); ok {
 		_spec.SetField(cart.FieldCount, field.TypeInt64, value)
 		_node.Count = value
+	}
+	if value, ok := cc.mutation.UserID(); ok {
+		_spec.SetField(cart.FieldUserID, field.TypeUUID, value)
+		_node.UserID = value
 	}
 	return _node, _spec
 }
