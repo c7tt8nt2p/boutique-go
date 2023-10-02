@@ -3,8 +3,6 @@ services:
   cart-service:
     image: go-kratos/beer-cart-service:0.1.0
     hostname: catalog-service
-    depends_on:
-      - catalog-db
   db:
     image: postgres:latest
     container_name: db

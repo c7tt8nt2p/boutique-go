@@ -4,7 +4,7 @@ package user
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kx-boutique/app/user/service/internal/data/ent/generated/predicate"
+	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/predicate"
 	"github.com/google/uuid"
 )
 

@@ -9,11 +9,11 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/biz"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/conf"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/server"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/service"
+	"github.com/kx-boutique/app/cart/service/internal/biz"
+	"github.com/kx-boutique/app/cart/service/internal/conf"
+	"github.com/kx-boutique/app/cart/service/internal/data"
+	"github.com/kx-boutique/app/cart/service/internal/server"
+	"github.com/kx-boutique/app/cart/service/internal/service"
 )
 
 // Injectors from wire.go:

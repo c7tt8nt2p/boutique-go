@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/go-kratos/kx-boutique/app/user/service/internal/data/ent/generated/predicate"
-	"github.com/go-kratos/kx-boutique/app/user/service/internal/data/ent/generated/user"
+	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/predicate"
+	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/user"
 )
 
 // UserDelete is the builder for deleting a User entity.

@@ -1,14 +1,9 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "v1/cart.proto",
+    "title": "v1/user_error.proto",
     "version": "version not set"
   },
-  "tags": [
-    {
-      "name": "Cart"
-    }
-  ],
   "consumes": [
     "application/json"
   ],
@@ -17,19 +12,6 @@
   ],
   "paths": {},
   "definitions": {
-    "ViewCartRespItem": {
-      "type": "object",
-      "properties": {
-        "itemId": {
-          "type": "string",
-          "format": "int64"
-        },
-        "quantity": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -54,18 +36,6 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/protobufAny"
-          }
-        }
-      }
-    },
-    "v1ViewCartResp": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/ViewCartRespItem"
           }
         }
       }

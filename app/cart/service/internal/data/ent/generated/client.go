@@ -9,12 +9,12 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/migrate"
+	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 )
 
 // Client is the client that holds all ent builders.

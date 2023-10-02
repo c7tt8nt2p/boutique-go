@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-kratos/kx-boutique/app/user/service/internal/data/ent/generated"
+	"github.com/kx-boutique/app/user/service/internal/data/ent/generated"
 )
 
 // The UserFunc type is an adapter to allow the use of ordinary

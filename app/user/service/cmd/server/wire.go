@@ -6,11 +6,11 @@
 package main
 
 import (
-	"github.com/kx-boutique/app/cart/service/internal/biz"
-	"github.com/kx-boutique/app/cart/service/internal/conf"
-	"github.com/kx-boutique/app/cart/service/internal/data"
-	"github.com/kx-boutique/app/cart/service/internal/server"
-	"github.com/kx-boutique/app/cart/service/internal/service"
+	"github.com/kx-boutique/app/user/service/internal/biz"
+	"github.com/kx-boutique/app/user/service/internal/conf"
+	"github.com/kx-boutique/app/user/service/internal/data"
+	"github.com/kx-boutique/app/user/service/internal/server"
+	"github.com/kx-boutique/app/user/service/internal/service"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"

@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 	"github.com/google/uuid"
 )
 

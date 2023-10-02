@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/biz"
+	"github.com/kx-boutique/app/cart/service/internal/biz"
 )
 
 var _ biz.CartRepo = (*cartRepo)(nil)

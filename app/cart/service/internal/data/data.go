@@ -3,10 +3,10 @@ package data
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/conf"
-	ent "github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/migrate"
 	"github.com/google/wire"
+	"github.com/kx-boutique/app/cart/service/internal/conf"
+	ent "github.com/kx-boutique/app/cart/service/internal/data/ent/generated"
+	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/migrate"
 )
 
 var ProviderSet = wire.NewSet(NewEntClient, NewData, NewCartRepo)

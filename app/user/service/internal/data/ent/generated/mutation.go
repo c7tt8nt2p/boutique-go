@@ -10,8 +10,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kx-boutique/app/user/service/internal/data/ent/generated/predicate"
-	"github.com/go-kratos/kx-boutique/app/user/service/internal/data/ent/generated/user"
+	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/predicate"
+	"github.com/kx-boutique/app/user/service/internal/data/ent/generated/user"
 	"github.com/google/uuid"
 )
 

@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/go-kratos/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
+	"github.com/kx-boutique/app/cart/service/internal/data/ent/generated/cart"
 	"github.com/google/uuid"
 )
 

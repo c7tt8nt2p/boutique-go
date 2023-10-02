@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CartClient interface {
-	ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc.CallOption) (*ViewCartReply, error)
+	ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc.CallOption) (*ViewCartResp, error)
 }
 
 type cartClient struct {
@@ -37,8 +37,8 @@ func NewCartClient(cc grpc.ClientConnInterface) CartClient {
 	return &cartClient{cc}
 }
 
-func (c *cartClient) ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc.CallOption) (*ViewCartReply, error) {
-	out := new(ViewCartReply)
+func (c *cartClient) ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc.CallOption) (*ViewCartResp, error) {
+	out := new(ViewCartResp)
 	err := c.cc.Invoke(ctx, Cart_ViewCart_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (c *cartClient) ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc
 // All implementations must embed UnimplementedCartServer
 // for forward compatibility
 type CartServer interface {
-	ViewCart(context.Context, *ViewCartReq) (*ViewCartReply, error)
+	ViewCart(context.Context, *ViewCartReq) (*ViewCartResp, error)
 	mustEmbedUnimplementedCartServer()
 }
 
@@ -58,7 +58,7 @@ type CartServer interface {
 type UnimplementedCartServer struct {
 }
 
-func (UnimplementedCartServer) ViewCart(context.Context, *ViewCartReq) (*ViewCartReply, error) {
+func (UnimplementedCartServer) ViewCart(context.Context, *ViewCartReq) (*ViewCartResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ViewCart not implemented")
 }
 func (UnimplementedCartServer) mustEmbedUnimplementedCartServer() {}

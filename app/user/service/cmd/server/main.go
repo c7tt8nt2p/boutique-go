@@ -2,12 +2,12 @@ package main
 
 import (
 	"flag"
+	"github.com/kx-boutique/app/user/service/internal/conf"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
 
 	"github.com/go-kratos/kratos/v2/registry"
-	"github.com/kx-boutique/app/cart/service/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -18,7 +18,7 @@ import (
 // go build -ldflags "-X main.Version=x.y.z"
 var (
 	// Name is the name of the compiled software.
-	Name = "kx_boutique.cart.service"
+	Name = "kx_boutique.user.service"
 	// Version is the version of the compiled software.
 	Version string
 	// flagconf is the config flag.

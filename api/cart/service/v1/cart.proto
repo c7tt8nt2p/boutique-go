@@ -5,14 +5,14 @@ package cart.service.v1;
 option go_package = "api/cart/service/v1;v1";
 
 service Cart {
-    rpc ViewCart (ViewCartReq) returns (ViewCartReply) {}
+    rpc ViewCart (ViewCartReq) returns (ViewCartResp) {}
 }
 
 message ViewCartReq {
     int64 user_id = 1;
 }
 
-message ViewCartReply {
+message ViewCartResp {
     message Item {
         int64 item_id = 1;
         int64 quantity = 2;
