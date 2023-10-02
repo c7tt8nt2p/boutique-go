@@ -21,7 +21,10 @@ func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 }
 
 func (r *userRepo) SaveUser(ctx context.Context, u *biz.User) (*biz.User, error) {
-	saved, err := r.data.db.User.Create().SetName(u.Name).Save(ctx)
+	saved, err := r.data.db.User.
+		Create().
+		SetName(u.Name).
+		Save(ctx)
 
 	if err != nil {
 		return nil, err
