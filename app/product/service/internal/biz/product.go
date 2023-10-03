@@ -29,7 +29,7 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProdu
 	return uc.repo.SaveProduct(ctx, pe)
 }
 
-func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.ViewProductReq) (*data.ProductEntity, error) {
+func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.GetProductReq) (*data.ProductEntity, error) {
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
 		return nil, errors.ErrValidationFailed("Id cannot be parsed to UUID.")

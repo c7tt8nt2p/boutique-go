@@ -67,7 +67,7 @@
         }
       }
     },
-    "v1ViewProductResp": {
+    "v1GetProductResp": {
       "type": "object",
       "properties": {
         "id": {

@@ -8,7 +8,7 @@ import "validate/validate.proto";
 
 service Product {
   rpc CreateProduct (CreateProductReq) returns (CreateProductResp) {}
-  rpc ViewProduct (ViewProductReq) returns (ViewProductResp) {}
+  rpc GetProduct (GetProductReq) returns (GetProductResp) {}
 }
 
 message CreateProductReq {
@@ -26,11 +26,11 @@ message CreateProductResp {
   float unit_price = 5;
 }
 
-message ViewProductReq {
+message GetProductReq {
   string id = 1 [(validate.rules).string.uuid = true];
 }
 
-message ViewProductResp {
+message GetProductResp {
   string id = 1;
   string name = 2;
   string description = 3;
