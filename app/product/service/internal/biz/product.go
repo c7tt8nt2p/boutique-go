@@ -19,26 +19,6 @@ func NewProductUseCase(repo data.ProductRepo, logger log.Logger) *ProductUseCase
 	return &ProductUseCase{repo: repo, log: log.NewHelper(log.With(logger, "module", "usecase/product"))}
 }
 
-func (uc *ProductUseCase) ValidateCreateProductReq(req *pb.CreateProductReq) error {
-	if req.Name == "" {
-		return errors.ErrValidationFailed("name cannot be empty")
-	}
-
-	if req.Description == "" {
-		return errors.ErrValidationFailed("description cannot be empty")
-	}
-
-	if req.Stock < 0 {
-		return errors.ErrValidationFailed("stock cannot be negative")
-	}
-
-	if req.UnitPrice < 0 {
-		return errors.ErrValidationFailed("unitPrice cannot be negative")
-	}
-
-	return nil
-}
-
 func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProductReq) (*data.ProductEntity, error) {
 	pe := &data.ProductEntity{
 		Name:        req.Name,

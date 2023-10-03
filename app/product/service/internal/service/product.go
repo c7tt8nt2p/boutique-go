@@ -22,10 +22,6 @@ func NewProductService(uc *biz.ProductUseCase, logger log.Logger) *ProductServic
 }
 
 func (s *ProductService) CreateProduct(ctx context.Context, req *pb.CreateProductReq) (*pb.CreateProductResp, error) {
-	if err := s.uc.ValidateCreateProductReq(req); err != nil {
-		return nil, err
-	}
-
 	product, err := s.uc.CreateProduct(ctx, req)
 	if err != nil {
 		return nil, err

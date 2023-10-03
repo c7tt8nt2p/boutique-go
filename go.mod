@@ -4,6 +4,7 @@ go 1.21.1
 
 require (
 	entgo.io/ent v0.12.4
+	github.com/envoyproxy/protoc-gen-validate v0.10.1
 	github.com/go-kratos/kratos/v2 v2.7.0
 	github.com/google/uuid v1.3.1
 	github.com/google/wire v0.5.0

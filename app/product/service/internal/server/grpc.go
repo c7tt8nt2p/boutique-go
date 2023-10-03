@@ -4,6 +4,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/kx-boutique/api/product/service/v1"
 	"github.com/kx-boutique/app/product/service/internal/conf"
@@ -16,6 +17,7 @@ func NewGRPCServer(c *conf.Server, logger log.Logger, s *service.ProductService)
 		grpc.Middleware(
 			recovery.Recovery(),
 			logging.Server(logger),
+			validate.Validator(),
 		),
 	}
 	if c.Grpc.Network != "" {

@@ -4,16 +4,18 @@ package cart.service.v1;
 
 option go_package = "github.com/kx-boutique/api/product/service/v1;v1";
 
+import "validate/validate.proto";
+
 service Product {
   rpc CreateProduct (CreateProductReq) returns (CreateProductResp) {}
   rpc ViewProduct (ViewProductReq) returns (ViewProductResp) {}
 }
 
 message CreateProductReq {
-  string name = 1;
-  string description = 2;
-  int32 stock = 3;
-  float unit_price = 4;
+  string name = 1 [(validate.rules).string.min_len = 1];
+  string description = 2 [(validate.rules).string.min_len = 5];
+  int32 stock = 3 [(validate.rules).int32 = {gt: 0}];
+  float unit_price = 4 [(validate.rules).float = {gt: 0}];
 }
 
 message CreateProductResp {
