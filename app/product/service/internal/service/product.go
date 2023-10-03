@@ -3,11 +3,8 @@ package service
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/google/uuid"
-	"github.com/kx-boutique/app/product/service/internal/biz"
-	"github.com/kx-boutique/pkg/errors"
-
 	pb "github.com/kx-boutique/api/product/service/v1"
+	"github.com/kx-boutique/app/product/service/internal/biz"
 )
 
 type ProductService struct {
@@ -25,6 +22,10 @@ func NewProductService(uc *biz.ProductUseCase, logger log.Logger) *ProductServic
 }
 
 func (s *ProductService) CreateProduct(ctx context.Context, req *pb.CreateProductReq) (*pb.CreateProductResp, error) {
+	if err := s.uc.ValidateCreateProductReq(req); err != nil {
+		return nil, err
+	}
+
 	product, err := s.uc.CreateProduct(ctx, req)
 	if err != nil {
 		return nil, err
@@ -39,12 +40,7 @@ func (s *ProductService) CreateProduct(ctx context.Context, req *pb.CreateProduc
 }
 
 func (s *ProductService) ViewProduct(ctx context.Context, req *pb.ViewProductReq) (*pb.ViewProductResp, error) {
-	id, err := uuid.Parse(req.Id)
-	if err != nil {
-		return nil, errors.ErrValidationFailed("Id is invalid.")
-	}
-
-	product, err := s.uc.GetProductById(ctx, id)
+	product, err := s.uc.GetProductById(ctx, req)
 	if err != nil {
 		return nil, err
 	}

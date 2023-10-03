@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	pb "github.com/kx-boutique/api/product/service/v1"
 	"github.com/kx-boutique/app/product/service/internal/data"
+	"github.com/kx-boutique/pkg/errors"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -18,6 +19,22 @@ func NewProductUseCase(repo data.ProductRepo, logger log.Logger) *ProductUseCase
 	return &ProductUseCase{repo: repo, log: log.NewHelper(log.With(logger, "module", "usecase/product"))}
 }
 
+func (uc *ProductUseCase) ValidateCreateProductReq(req *pb.CreateProductReq) error {
+	if req.Name == "" {
+		return errors.ErrValidationFailed("name cannot be empty")
+	}
+
+	if req.Description == "" {
+		return errors.ErrValidationFailed("description cannot be empty")
+	}
+
+	if req.Stock < 0 {
+		return errors.ErrValidationFailed("stock cannot be negative")
+	}
+
+	return nil
+}
+
 func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProductReq) (*data.ProductEntity, error) {
 	pe := &data.ProductEntity{
 		Name:        req.Name,
@@ -27,6 +44,11 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProdu
 	return uc.repo.SaveProduct(ctx, pe)
 }
 
-func (uc *ProductUseCase) GetProductById(ctx context.Context, id uuid.UUID) (*data.ProductEntity, error) {
+func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.ViewProductReq) (*data.ProductEntity, error) {
+	id, err := uuid.Parse(req.Id)
+	if err != nil {
+		return nil, errors.ErrValidationFailed("Id is not valid.")
+	}
+
 	return uc.repo.GetProductById(ctx, id)
 }
