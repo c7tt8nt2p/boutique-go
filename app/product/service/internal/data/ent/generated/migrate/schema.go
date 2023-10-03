@@ -14,6 +14,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString},
 		{Name: "stock", Type: field.TypeInt32},
+		{Name: "unit_price", Type: field.TypeFloat32},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}

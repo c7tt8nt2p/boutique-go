@@ -13,6 +13,7 @@ message CreateProductReq {
   string name = 1;
   string description = 2;
   int32 stock = 3;
+  float unit_price = 4;
 }
 
 message CreateProductResp {
@@ -20,6 +21,7 @@ message CreateProductResp {
   string name = 2;
   string description = 3;
   int32 stock = 4;
+  float unit_price = 5;
 }
 
 message ViewProductReq {
@@ -31,5 +33,6 @@ message ViewProductResp {
   string name = 2;
   string description = 3;
   int32 stock = 4;
+  float unit_price = 5;
 }
 

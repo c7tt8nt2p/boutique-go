@@ -24,6 +24,8 @@ type Product struct {
 	Description string `json:"description,omitempty"`
 	// Stock holds the value of the "stock" field.
 	Stock int32 `json:"stock,omitempty"`
+	// UnitPrice holds the value of the "unit_price" field.
+	UnitPrice float32 `json:"unit_price,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -36,6 +38,8 @@ func (*Product) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case product.FieldUnitPrice:
+			values[i] = new(sql.NullFloat64)
 		case product.FieldStock:
 			values[i] = new(sql.NullInt64)
 		case product.FieldName, product.FieldDescription:
@@ -82,6 +86,12 @@ func (pr *Product) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field stock", values[i])
 			} else if value.Valid {
 				pr.Stock = int32(value.Int64)
+			}
+		case product.FieldUnitPrice:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field unit_price", values[i])
+			} else if value.Valid {
+				pr.UnitPrice = float32(value.Float64)
 			}
 		case product.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -139,6 +149,9 @@ func (pr *Product) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("stock=")
 	builder.WriteString(fmt.Sprintf("%v", pr.Stock))
+	builder.WriteString(", ")
+	builder.WriteString("unit_price=")
+	builder.WriteString(fmt.Sprintf("%v", pr.UnitPrice))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(pr.CreatedAt.Format(time.ANSIC))

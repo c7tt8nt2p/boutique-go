@@ -11,6 +11,7 @@ type ProductEntity struct {
 	Name        string
 	Description string
 	Stock       int32
+	UnitPrice   float32
 }
 
 type ProductRepo interface {
@@ -36,6 +37,7 @@ func (r *productRepo) SaveProduct(ctx context.Context, pe *ProductEntity) (*Prod
 		SetName(pe.Name).
 		SetDescription(pe.Description).
 		SetStock(pe.Stock).
+		SetUnitPrice(pe.UnitPrice).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -46,6 +48,7 @@ func (r *productRepo) SaveProduct(ctx context.Context, pe *ProductEntity) (*Prod
 		Name:        saved.Name,
 		Description: saved.Description,
 		Stock:       saved.Stock,
+		UnitPrice:   saved.UnitPrice,
 	}, nil
 }
 
@@ -60,5 +63,6 @@ func (r *productRepo) GetProductById(ctx context.Context, id uuid.UUID) (*Produc
 		Name:        p.Name,
 		Description: p.Description,
 		Stock:       p.Stock,
+		UnitPrice:   p.UnitPrice,
 	}, nil
 }

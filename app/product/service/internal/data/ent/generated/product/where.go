@@ -70,6 +70,11 @@ func Stock(v int32) predicate.Product {
 	return predicate.Product(sql.FieldEQ(FieldStock, v))
 }
 
+// UnitPrice applies equality check predicate on the "unit_price" field. It's identical to UnitPriceEQ.
+func UnitPrice(v float32) predicate.Product {
+	return predicate.Product(sql.FieldEQ(FieldUnitPrice, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Product {
 	return predicate.Product(sql.FieldEQ(FieldCreatedAt, v))
@@ -248,6 +253,46 @@ func StockLT(v int32) predicate.Product {
 // StockLTE applies the LTE predicate on the "stock" field.
 func StockLTE(v int32) predicate.Product {
 	return predicate.Product(sql.FieldLTE(FieldStock, v))
+}
+
+// UnitPriceEQ applies the EQ predicate on the "unit_price" field.
+func UnitPriceEQ(v float32) predicate.Product {
+	return predicate.Product(sql.FieldEQ(FieldUnitPrice, v))
+}
+
+// UnitPriceNEQ applies the NEQ predicate on the "unit_price" field.
+func UnitPriceNEQ(v float32) predicate.Product {
+	return predicate.Product(sql.FieldNEQ(FieldUnitPrice, v))
+}
+
+// UnitPriceIn applies the In predicate on the "unit_price" field.
+func UnitPriceIn(vs ...float32) predicate.Product {
+	return predicate.Product(sql.FieldIn(FieldUnitPrice, vs...))
+}
+
+// UnitPriceNotIn applies the NotIn predicate on the "unit_price" field.
+func UnitPriceNotIn(vs ...float32) predicate.Product {
+	return predicate.Product(sql.FieldNotIn(FieldUnitPrice, vs...))
+}
+
+// UnitPriceGT applies the GT predicate on the "unit_price" field.
+func UnitPriceGT(v float32) predicate.Product {
+	return predicate.Product(sql.FieldGT(FieldUnitPrice, v))
+}
+
+// UnitPriceGTE applies the GTE predicate on the "unit_price" field.
+func UnitPriceGTE(v float32) predicate.Product {
+	return predicate.Product(sql.FieldGTE(FieldUnitPrice, v))
+}
+
+// UnitPriceLT applies the LT predicate on the "unit_price" field.
+func UnitPriceLT(v float32) predicate.Product {
+	return predicate.Product(sql.FieldLT(FieldUnitPrice, v))
+}
+
+// UnitPriceLTE applies the LTE predicate on the "unit_price" field.
+func UnitPriceLTE(v float32) predicate.Product {
+	return predicate.Product(sql.FieldLTE(FieldUnitPrice, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

@@ -39,6 +39,12 @@ func (pc *ProductCreate) SetStock(i int32) *ProductCreate {
 	return pc
 }
 
+// SetUnitPrice sets the "unit_price" field.
+func (pc *ProductCreate) SetUnitPrice(f float32) *ProductCreate {
+	pc.mutation.SetUnitPrice(f)
+	return pc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pc *ProductCreate) SetCreatedAt(t time.Time) *ProductCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -141,6 +147,9 @@ func (pc *ProductCreate) check() error {
 	if _, ok := pc.mutation.Stock(); !ok {
 		return &ValidationError{Name: "stock", err: errors.New(`generated: missing required field "Product.stock"`)}
 	}
+	if _, ok := pc.mutation.UnitPrice(); !ok {
+		return &ValidationError{Name: "unit_price", err: errors.New(`generated: missing required field "Product.unit_price"`)}
+	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "Product.created_at"`)}
 	}
@@ -193,6 +202,10 @@ func (pc *ProductCreate) createSpec() (*Product, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.Stock(); ok {
 		_spec.SetField(product.FieldStock, field.TypeInt32, value)
 		_node.Stock = value
+	}
+	if value, ok := pc.mutation.UnitPrice(); ok {
+		_spec.SetField(product.FieldUnitPrice, field.TypeFloat32, value)
+		_node.UnitPrice = value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)

@@ -36,6 +36,7 @@ func (s *ProductService) CreateProduct(ctx context.Context, req *pb.CreateProduc
 		Name:        product.Name,
 		Description: product.Description,
 		Stock:       product.Stock,
+		UnitPrice:   product.UnitPrice,
 	}, nil
 }
 
@@ -50,5 +51,6 @@ func (s *ProductService) ViewProduct(ctx context.Context, req *pb.ViewProductReq
 		Name:        product.Name,
 		Description: product.Description,
 		Stock:       product.Stock,
+		UnitPrice:   product.UnitPrice,
 	}, nil
 }

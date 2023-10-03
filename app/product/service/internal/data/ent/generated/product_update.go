@@ -53,6 +53,19 @@ func (pu *ProductUpdate) AddStock(i int32) *ProductUpdate {
 	return pu
 }
 
+// SetUnitPrice sets the "unit_price" field.
+func (pu *ProductUpdate) SetUnitPrice(f float32) *ProductUpdate {
+	pu.mutation.ResetUnitPrice()
+	pu.mutation.SetUnitPrice(f)
+	return pu
+}
+
+// AddUnitPrice adds f to the "unit_price" field.
+func (pu *ProductUpdate) AddUnitPrice(f float32) *ProductUpdate {
+	pu.mutation.AddUnitPrice(f)
+	return pu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pu *ProductUpdate) SetCreatedAt(t time.Time) *ProductUpdate {
 	pu.mutation.SetCreatedAt(t)
@@ -134,6 +147,12 @@ func (pu *ProductUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.AddedStock(); ok {
 		_spec.AddField(product.FieldStock, field.TypeInt32, value)
 	}
+	if value, ok := pu.mutation.UnitPrice(); ok {
+		_spec.SetField(product.FieldUnitPrice, field.TypeFloat32, value)
+	}
+	if value, ok := pu.mutation.AddedUnitPrice(); ok {
+		_spec.AddField(product.FieldUnitPrice, field.TypeFloat32, value)
+	}
 	if value, ok := pu.mutation.CreatedAt(); ok {
 		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -182,6 +201,19 @@ func (puo *ProductUpdateOne) SetStock(i int32) *ProductUpdateOne {
 // AddStock adds i to the "stock" field.
 func (puo *ProductUpdateOne) AddStock(i int32) *ProductUpdateOne {
 	puo.mutation.AddStock(i)
+	return puo
+}
+
+// SetUnitPrice sets the "unit_price" field.
+func (puo *ProductUpdateOne) SetUnitPrice(f float32) *ProductUpdateOne {
+	puo.mutation.ResetUnitPrice()
+	puo.mutation.SetUnitPrice(f)
+	return puo
+}
+
+// AddUnitPrice adds f to the "unit_price" field.
+func (puo *ProductUpdateOne) AddUnitPrice(f float32) *ProductUpdateOne {
+	puo.mutation.AddUnitPrice(f)
 	return puo
 }
 
@@ -295,6 +327,12 @@ func (puo *ProductUpdateOne) sqlSave(ctx context.Context) (_node *Product, err e
 	}
 	if value, ok := puo.mutation.AddedStock(); ok {
 		_spec.AddField(product.FieldStock, field.TypeInt32, value)
+	}
+	if value, ok := puo.mutation.UnitPrice(); ok {
+		_spec.SetField(product.FieldUnitPrice, field.TypeFloat32, value)
+	}
+	if value, ok := puo.mutation.AddedUnitPrice(); ok {
+		_spec.AddField(product.FieldUnitPrice, field.TypeFloat32, value)
 	}
 	if value, ok := puo.mutation.CreatedAt(); ok {
 		_spec.SetField(product.FieldCreatedAt, field.TypeTime, value)

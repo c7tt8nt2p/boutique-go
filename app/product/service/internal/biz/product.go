@@ -32,6 +32,10 @@ func (uc *ProductUseCase) ValidateCreateProductReq(req *pb.CreateProductReq) err
 		return errors.ErrValidationFailed("stock cannot be negative")
 	}
 
+	if req.UnitPrice < 0 {
+		return errors.ErrValidationFailed("unitPrice cannot be negative")
+	}
+
 	return nil
 }
 
@@ -40,6 +44,7 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProdu
 		Name:        req.Name,
 		Description: req.Description,
 		Stock:       req.Stock,
+		UnitPrice:   req.UnitPrice,
 	}
 	return uc.repo.SaveProduct(ctx, pe)
 }

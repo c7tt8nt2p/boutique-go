@@ -20,6 +20,8 @@ const (
 	FieldDescription = "description"
 	// FieldStock holds the string denoting the stock field in the database.
 	FieldStock = "stock"
+	// FieldUnitPrice holds the string denoting the unit_price field in the database.
+	FieldUnitPrice = "unit_price"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -34,6 +36,7 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldStock,
+	FieldUnitPrice,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -78,6 +81,11 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 // ByStock orders the results by the stock field.
 func ByStock(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStock, opts...).ToFunc()
+}
+
+// ByUnitPrice orders the results by the unit_price field.
+func ByUnitPrice(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUnitPrice, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

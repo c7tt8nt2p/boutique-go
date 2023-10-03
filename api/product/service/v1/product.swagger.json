@@ -60,6 +60,10 @@
         "stock": {
           "type": "integer",
           "format": "int32"
+        },
+        "unitPrice": {
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -78,6 +82,10 @@
         "stock": {
           "type": "integer",
           "format": "int32"
+        },
+        "unitPrice": {
+          "type": "number",
+          "format": "float"
         }
       }
     }

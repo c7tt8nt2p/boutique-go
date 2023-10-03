@@ -38,6 +38,8 @@ type ProductMutation struct {
 	description   *string
 	stock         *int32
 	addstock      *int32
+	unit_price    *float32
+	addunit_price *float32
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
@@ -278,6 +280,62 @@ func (m *ProductMutation) ResetStock() {
 	m.addstock = nil
 }
 
+// SetUnitPrice sets the "unit_price" field.
+func (m *ProductMutation) SetUnitPrice(f float32) {
+	m.unit_price = &f
+	m.addunit_price = nil
+}
+
+// UnitPrice returns the value of the "unit_price" field in the mutation.
+func (m *ProductMutation) UnitPrice() (r float32, exists bool) {
+	v := m.unit_price
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUnitPrice returns the old "unit_price" field's value of the Product entity.
+// If the Product object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProductMutation) OldUnitPrice(ctx context.Context) (v float32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUnitPrice is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUnitPrice requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUnitPrice: %w", err)
+	}
+	return oldValue.UnitPrice, nil
+}
+
+// AddUnitPrice adds f to the "unit_price" field.
+func (m *ProductMutation) AddUnitPrice(f float32) {
+	if m.addunit_price != nil {
+		*m.addunit_price += f
+	} else {
+		m.addunit_price = &f
+	}
+}
+
+// AddedUnitPrice returns the value that was added to the "unit_price" field in this mutation.
+func (m *ProductMutation) AddedUnitPrice() (r float32, exists bool) {
+	v := m.addunit_price
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUnitPrice resets all changes to the "unit_price" field.
+func (m *ProductMutation) ResetUnitPrice() {
+	m.unit_price = nil
+	m.addunit_price = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ProductMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -384,7 +442,7 @@ func (m *ProductMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProductMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.name != nil {
 		fields = append(fields, product.FieldName)
 	}
@@ -393,6 +451,9 @@ func (m *ProductMutation) Fields() []string {
 	}
 	if m.stock != nil {
 		fields = append(fields, product.FieldStock)
+	}
+	if m.unit_price != nil {
+		fields = append(fields, product.FieldUnitPrice)
 	}
 	if m.created_at != nil {
 		fields = append(fields, product.FieldCreatedAt)
@@ -414,6 +475,8 @@ func (m *ProductMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case product.FieldStock:
 		return m.Stock()
+	case product.FieldUnitPrice:
+		return m.UnitPrice()
 	case product.FieldCreatedAt:
 		return m.CreatedAt()
 	case product.FieldUpdatedAt:
@@ -433,6 +496,8 @@ func (m *ProductMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldDescription(ctx)
 	case product.FieldStock:
 		return m.OldStock(ctx)
+	case product.FieldUnitPrice:
+		return m.OldUnitPrice(ctx)
 	case product.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case product.FieldUpdatedAt:
@@ -467,6 +532,13 @@ func (m *ProductMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStock(v)
 		return nil
+	case product.FieldUnitPrice:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUnitPrice(v)
+		return nil
 	case product.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -492,6 +564,9 @@ func (m *ProductMutation) AddedFields() []string {
 	if m.addstock != nil {
 		fields = append(fields, product.FieldStock)
 	}
+	if m.addunit_price != nil {
+		fields = append(fields, product.FieldUnitPrice)
+	}
 	return fields
 }
 
@@ -502,6 +577,8 @@ func (m *ProductMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case product.FieldStock:
 		return m.AddedStock()
+	case product.FieldUnitPrice:
+		return m.AddedUnitPrice()
 	}
 	return nil, false
 }
@@ -517,6 +594,13 @@ func (m *ProductMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddStock(v)
+		return nil
+	case product.FieldUnitPrice:
+		v, ok := value.(float32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUnitPrice(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Product numeric field %s", name)
@@ -553,6 +637,9 @@ func (m *ProductMutation) ResetField(name string) error {
 		return nil
 	case product.FieldStock:
 		m.ResetStock()
+		return nil
+	case product.FieldUnitPrice:
+		m.ResetUnitPrice()
 		return nil
 	case product.FieldCreatedAt:
 		m.ResetCreatedAt()
