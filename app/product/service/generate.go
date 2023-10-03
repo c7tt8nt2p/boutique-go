@@ -1,6 +1,6 @@
 package generate
 
-//go:generate kratos proto server ../../../api/user/service/v1/cart.proto -t ./internal/service
+//go:generate kratos proto server ../../../api/product/service/v1/product.proto -t ./internal/service
 
 //go:generate make api
 

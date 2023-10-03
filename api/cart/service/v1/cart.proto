@@ -5,7 +5,16 @@ package cart.service.v1;
 option go_package = "github.com/kx-boutique/api/cart/service/v1;v1";
 
 service Cart {
+    rpc AddItem (AddItemReq) returns (AddItemResp) {}
     rpc ViewCart (ViewCartReq) returns (ViewCartResp) {}
+}
+
+message AddItemReq {
+    int64 user_id = 1;
+}
+
+message AddItemResp {
+    int64 user_id = 1;
 }
 
 message ViewCartReq {

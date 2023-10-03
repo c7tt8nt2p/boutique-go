@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package cart.service.v1;
+
+option go_package = "github.com/kx-boutique/api/product/service/v1;v1";
+
+service Product {
+  rpc ViewProduct (ViewProductReq) returns (ViewProductResp) {}
+}
+
+message ViewProductReq {
+  string id = 1;
+}
+
+message ViewProductResp {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  int32 stock = 4;
+
+}
+
