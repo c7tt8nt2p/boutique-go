@@ -2,9 +2,8 @@ package data
 
 import (
 	"context"
-	"github.com/google/uuid"
-
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/google/uuid"
 )
 
 type ProductEntity struct {
@@ -15,7 +14,8 @@ type ProductEntity struct {
 }
 
 type ProductRepo interface {
-	GetProductById(ctx context.Context, id string) (*ProductEntity, error)
+	SaveProduct(ctx context.Context, pe *ProductEntity) (*ProductEntity, error)
+	GetProductById(ctx context.Context, id uuid.UUID) (*ProductEntity, error)
 }
 
 type productRepo struct {
@@ -30,15 +30,29 @@ func NewProductRepo(data *Data, logger log.Logger) ProductRepo {
 	}
 }
 
-func (r *productRepo) GetProductById(ctx context.Context, id string) (*ProductEntity, error) {
-	buuid, err1 := uuid.FromBytes([]byte(id))
-	if err1 != nil {
-		return nil, err1
+func (r *productRepo) SaveProduct(ctx context.Context, pe *ProductEntity) (*ProductEntity, error) {
+	saved, err := r.data.db.Product.
+		Create().
+		SetName(pe.Name).
+		SetDescription(pe.Description).
+		SetStock(pe.Stock).
+		Save(ctx)
+	if err != nil {
+		return nil, err
 	}
 
-	p, err2 := r.data.db.Product.Get(ctx, buuid)
-	if err2 != nil {
-		return nil, err2
+	return &ProductEntity{
+		Id:          saved.ID.String(),
+		Name:        saved.Name,
+		Description: saved.Description,
+		Stock:       saved.Stock,
+	}, nil
+}
+
+func (r *productRepo) GetProductById(ctx context.Context, id uuid.UUID) (*ProductEntity, error) {
+	p, err := r.data.db.Product.Get(ctx, id)
+	if err != nil {
+		return nil, err
 	}
 
 	return &ProductEntity{

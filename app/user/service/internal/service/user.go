@@ -3,9 +3,8 @@ package service
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/kx-boutique/app/user/service/internal/biz"
-
 	pb "github.com/kx-boutique/api/user/service/v1"
+	"github.com/kx-boutique/app/user/service/internal/biz"
 )
 
 type UserService struct {
@@ -22,10 +21,11 @@ func NewUserService(uc *biz.UserUseCase, logger log.Logger) *UserService {
 }
 
 func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*pb.CreateUserResp, error) {
-	user, err := s.uc.SaveUser(ctx, &biz.User{Name: req.Name})
+	user, err := s.uc.SaveUser(ctx, req)
 	if err != nil {
 		return nil, err
 	}
+
 	return &pb.CreateUserResp{
 		Id:   user.Id,
 		Name: user.Name,

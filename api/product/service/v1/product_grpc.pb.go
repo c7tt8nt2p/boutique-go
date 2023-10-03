@@ -19,13 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Product_ViewProduct_FullMethodName = "/cart.service.v1.Product/ViewProduct"
+	Product_CreateProduct_FullMethodName = "/cart.service.v1.Product/CreateProduct"
+	Product_ViewProduct_FullMethodName   = "/cart.service.v1.Product/ViewProduct"
 )
 
 // ProductClient is the client API for Product service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductClient interface {
+	CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error)
 	ViewProduct(ctx context.Context, in *ViewProductReq, opts ...grpc.CallOption) (*ViewProductResp, error)
 }
 
@@ -35,6 +37,15 @@ type productClient struct {
 
 func NewProductClient(cc grpc.ClientConnInterface) ProductClient {
 	return &productClient{cc}
+}
+
+func (c *productClient) CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error) {
+	out := new(CreateProductResp)
+	err := c.cc.Invoke(ctx, Product_CreateProduct_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *productClient) ViewProduct(ctx context.Context, in *ViewProductReq, opts ...grpc.CallOption) (*ViewProductResp, error) {
@@ -50,6 +61,7 @@ func (c *productClient) ViewProduct(ctx context.Context, in *ViewProductReq, opt
 // All implementations must embed UnimplementedProductServer
 // for forward compatibility
 type ProductServer interface {
+	CreateProduct(context.Context, *CreateProductReq) (*CreateProductResp, error)
 	ViewProduct(context.Context, *ViewProductReq) (*ViewProductResp, error)
 	mustEmbedUnimplementedProductServer()
 }
@@ -58,6 +70,9 @@ type ProductServer interface {
 type UnimplementedProductServer struct {
 }
 
+func (UnimplementedProductServer) CreateProduct(context.Context, *CreateProductReq) (*CreateProductResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
+}
 func (UnimplementedProductServer) ViewProduct(context.Context, *ViewProductReq) (*ViewProductResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ViewProduct not implemented")
 }
@@ -72,6 +87,24 @@ type UnsafeProductServer interface {
 
 func RegisterProductServer(s grpc.ServiceRegistrar, srv ProductServer) {
 	s.RegisterService(&Product_ServiceDesc, srv)
+}
+
+func _Product_CreateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProductReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServer).CreateProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Product_CreateProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServer).CreateProduct(ctx, req.(*CreateProductReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Product_ViewProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -99,6 +132,10 @@ var Product_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "cart.service.v1.Product",
 	HandlerType: (*ProductServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateProduct",
+			Handler:    _Product_CreateProduct_Handler,
+		},
 		{
 			MethodName: "ViewProduct",
 			Handler:    _Product_ViewProduct_Handler,

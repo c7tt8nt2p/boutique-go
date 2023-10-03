@@ -5,7 +5,21 @@ package cart.service.v1;
 option go_package = "github.com/kx-boutique/api/product/service/v1;v1";
 
 service Product {
+  rpc CreateProduct (CreateProductReq) returns (CreateProductResp) {}
   rpc ViewProduct (ViewProductReq) returns (ViewProductResp) {}
+}
+
+message CreateProductReq {
+  string name = 1;
+  string description = 2;
+  int32 stock = 3;
+}
+
+message CreateProductResp {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  int32 stock = 4;
 }
 
 message ViewProductReq {
@@ -17,6 +31,5 @@ message ViewProductResp {
   string name = 2;
   string description = 3;
   int32 stock = 4;
-
 }
 

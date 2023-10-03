@@ -45,6 +45,24 @@
         }
       }
     },
+    "v1CreateProductResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "stock": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "v1ViewProductResp": {
       "type": "object",
       "properties": {
