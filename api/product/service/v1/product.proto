@@ -27,7 +27,7 @@ message CreateProductResp {
 }
 
 message ViewProductReq {
-  string id = 1;
+  string id = 1 [(validate.rules).string.uuid = true];
 }
 
 message ViewProductResp {

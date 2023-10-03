@@ -32,7 +32,7 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProdu
 func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.ViewProductReq) (*data.ProductEntity, error) {
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
-		return nil, errors.ErrValidationFailed("Id is not valid.")
+		return nil, errors.ErrValidationFailed("Id cannot be parsed to UUID.")
 	}
 
 	return uc.repo.GetProductById(ctx, id)
