@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 )
@@ -23,5 +24,11 @@ func (Cart) Fields() []ent.Field {
 
 // Edges of the Cart.
 func (Cart) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.From("owner", UserCart.Type).
+			Ref("cart").
+			Field("cart_id").
+			Unique().
+			Required(),
+	}
 }

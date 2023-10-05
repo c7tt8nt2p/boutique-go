@@ -22,7 +22,7 @@ type Data struct {
 func NewEntClient(conf *conf.Data, logger log.Logger) *ent.Client {
 	log := log.NewHelper(log.With(logger, "module", "catalog-service/data/ent"))
 
-	dataSource := fmt.Sprintf("postgresql://%s:%s@%s/%s?sslmode=disable",
+	dataSource := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
 		conf.Database.User,
 		conf.Database.Password,
 		conf.Database.Url,

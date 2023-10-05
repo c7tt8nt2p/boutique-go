@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 )
@@ -27,5 +28,13 @@ func (UserCart) Fields() []ent.Field {
 }
 
 func (UserCart) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.From("owner", User.Type).
+			Ref("user_cart").
+			Field("user_id").
+			Unique().
+			Required(),
+		edge.To("cart", Cart.Type).
+			Unique(),
+	}
 }
