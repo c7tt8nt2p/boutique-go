@@ -11,7 +11,7 @@ type ProductEntity struct {
 	Name        string
 	Description string
 	Stock       int32
-	UnitPrice   float32
+	UnitPrice   float64
 }
 
 type ProductRepo interface {
@@ -32,6 +32,7 @@ func NewProductRepo(data *Data, logger log.Logger) ProductRepo {
 }
 
 func (r *productRepo) SaveProduct(ctx context.Context, pe *ProductEntity) (*ProductEntity, error) {
+	//r.data.db.UserCart.Create().SetUserID()
 	saved, err := r.data.db.Product.
 		Create().
 		SetName(pe.Name).

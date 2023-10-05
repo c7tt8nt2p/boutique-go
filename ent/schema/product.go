@@ -18,7 +18,7 @@ func (Product) Fields() []ent.Field {
 		field.String("name"),
 		field.String("description"),
 		field.Int32("stock"),
-		field.Float32("unit_price"),
+		field.Float("unit_price"),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

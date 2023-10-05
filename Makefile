@@ -13,11 +13,6 @@ proto:
 wire:
 	find app -type d -depth 2 -print | xargs -L 1 bash -c 'cd "$$0" && pwd && $(MAKE) wire'
 
-.PHONY: ent
-# generate ent
-ent:
-	find app -type d -depth 2 -print | xargs -L 1 bash -c 'cd "$$0" && pwd && $(MAKE) ent'
-
 .PHONY: docker
 # generate docker
 docker:

@@ -58,6 +58,15 @@
         }
       }
     },
+    "v1AddItemResp": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "v1ViewCartResp": {
       "type": "object",
       "properties": {

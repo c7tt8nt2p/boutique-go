@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// Cart holds the schema definition for the Cart entity.
 type Cart struct {
 	ent.Schema
 }
@@ -14,10 +13,11 @@ type Cart struct {
 // Fields of the Cart.
 func (Cart) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int64("id"),
-		field.Int64("item_id"),
-		field.Int64("count"),
-		field.UUID("user_id", uuid.UUID{}),
+		field.UUID("id", uuid.UUID{}).
+			Default(uuid.New),
+		field.UUID("cart_id", uuid.UUID{}),
+		field.UUID("product_id", uuid.UUID{}),
+		field.Int64("qty"),
 	}
 }
 

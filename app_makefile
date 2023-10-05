@@ -85,10 +85,6 @@ test:
 run:
 	cd cmd/server/ && go run .
 
-.PHONY: ent
-ent:
-	cd internal/data/ent && ent generate ./schema --target ./generated
-
 .PHONY: docker
 docker:
 	cd ../../.. && docker build -f deploy/build/Dockerfile --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .

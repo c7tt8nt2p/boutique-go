@@ -63,7 +63,7 @@
         },
         "unitPrice": {
           "type": "number",
-          "format": "float"
+          "format": "double"
         }
       }
     },
@@ -85,7 +85,7 @@
         },
         "unitPrice": {
           "type": "number",
-          "format": "float"
+          "format": "double"
         }
       }
     }

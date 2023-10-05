@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	Cart_AddItem_FullMethodName  = "/cart.service.v1.Cart/AddItem"
 	Cart_ViewCart_FullMethodName = "/cart.service.v1.Cart/ViewCart"
 )
 
@@ -26,6 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CartClient interface {
+	AddItem(ctx context.Context, in *AddItemReq, opts ...grpc.CallOption) (*AddItemResp, error)
 	ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc.CallOption) (*ViewCartResp, error)
 }
 
@@ -35,6 +37,15 @@ type cartClient struct {
 
 func NewCartClient(cc grpc.ClientConnInterface) CartClient {
 	return &cartClient{cc}
+}
+
+func (c *cartClient) AddItem(ctx context.Context, in *AddItemReq, opts ...grpc.CallOption) (*AddItemResp, error) {
+	out := new(AddItemResp)
+	err := c.cc.Invoke(ctx, Cart_AddItem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *cartClient) ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc.CallOption) (*ViewCartResp, error) {
@@ -50,6 +61,7 @@ func (c *cartClient) ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc
 // All implementations must embed UnimplementedCartServer
 // for forward compatibility
 type CartServer interface {
+	AddItem(context.Context, *AddItemReq) (*AddItemResp, error)
 	ViewCart(context.Context, *ViewCartReq) (*ViewCartResp, error)
 	mustEmbedUnimplementedCartServer()
 }
@@ -58,6 +70,9 @@ type CartServer interface {
 type UnimplementedCartServer struct {
 }
 
+func (UnimplementedCartServer) AddItem(context.Context, *AddItemReq) (*AddItemResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddItem not implemented")
+}
 func (UnimplementedCartServer) ViewCart(context.Context, *ViewCartReq) (*ViewCartResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ViewCart not implemented")
 }
@@ -72,6 +87,24 @@ type UnsafeCartServer interface {
 
 func RegisterCartServer(s grpc.ServiceRegistrar, srv CartServer) {
 	s.RegisterService(&Cart_ServiceDesc, srv)
+}
+
+func _Cart_AddItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddItemReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CartServer).AddItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Cart_AddItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CartServer).AddItem(ctx, req.(*AddItemReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Cart_ViewCart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -99,6 +132,10 @@ var Cart_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "cart.service.v1.Cart",
 	HandlerType: (*CartServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AddItem",
+			Handler:    _Cart_AddItem_Handler,
+		},
 		{
 			MethodName: "ViewCart",
 			Handler:    _Cart_ViewCart_Handler,

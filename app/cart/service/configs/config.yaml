@@ -1,11 +1,10 @@
 server:
-  http:
-    addr: 0.0.0.0:8000
-    timeout: 1s
   grpc:
-    addr: 0.0.0.0:0
+    addr: 0.0.0.0:9002
     timeout: 1s
 data:
   database:
-    driver: mysql
-    source: user:1234@tcp(127.0.0.1:3306)/cart_db?parseTime=true
+    url: localhost:5432
+    user: user
+    password: '1234'
+    db_name: kx_boutique
