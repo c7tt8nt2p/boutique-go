@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/google/uuid"
 )
 
 type CartEntity struct {
@@ -16,6 +17,7 @@ type ItemEntity struct {
 }
 
 type CartRepo interface {
+	SaveNewCart(ctx context.Context, userId uuid.UUID) (uuid.UUID, error)
 	GetCart(ctx context.Context, id int64) (*CartEntity, error)
 }
 
@@ -29,6 +31,19 @@ func NewCartRepo(data *Data, logger log.Logger) CartRepo {
 		data: data,
 		log:  log.NewHelper(log.With(logger, "module", "repo/cart")),
 	}
+}
+
+func (r *cartRepo) SaveNewCart(ctx context.Context, userId uuid.UUID) (uuid.UUID, error) {
+	saved, err := r.data.db.UserCart.
+		Create().
+		SetUserID(userId).
+		Save(ctx)
+
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	return saved.ID, nil
 }
 
 func (r *cartRepo) GetCart(ctx context.Context, uid int64) (*CartEntity, error) {

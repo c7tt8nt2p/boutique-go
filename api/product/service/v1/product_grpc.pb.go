@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Product_CreateProduct_FullMethodName = "/cart.service.v1.Product/CreateProduct"
-	Product_GetProduct_FullMethodName    = "/cart.service.v1.Product/GetProduct"
+	Product_CreateProduct_FullMethodName  = "/cart.service.v1.Product/CreateProduct"
+	Product_GetProductById_FullMethodName = "/cart.service.v1.Product/GetProductById"
 )
 
 // ProductClient is the client API for Product service.
@@ -28,7 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductClient interface {
 	CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error)
-	GetProduct(ctx context.Context, in *GetProductReq, opts ...grpc.CallOption) (*GetProductResp, error)
+	GetProductById(ctx context.Context, in *GetProductByIdReq, opts ...grpc.CallOption) (*GetProductByIdResp, error)
 }
 
 type productClient struct {
@@ -48,9 +48,9 @@ func (c *productClient) CreateProduct(ctx context.Context, in *CreateProductReq,
 	return out, nil
 }
 
-func (c *productClient) GetProduct(ctx context.Context, in *GetProductReq, opts ...grpc.CallOption) (*GetProductResp, error) {
-	out := new(GetProductResp)
-	err := c.cc.Invoke(ctx, Product_GetProduct_FullMethodName, in, out, opts...)
+func (c *productClient) GetProductById(ctx context.Context, in *GetProductByIdReq, opts ...grpc.CallOption) (*GetProductByIdResp, error) {
+	out := new(GetProductByIdResp)
+	err := c.cc.Invoke(ctx, Product_GetProductById_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *productClient) GetProduct(ctx context.Context, in *GetProductReq, opts 
 // for forward compatibility
 type ProductServer interface {
 	CreateProduct(context.Context, *CreateProductReq) (*CreateProductResp, error)
-	GetProduct(context.Context, *GetProductReq) (*GetProductResp, error)
+	GetProductById(context.Context, *GetProductByIdReq) (*GetProductByIdResp, error)
 	mustEmbedUnimplementedProductServer()
 }
 
@@ -73,8 +73,8 @@ type UnimplementedProductServer struct {
 func (UnimplementedProductServer) CreateProduct(context.Context, *CreateProductReq) (*CreateProductResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
 }
-func (UnimplementedProductServer) GetProduct(context.Context, *GetProductReq) (*GetProductResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
+func (UnimplementedProductServer) GetProductById(context.Context, *GetProductByIdReq) (*GetProductByIdResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProductById not implemented")
 }
 func (UnimplementedProductServer) mustEmbedUnimplementedProductServer() {}
 
@@ -107,20 +107,20 @@ func _Product_CreateProduct_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Product_GetProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetProductReq)
+func _Product_GetProductById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProductByIdReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServer).GetProduct(ctx, in)
+		return srv.(ProductServer).GetProductById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Product_GetProduct_FullMethodName,
+		FullMethod: Product_GetProductById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServer).GetProduct(ctx, req.(*GetProductReq))
+		return srv.(ProductServer).GetProductById(ctx, req.(*GetProductByIdReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -137,8 +137,8 @@ var Product_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Product_CreateProduct_Handler,
 		},
 		{
-			MethodName: "GetProduct",
-			Handler:    _Product_GetProduct_Handler,
+			MethodName: "GetProductById",
+			Handler:    _Product_GetProductById_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

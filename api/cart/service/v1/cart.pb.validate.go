@@ -35,6 +35,229 @@ var (
 	_ = sort.Sort
 )
 
+// define the regex for a UUID once up-front
+var _cart_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+
+// Validate checks the field values on NewCartReq with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *NewCartReq) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on NewCartReq with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in NewCartReqMultiError, or
+// nil if none found.
+func (m *NewCartReq) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *NewCartReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if err := m._validateUuid(m.GetUserId()); err != nil {
+		err = NewCartReqValidationError{
+			field:  "UserId",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return NewCartReqMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *NewCartReq) _validateUuid(uuid string) error {
+	if matched := _cart_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// NewCartReqMultiError is an error wrapping multiple validation errors
+// returned by NewCartReq.ValidateAll() if the designated constraints aren't met.
+type NewCartReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m NewCartReqMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m NewCartReqMultiError) AllErrors() []error { return m }
+
+// NewCartReqValidationError is the validation error returned by
+// NewCartReq.Validate if the designated constraints aren't met.
+type NewCartReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e NewCartReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e NewCartReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e NewCartReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e NewCartReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e NewCartReqValidationError) ErrorName() string { return "NewCartReqValidationError" }
+
+// Error satisfies the builtin error interface
+func (e NewCartReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sNewCartReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = NewCartReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = NewCartReqValidationError{}
+
+// Validate checks the field values on NewCartResp with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *NewCartResp) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on NewCartResp with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in NewCartRespMultiError, or
+// nil if none found.
+func (m *NewCartResp) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *NewCartResp) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return NewCartRespMultiError(errors)
+	}
+
+	return nil
+}
+
+// NewCartRespMultiError is an error wrapping multiple validation errors
+// returned by NewCartResp.ValidateAll() if the designated constraints aren't met.
+type NewCartRespMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m NewCartRespMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m NewCartRespMultiError) AllErrors() []error { return m }
+
+// NewCartRespValidationError is the validation error returned by
+// NewCartResp.Validate if the designated constraints aren't met.
+type NewCartRespValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e NewCartRespValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e NewCartRespValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e NewCartRespValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e NewCartRespValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e NewCartRespValidationError) ErrorName() string { return "NewCartRespValidationError" }
+
+// Error satisfies the builtin error interface
+func (e NewCartRespValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sNewCartResp.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = NewCartRespValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = NewCartRespValidationError{}
+
 // Validate checks the field values on AddItemReq with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.

@@ -27,7 +27,19 @@ func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*p
 	}
 
 	return &pb.CreateUserResp{
-		Id:   user.Id,
+		Id:   user.Id.String(),
+		Name: user.Name,
+	}, nil
+}
+
+func (s *UserService) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) (*pb.GetUserByIdResp, error) {
+	user, err := s.uc.GetUserById(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetUserByIdResp{
+		Id:   user.Id.String(),
 		Name: user.Name,
 	}, nil
 }

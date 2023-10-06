@@ -294,22 +294,22 @@ var _ interface {
 	ErrorName() string
 } = CreateProductRespValidationError{}
 
-// Validate checks the field values on GetProductReq with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *GetProductReq) Validate() error {
+// Validate checks the field values on GetProductByIdReq with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *GetProductByIdReq) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetProductReq with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in GetProductReqMultiError, or
-// nil if none found.
-func (m *GetProductReq) ValidateAll() error {
+// ValidateAll checks the field values on GetProductByIdReq with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetProductByIdReqMultiError, or nil if none found.
+func (m *GetProductByIdReq) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetProductReq) validate(all bool) error {
+func (m *GetProductByIdReq) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -317,7 +317,7 @@ func (m *GetProductReq) validate(all bool) error {
 	var errors []error
 
 	if err := m._validateUuid(m.GetId()); err != nil {
-		err = GetProductReqValidationError{
+		err = GetProductByIdReqValidationError{
 			field:  "Id",
 			reason: "value must be a valid UUID",
 			cause:  err,
@@ -329,13 +329,13 @@ func (m *GetProductReq) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return GetProductReqMultiError(errors)
+		return GetProductByIdReqMultiError(errors)
 	}
 
 	return nil
 }
 
-func (m *GetProductReq) _validateUuid(uuid string) error {
+func (m *GetProductByIdReq) _validateUuid(uuid string) error {
 	if matched := _product_uuidPattern.MatchString(uuid); !matched {
 		return errors.New("invalid uuid format")
 	}
@@ -343,13 +343,13 @@ func (m *GetProductReq) _validateUuid(uuid string) error {
 	return nil
 }
 
-// GetProductReqMultiError is an error wrapping multiple validation errors
-// returned by GetProductReq.ValidateAll() if the designated constraints
+// GetProductByIdReqMultiError is an error wrapping multiple validation errors
+// returned by GetProductByIdReq.ValidateAll() if the designated constraints
 // aren't met.
-type GetProductReqMultiError []error
+type GetProductByIdReqMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetProductReqMultiError) Error() string {
+func (m GetProductByIdReqMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -358,11 +358,11 @@ func (m GetProductReqMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetProductReqMultiError) AllErrors() []error { return m }
+func (m GetProductByIdReqMultiError) AllErrors() []error { return m }
 
-// GetProductReqValidationError is the validation error returned by
-// GetProductReq.Validate if the designated constraints aren't met.
-type GetProductReqValidationError struct {
+// GetProductByIdReqValidationError is the validation error returned by
+// GetProductByIdReq.Validate if the designated constraints aren't met.
+type GetProductByIdReqValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -370,22 +370,24 @@ type GetProductReqValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetProductReqValidationError) Field() string { return e.field }
+func (e GetProductByIdReqValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetProductReqValidationError) Reason() string { return e.reason }
+func (e GetProductByIdReqValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetProductReqValidationError) Cause() error { return e.cause }
+func (e GetProductByIdReqValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetProductReqValidationError) Key() bool { return e.key }
+func (e GetProductByIdReqValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetProductReqValidationError) ErrorName() string { return "GetProductReqValidationError" }
+func (e GetProductByIdReqValidationError) ErrorName() string {
+	return "GetProductByIdReqValidationError"
+}
 
 // Error satisfies the builtin error interface
-func (e GetProductReqValidationError) Error() string {
+func (e GetProductByIdReqValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -397,14 +399,14 @@ func (e GetProductReqValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetProductReq.%s: %s%s",
+		"invalid %sGetProductByIdReq.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetProductReqValidationError{}
+var _ error = GetProductByIdReqValidationError{}
 
 var _ interface {
 	Field() string
@@ -412,24 +414,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetProductReqValidationError{}
+} = GetProductByIdReqValidationError{}
 
-// Validate checks the field values on GetProductResp with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *GetProductResp) Validate() error {
+// Validate checks the field values on GetProductByIdResp with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetProductByIdResp) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetProductResp with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in GetProductRespMultiError,
-// or nil if none found.
-func (m *GetProductResp) ValidateAll() error {
+// ValidateAll checks the field values on GetProductByIdResp with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetProductByIdRespMultiError, or nil if none found.
+func (m *GetProductByIdResp) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetProductResp) validate(all bool) error {
+func (m *GetProductByIdResp) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -447,19 +449,19 @@ func (m *GetProductResp) validate(all bool) error {
 	// no validation rules for UnitPrice
 
 	if len(errors) > 0 {
-		return GetProductRespMultiError(errors)
+		return GetProductByIdRespMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetProductRespMultiError is an error wrapping multiple validation errors
-// returned by GetProductResp.ValidateAll() if the designated constraints
+// GetProductByIdRespMultiError is an error wrapping multiple validation errors
+// returned by GetProductByIdResp.ValidateAll() if the designated constraints
 // aren't met.
-type GetProductRespMultiError []error
+type GetProductByIdRespMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetProductRespMultiError) Error() string {
+func (m GetProductByIdRespMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -468,11 +470,11 @@ func (m GetProductRespMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetProductRespMultiError) AllErrors() []error { return m }
+func (m GetProductByIdRespMultiError) AllErrors() []error { return m }
 
-// GetProductRespValidationError is the validation error returned by
-// GetProductResp.Validate if the designated constraints aren't met.
-type GetProductRespValidationError struct {
+// GetProductByIdRespValidationError is the validation error returned by
+// GetProductByIdResp.Validate if the designated constraints aren't met.
+type GetProductByIdRespValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -480,22 +482,24 @@ type GetProductRespValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetProductRespValidationError) Field() string { return e.field }
+func (e GetProductByIdRespValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetProductRespValidationError) Reason() string { return e.reason }
+func (e GetProductByIdRespValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetProductRespValidationError) Cause() error { return e.cause }
+func (e GetProductByIdRespValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetProductRespValidationError) Key() bool { return e.key }
+func (e GetProductByIdRespValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetProductRespValidationError) ErrorName() string { return "GetProductRespValidationError" }
+func (e GetProductByIdRespValidationError) ErrorName() string {
+	return "GetProductByIdRespValidationError"
+}
 
 // Error satisfies the builtin error interface
-func (e GetProductRespValidationError) Error() string {
+func (e GetProductByIdRespValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -507,14 +511,14 @@ func (e GetProductRespValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetProductResp.%s: %s%s",
+		"invalid %sGetProductByIdResp.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetProductRespValidationError{}
+var _ error = GetProductByIdRespValidationError{}
 
 var _ interface {
 	Field() string
@@ -522,4 +526,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetProductRespValidationError{}
+} = GetProductByIdRespValidationError{}

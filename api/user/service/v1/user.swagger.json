@@ -55,6 +55,17 @@
           "type": "string"
         }
       }
+    },
+    "v1GetUserByIdResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
     }
   }
 }

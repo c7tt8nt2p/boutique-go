@@ -1,10 +1,15 @@
 server:
   grpc:
-    addr: 0.0.0.0:9000
+    addr: localhost:9000
     timeout: 1s
+
 data:
   database:
     url: localhost:5432
     user: user
     password: '1234'
     db_name: kx_boutique
+
+client:
+  cart_service:
+    url: localhost:9002

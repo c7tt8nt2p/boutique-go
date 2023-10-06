@@ -2,10 +2,9 @@ package biz
 
 import (
 	"context"
-	"github.com/google/uuid"
 	pb "github.com/kx-boutique/api/product/service/v1"
 	"github.com/kx-boutique/app/product/service/internal/data"
-	"github.com/kx-boutique/pkg/errors"
+	"github.com/kx-boutique/pkg/util"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
@@ -29,11 +28,10 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProdu
 	return uc.repo.SaveProduct(ctx, pe)
 }
 
-func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.GetProductReq) (*data.ProductEntity, error) {
-	id, err := uuid.Parse(req.Id)
+func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.GetProductByIdReq) (*data.ProductEntity, error) {
+	id, err := util.ParseUUID(req.Id)
 	if err != nil {
-		return nil, errors.ErrValidationFailed("Id cannot be parsed to UUID.")
+		return nil, err
 	}
-
-	return uc.repo.GetProductById(ctx, id)
+	return uc.repo.FindProductById(ctx, id)
 }

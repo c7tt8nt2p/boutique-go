@@ -16,7 +16,7 @@ type ProductEntity struct {
 
 type ProductRepo interface {
 	SaveProduct(ctx context.Context, pe *ProductEntity) (*ProductEntity, error)
-	GetProductById(ctx context.Context, id uuid.UUID) (*ProductEntity, error)
+	FindProductById(ctx context.Context, id uuid.UUID) (*ProductEntity, error)
 }
 
 type productRepo struct {
@@ -53,7 +53,7 @@ func (r *productRepo) SaveProduct(ctx context.Context, pe *ProductEntity) (*Prod
 	}, nil
 }
 
-func (r *productRepo) GetProductById(ctx context.Context, id uuid.UUID) (*ProductEntity, error) {
+func (r *productRepo) FindProductById(ctx context.Context, id uuid.UUID) (*ProductEntity, error) {
 	p, err := r.data.db.Product.Get(ctx, id)
 	if err != nil {
 		return nil, err

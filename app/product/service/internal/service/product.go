@@ -36,13 +36,13 @@ func (s *ProductService) CreateProduct(ctx context.Context, req *pb.CreateProduc
 	}, nil
 }
 
-func (s *ProductService) GetProduct(ctx context.Context, req *pb.GetProductReq) (*pb.GetProductResp, error) {
+func (s *ProductService) GetProductById(ctx context.Context, req *pb.GetProductByIdReq) (*pb.GetProductByIdResp, error) {
 	product, err := s.uc.GetProductById(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.GetProductResp{
+	return &pb.GetProductByIdResp{
 		Id:          product.Id,
 		Name:        product.Name,
 		Description: product.Description,

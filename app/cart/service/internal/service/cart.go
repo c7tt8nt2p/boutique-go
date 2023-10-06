@@ -21,8 +21,18 @@ func NewCartService(uc *biz.CartUseCase, logger log.Logger) *CartService {
 		log: log.NewHelper(log.With(logger, "module", "service/cart"))}
 }
 
-func (s *CartService) ViewCart(ctx context.Context, req *pb.ViewCartReq) (reply *pb.ViewCartResp, err error) {
-	reply = &pb.ViewCartResp{Items: make([]*pb.ViewCartResp_Item, 0)}
-	s.uc.GetCart(ctx, req.UserId)
-	return nil, nil
+func (s *CartService) NewCart(ctx context.Context, req *pb.NewCartReq) (*pb.NewCartResp, error) {
+	id, err := s.uc.NewCart(ctx, req.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.NewCartResp{
+		Id: id.String(),
+	}, nil
+}
+
+func (s *CartService) ViewCart(ctx context.Context, req *pb.ViewCartReq) (*pb.ViewCartResp, error) {
+	reply := &pb.ViewCartResp{Items: make([]*pb.ViewCartResp_Item, 0)}
+	return reply, nil
 }

@@ -67,7 +67,7 @@
         }
       }
     },
-    "v1GetProductResp": {
+    "v1GetProductByIdResp": {
       "type": "object",
       "properties": {
         "id": {

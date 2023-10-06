@@ -34,7 +34,6 @@ func (UserCart) Edges() []ent.Edge {
 			Field("user_id").
 			Unique().
 			Required(),
-		edge.To("cart", Cart.Type).
-			Unique(),
+		edge.To("carts", Cart.Type),
 	}
 }

@@ -4,28 +4,40 @@ package cart.service.v1;
 
 option go_package = "github.com/kx-boutique/api/cart/service/v1;v1";
 
+import "validate/validate.proto";
+
+
 service Cart {
-    rpc AddItem (AddItemReq) returns (AddItemResp) {}
-    rpc ViewCart (ViewCartReq) returns (ViewCartResp) {}
+  rpc NewCart (NewCartReq) returns (NewCartResp) {}
+  rpc AddItem (AddItemReq) returns (AddItemResp) {}
+  rpc ViewCart (ViewCartReq) returns (ViewCartResp) {}
+}
+
+message NewCartReq {
+  string user_id = 1 [(validate.rules).string.uuid = true];
+}
+
+message NewCartResp {
+  string id = 1;
 }
 
 message AddItemReq {
-    int64 user_id = 1;
+  int64 user_id = 1;
 }
 
 message AddItemResp {
-    int64 user_id = 1;
+  int64 user_id = 1;
 }
 
 message ViewCartReq {
-    int64 user_id = 1;
+  int64 user_id = 1;
 }
 
 message ViewCartResp {
-    message Item {
-        int64 item_id = 1;
-        int64 quantity = 2;
-    }
-    repeated Item items = 1;
+  message Item {
+    int64 item_id = 1;
+    int64 quantity = 2;
+  }
+  repeated Item items = 1;
 }
 

@@ -67,6 +67,14 @@
         }
       }
     },
+    "v1NewCartResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
     "v1ViewCartResp": {
       "type": "object",
       "properties": {
