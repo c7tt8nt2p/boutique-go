@@ -7,3 +7,5 @@ package generate
 //go:generate make proto
 
 //go:generate make wire
+
+//go:generate make build
