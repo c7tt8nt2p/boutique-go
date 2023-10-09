@@ -8,8 +8,9 @@ import (
 )
 
 type UserEntity struct {
-	Id   uuid.UUID
-	Name string
+	Id    uuid.UUID
+	Name  string
+	Email string
 }
 
 type UserRepo interface {
@@ -39,6 +40,7 @@ func (r *userRepo) SaveUser(ctx context.Context, client *ent.Client, ue *UserEnt
 	saved, err := client.User.
 		Create().
 		SetName(ue.Name).
+		SetEmail(ue.Email).
 		Save(ctx)
 
 	if err != nil {
@@ -46,8 +48,9 @@ func (r *userRepo) SaveUser(ctx context.Context, client *ent.Client, ue *UserEnt
 	}
 
 	return &UserEntity{
-		Id:   saved.ID,
-		Name: saved.Name,
+		Id:    saved.ID,
+		Name:  saved.Name,
+		Email: saved.Email,
 	}, nil
 }
 

@@ -27,8 +27,9 @@ func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*p
 	}
 
 	return &pb.CreateUserResp{
-		Id:   user.Id.String(),
-		Name: user.Name,
+		Id:    user.Id.String(),
+		Name:  user.Name,
+		Email: user.Email,
 	}, nil
 }
 

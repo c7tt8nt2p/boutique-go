@@ -1,14 +1,12 @@
 package data
 
 import (
-	"context"
 	"entgo.io/ent/dialect"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"github.com/kx-boutique/app/user/service/internal/conf"
 	ent "github.com/kx-boutique/ent/generated"
-	"github.com/kx-boutique/ent/generated/migrate"
 	_ "github.com/lib/pq"
 )
 
@@ -32,10 +30,6 @@ func NewEntClient(conf *conf.Data, logger log.Logger) *ent.Client {
 	client, err := ent.Open(dialect.Postgres, dataSource)
 	if err != nil {
 		log.Fatalf("failed opening connection to db: %v", err)
-	}
-	// Run the auto migration tool.
-	if err := client.Schema.Create(context.Background(), migrate.WithGlobalUniqueID(true)); err != nil {
-		log.Fatalf("failed creating schema resources: %v", err)
 	}
 	return client
 }

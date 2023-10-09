@@ -6,7 +6,6 @@ option go_package = "github.com/kx-boutique/api/cart/service/v1;v1";
 
 import "validate/validate.proto";
 
-
 service Cart {
   rpc NewCart (NewCartReq) returns (NewCartResp) {}
   rpc AddItem (AddItemReq) returns (AddItemResp) {}

@@ -24,7 +24,10 @@ func NewUserUseCase(cartClient v1.CartClient, repo data.UserRepo, logger log.Log
 }
 
 func (uc *UserUseCase) SaveUser(ctx context.Context, req *pb.CreateUserReq) (*data.UserEntity, error) {
-	user, err1 := uc.repo.SaveUser(ctx, uc.repo.GetEntClient(), &data.UserEntity{Name: req.Name})
+	user, err1 := uc.repo.SaveUser(ctx, uc.repo.GetEntClient(), &data.UserEntity{
+		Name:  req.Name,
+		Email: req.Email,
+	})
 	if err1 != nil {
 		return nil, err1
 	}
