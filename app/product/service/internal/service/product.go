@@ -50,3 +50,17 @@ func (s *ProductService) GetProductById(ctx context.Context, req *pb.GetProductB
 		UnitPrice:   product.UnitPrice,
 	}, nil
 }
+
+func (s *ProductService) ValidatePurchasableProduct(ctx context.Context, req *pb.ValidatePurchasableProductReq) (*pb.ValidatePurchasableProductResp, error) {
+	validated, err := s.uc.ValidateProduct(ctx, req)
+	if err != nil {
+		return &pb.ValidatePurchasableProductResp{
+			Validated:         false,
+			ValidationMessage: err.Error(),
+		}, nil
+	}
+
+	return &pb.ValidatePurchasableProductResp{
+		Validated: validated,
+	}, nil
+}

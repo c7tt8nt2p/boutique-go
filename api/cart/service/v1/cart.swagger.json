@@ -58,12 +58,15 @@
         }
       }
     },
-    "v1AddItemResp": {
+    "v1AddItemToCartResp": {
       "type": "object",
       "properties": {
-        "userId": {
-          "type": "string",
-          "format": "int64"
+        "productId": {
+          "type": "string"
+        },
+        "qty": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

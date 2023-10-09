@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Product_CreateProduct_FullMethodName  = "/cart.service.v1.Product/CreateProduct"
-	Product_GetProductById_FullMethodName = "/cart.service.v1.Product/GetProductById"
+	Product_CreateProduct_FullMethodName              = "/cart.service.v1.Product/CreateProduct"
+	Product_GetProductById_FullMethodName             = "/cart.service.v1.Product/GetProductById"
+	Product_ValidatePurchasableProduct_FullMethodName = "/cart.service.v1.Product/ValidatePurchasableProduct"
 )
 
 // ProductClient is the client API for Product service.
@@ -29,6 +30,7 @@ const (
 type ProductClient interface {
 	CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error)
 	GetProductById(ctx context.Context, in *GetProductByIdReq, opts ...grpc.CallOption) (*GetProductByIdResp, error)
+	ValidatePurchasableProduct(ctx context.Context, in *ValidatePurchasableProductReq, opts ...grpc.CallOption) (*ValidatePurchasableProductResp, error)
 }
 
 type productClient struct {
@@ -57,12 +59,22 @@ func (c *productClient) GetProductById(ctx context.Context, in *GetProductByIdRe
 	return out, nil
 }
 
+func (c *productClient) ValidatePurchasableProduct(ctx context.Context, in *ValidatePurchasableProductReq, opts ...grpc.CallOption) (*ValidatePurchasableProductResp, error) {
+	out := new(ValidatePurchasableProductResp)
+	err := c.cc.Invoke(ctx, Product_ValidatePurchasableProduct_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServer is the server API for Product service.
 // All implementations must embed UnimplementedProductServer
 // for forward compatibility
 type ProductServer interface {
 	CreateProduct(context.Context, *CreateProductReq) (*CreateProductResp, error)
 	GetProductById(context.Context, *GetProductByIdReq) (*GetProductByIdResp, error)
+	ValidatePurchasableProduct(context.Context, *ValidatePurchasableProductReq) (*ValidatePurchasableProductResp, error)
 	mustEmbedUnimplementedProductServer()
 }
 
@@ -75,6 +87,9 @@ func (UnimplementedProductServer) CreateProduct(context.Context, *CreateProductR
 }
 func (UnimplementedProductServer) GetProductById(context.Context, *GetProductByIdReq) (*GetProductByIdResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProductById not implemented")
+}
+func (UnimplementedProductServer) ValidatePurchasableProduct(context.Context, *ValidatePurchasableProductReq) (*ValidatePurchasableProductResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidatePurchasableProduct not implemented")
 }
 func (UnimplementedProductServer) mustEmbedUnimplementedProductServer() {}
 
@@ -125,6 +140,24 @@ func _Product_GetProductById_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Product_ValidatePurchasableProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidatePurchasableProductReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServer).ValidatePurchasableProduct(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Product_ValidatePurchasableProduct_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServer).ValidatePurchasableProduct(ctx, req.(*ValidatePurchasableProductReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Product_ServiceDesc is the grpc.ServiceDesc for Product service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +172,10 @@ var Product_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProductById",
 			Handler:    _Product_GetProductById_Handler,
+		},
+		{
+			MethodName: "ValidatePurchasableProduct",
+			Handler:    _Product_ValidatePurchasableProduct_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

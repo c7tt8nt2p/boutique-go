@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/ent/generated/product"
 )
 
 type ProductEntity struct {
@@ -15,8 +16,9 @@ type ProductEntity struct {
 }
 
 type ProductRepo interface {
-	SaveProduct(ctx context.Context, pe *ProductEntity) (*ProductEntity, error)
-	FindProductById(ctx context.Context, id uuid.UUID) (*ProductEntity, error)
+	Save(ctx context.Context, pe *ProductEntity) (*ProductEntity, error)
+	FindById(ctx context.Context, id uuid.UUID) (*ProductEntity, error)
+	IsPurchasable(ctx context.Context, id uuid.UUID, purchaseQty int32) (bool, error)
 }
 
 type productRepo struct {
@@ -31,8 +33,7 @@ func NewProductRepo(data *Data, logger log.Logger) ProductRepo {
 	}
 }
 
-func (r *productRepo) SaveProduct(ctx context.Context, pe *ProductEntity) (*ProductEntity, error) {
-	//r.data.db.UserCart.Create().SetUserID()
+func (r *productRepo) Save(ctx context.Context, pe *ProductEntity) (*ProductEntity, error) {
 	saved, err := r.data.db.Product.
 		Create().
 		SetName(pe.Name).
@@ -53,17 +54,34 @@ func (r *productRepo) SaveProduct(ctx context.Context, pe *ProductEntity) (*Prod
 	}, nil
 }
 
-func (r *productRepo) FindProductById(ctx context.Context, id uuid.UUID) (*ProductEntity, error) {
-	p, err := r.data.db.Product.Get(ctx, id)
+func (r *productRepo) FindById(ctx context.Context, id uuid.UUID) (*ProductEntity, error) {
+	entity, err := r.data.db.Product.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	return &ProductEntity{
-		Id:          p.ID.String(),
-		Name:        p.Name,
-		Description: p.Description,
-		Stock:       p.Stock,
-		UnitPrice:   p.UnitPrice,
+		Id:          entity.ID.String(),
+		Name:        entity.Name,
+		Description: entity.Description,
+		Stock:       entity.Stock,
+		UnitPrice:   entity.UnitPrice,
 	}, nil
+}
+
+func (r *productRepo) IsPurchasable(ctx context.Context, id uuid.UUID, purchaseQty int32) (bool, error) {
+	ok, err := r.data.db.Product.
+		Query().
+		Where(
+			product.And(
+				product.ID(id),
+				product.StockGTE(purchaseQty),
+			),
+		).
+		Exist(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return ok, nil
 }

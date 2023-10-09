@@ -22,12 +22,20 @@ func NewCartService(uc *biz.CartUseCase, logger log.Logger) *CartService {
 }
 
 func (s *CartService) NewCart(ctx context.Context, req *pb.NewCartReq) (*pb.NewCartResp, error) {
-	id, err := s.uc.NewCart(ctx, req.UserId)
+	id, err := s.uc.NewCart(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.NewCartResp{
+		Id: id.String(),
+	}, nil
+}
+
+func (s *CartService) AddItemToCart(ctx context.Context, req *pb.AddItemToCartReq) (*pb.AddItemToCartResp, error) {
+	id, err := s.uc.AddItemToCart(ctx, req)
+
+	return &pb.AddItemToCartResp{
 		Id: id.String(),
 	}, nil
 }

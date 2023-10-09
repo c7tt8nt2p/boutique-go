@@ -527,3 +527,244 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetProductByIdRespValidationError{}
+
+// Validate checks the field values on ValidatePurchasableProductReq with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ValidatePurchasableProductReq) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ValidatePurchasableProductReq with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ValidatePurchasableProductReqMultiError, or nil if none found.
+func (m *ValidatePurchasableProductReq) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ValidatePurchasableProductReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if err := m._validateUuid(m.GetId()); err != nil {
+		err = ValidatePurchasableProductReqValidationError{
+			field:  "Id",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetQty() <= 0 {
+		err := ValidatePurchasableProductReqValidationError{
+			field:  "Qty",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return ValidatePurchasableProductReqMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *ValidatePurchasableProductReq) _validateUuid(uuid string) error {
+	if matched := _product_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// ValidatePurchasableProductReqMultiError is an error wrapping multiple
+// validation errors returned by ValidatePurchasableProductReq.ValidateAll()
+// if the designated constraints aren't met.
+type ValidatePurchasableProductReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ValidatePurchasableProductReqMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ValidatePurchasableProductReqMultiError) AllErrors() []error { return m }
+
+// ValidatePurchasableProductReqValidationError is the validation error
+// returned by ValidatePurchasableProductReq.Validate if the designated
+// constraints aren't met.
+type ValidatePurchasableProductReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ValidatePurchasableProductReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ValidatePurchasableProductReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ValidatePurchasableProductReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ValidatePurchasableProductReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ValidatePurchasableProductReqValidationError) ErrorName() string {
+	return "ValidatePurchasableProductReqValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ValidatePurchasableProductReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sValidatePurchasableProductReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ValidatePurchasableProductReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ValidatePurchasableProductReqValidationError{}
+
+// Validate checks the field values on ValidatePurchasableProductResp with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ValidatePurchasableProductResp) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ValidatePurchasableProductResp with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ValidatePurchasableProductRespMultiError, or nil if none found.
+func (m *ValidatePurchasableProductResp) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ValidatePurchasableProductResp) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Validated
+
+	// no validation rules for ValidationMessage
+
+	if len(errors) > 0 {
+		return ValidatePurchasableProductRespMultiError(errors)
+	}
+
+	return nil
+}
+
+// ValidatePurchasableProductRespMultiError is an error wrapping multiple
+// validation errors returned by ValidatePurchasableProductResp.ValidateAll()
+// if the designated constraints aren't met.
+type ValidatePurchasableProductRespMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ValidatePurchasableProductRespMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ValidatePurchasableProductRespMultiError) AllErrors() []error { return m }
+
+// ValidatePurchasableProductRespValidationError is the validation error
+// returned by ValidatePurchasableProductResp.Validate if the designated
+// constraints aren't met.
+type ValidatePurchasableProductRespValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ValidatePurchasableProductRespValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ValidatePurchasableProductRespValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ValidatePurchasableProductRespValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ValidatePurchasableProductRespValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ValidatePurchasableProductRespValidationError) ErrorName() string {
+	return "ValidatePurchasableProductRespValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ValidatePurchasableProductRespValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sValidatePurchasableProductResp.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ValidatePurchasableProductRespValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ValidatePurchasableProductRespValidationError{}

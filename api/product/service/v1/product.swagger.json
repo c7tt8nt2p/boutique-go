@@ -88,6 +88,17 @@
           "format": "double"
         }
       }
+    },
+    "v1ValidatePurchasableProductResp": {
+      "type": "object",
+      "properties": {
+        "validated": {
+          "type": "boolean"
+        },
+        "validationMessage": {
+          "type": "string"
+        }
+      }
     }
   }
 }

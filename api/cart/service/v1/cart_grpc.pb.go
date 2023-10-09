@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Cart_NewCart_FullMethodName  = "/cart.service.v1.Cart/NewCart"
-	Cart_AddItem_FullMethodName  = "/cart.service.v1.Cart/AddItem"
-	Cart_ViewCart_FullMethodName = "/cart.service.v1.Cart/ViewCart"
+	Cart_NewCart_FullMethodName       = "/cart.service.v1.Cart/NewCart"
+	Cart_AddItemToCart_FullMethodName = "/cart.service.v1.Cart/AddItemToCart"
+	Cart_ViewCart_FullMethodName      = "/cart.service.v1.Cart/ViewCart"
 )
 
 // CartClient is the client API for Cart service.
@@ -29,7 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CartClient interface {
 	NewCart(ctx context.Context, in *NewCartReq, opts ...grpc.CallOption) (*NewCartResp, error)
-	AddItem(ctx context.Context, in *AddItemReq, opts ...grpc.CallOption) (*AddItemResp, error)
+	AddItemToCart(ctx context.Context, in *AddItemToCartReq, opts ...grpc.CallOption) (*AddItemToCartResp, error)
 	ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc.CallOption) (*ViewCartResp, error)
 }
 
@@ -50,9 +50,9 @@ func (c *cartClient) NewCart(ctx context.Context, in *NewCartReq, opts ...grpc.C
 	return out, nil
 }
 
-func (c *cartClient) AddItem(ctx context.Context, in *AddItemReq, opts ...grpc.CallOption) (*AddItemResp, error) {
-	out := new(AddItemResp)
-	err := c.cc.Invoke(ctx, Cart_AddItem_FullMethodName, in, out, opts...)
+func (c *cartClient) AddItemToCart(ctx context.Context, in *AddItemToCartReq, opts ...grpc.CallOption) (*AddItemToCartResp, error) {
+	out := new(AddItemToCartResp)
+	err := c.cc.Invoke(ctx, Cart_AddItemToCart_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (c *cartClient) ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc
 // for forward compatibility
 type CartServer interface {
 	NewCart(context.Context, *NewCartReq) (*NewCartResp, error)
-	AddItem(context.Context, *AddItemReq) (*AddItemResp, error)
+	AddItemToCart(context.Context, *AddItemToCartReq) (*AddItemToCartResp, error)
 	ViewCart(context.Context, *ViewCartReq) (*ViewCartResp, error)
 	mustEmbedUnimplementedCartServer()
 }
@@ -85,8 +85,8 @@ type UnimplementedCartServer struct {
 func (UnimplementedCartServer) NewCart(context.Context, *NewCartReq) (*NewCartResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewCart not implemented")
 }
-func (UnimplementedCartServer) AddItem(context.Context, *AddItemReq) (*AddItemResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddItem not implemented")
+func (UnimplementedCartServer) AddItemToCart(context.Context, *AddItemToCartReq) (*AddItemToCartResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddItemToCart not implemented")
 }
 func (UnimplementedCartServer) ViewCart(context.Context, *ViewCartReq) (*ViewCartResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ViewCart not implemented")
@@ -122,20 +122,20 @@ func _Cart_NewCart_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Cart_AddItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddItemReq)
+func _Cart_AddItemToCart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddItemToCartReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CartServer).AddItem(ctx, in)
+		return srv.(CartServer).AddItemToCart(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Cart_AddItem_FullMethodName,
+		FullMethod: Cart_AddItemToCart_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServer).AddItem(ctx, req.(*AddItemReq))
+		return srv.(CartServer).AddItemToCart(ctx, req.(*AddItemToCartReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -170,8 +170,8 @@ var Cart_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Cart_NewCart_Handler,
 		},
 		{
-			MethodName: "AddItem",
-			Handler:    _Cart_AddItem_Handler,
+			MethodName: "AddItemToCart",
+			Handler:    _Cart_AddItemToCart_Handler,
 		},
 		{
 			MethodName: "ViewCart",

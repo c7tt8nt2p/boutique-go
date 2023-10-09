@@ -4,21 +4,18 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/ent/generated/cart"
+	"github.com/kx-boutique/ent/generated/user"
 )
 
 type CartEntity struct {
-	UserId int64
-	Items  []ItemEntity
-}
-
-type ItemEntity struct {
-	Id       int64
-	Quantity int64
+	Id     string
+	UserId string
 }
 
 type CartRepo interface {
-	SaveNewCart(ctx context.Context, userId uuid.UUID) (uuid.UUID, error)
-	GetCart(ctx context.Context, id int64) (*CartEntity, error)
+	Save(ctx context.Context, userId uuid.UUID) (uuid.UUID, error)
+	FindIdByUserId(ctx context.Context, userId uuid.UUID) (uuid.UUID, error)
 }
 
 type cartRepo struct {
@@ -33,8 +30,8 @@ func NewCartRepo(data *Data, logger log.Logger) CartRepo {
 	}
 }
 
-func (r *cartRepo) SaveNewCart(ctx context.Context, userId uuid.UUID) (uuid.UUID, error) {
-	saved, err := r.data.db.UserCart.
+func (r *cartRepo) Save(ctx context.Context, userId uuid.UUID) (uuid.UUID, error) {
+	entity, err := r.data.db.Cart.
 		Create().
 		SetUserID(userId).
 		Save(ctx)
@@ -43,16 +40,17 @@ func (r *cartRepo) SaveNewCart(ctx context.Context, userId uuid.UUID) (uuid.UUID
 		return uuid.Nil, err
 	}
 
-	return saved.ID, nil
+	return entity.ID, nil
 }
 
-func (r *cartRepo) GetCart(ctx context.Context, uid int64) (*CartEntity, error) {
-	//po, err := r.data.db.Cart.Get(ctx, uid)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//return &CartEntity{
-	//	UserId: po.ID,
-	//}, nil
-	return nil, nil
+func (r *cartRepo) FindIdByUserId(ctx context.Context, userId uuid.UUID) (uuid.UUID, error) {
+	entity, err := r.data.db.Cart.
+		Query().
+		Where(cart.HasUserIDOwnerWith(user.ID(userId))).
+		Only(ctx)
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	return entity.UserID, nil
 }

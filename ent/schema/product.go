@@ -29,6 +29,6 @@ func (Product) Fields() []ent.Field {
 
 func (Product) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("carts", Cart.Type),
+		edge.To("cart_item", CartItem.Type),
 	}
 }
