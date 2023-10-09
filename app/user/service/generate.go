@@ -9,3 +9,5 @@ package generate
 //go:generate make wire
 
 //go:generate make ent
+
+//go:generate make build
