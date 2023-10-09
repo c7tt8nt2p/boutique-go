@@ -7,7 +7,6 @@ package main
 
 import (
 	"github.com/kx-boutique/app/user/service/internal/biz"
-	"github.com/kx-boutique/app/user/service/internal/client"
 	"github.com/kx-boutique/app/user/service/internal/conf"
 	"github.com/kx-boutique/app/user/service/internal/data"
 	"github.com/kx-boutique/app/user/service/internal/server"
@@ -20,5 +19,5 @@ import (
 
 // initApp init kratos application.
 func initApp(*conf.Server, *conf.Client, *conf.Data, log.Logger) (*kratos.App, func(), error) {
-	panic(wire.Build(client.ProviderSet, server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
+	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
 }
