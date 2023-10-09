@@ -15,19 +15,19 @@ const (
 	FieldID = "id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
-	// EdgeOwner holds the string denoting the owner edge name in mutations.
-	EdgeOwner = "owner"
+	// EdgeUserOwner holds the string denoting the user_owner edge name in mutations.
+	EdgeUserOwner = "user_owner"
 	// EdgeCarts holds the string denoting the carts edge name in mutations.
 	EdgeCarts = "carts"
 	// Table holds the table name of the usercart in the database.
 	Table = "user_cart"
-	// OwnerTable is the table that holds the owner relation/edge.
-	OwnerTable = "user_cart"
-	// OwnerInverseTable is the table name for the User entity.
+	// UserOwnerTable is the table that holds the user_owner relation/edge.
+	UserOwnerTable = "user_cart"
+	// UserOwnerInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
-	OwnerInverseTable = "users"
-	// OwnerColumn is the table column denoting the owner relation/edge.
-	OwnerColumn = "user_id"
+	UserOwnerInverseTable = "users"
+	// UserOwnerColumn is the table column denoting the user_owner relation/edge.
+	UserOwnerColumn = "user_id"
 	// CartsTable is the table that holds the carts relation/edge.
 	CartsTable = "carts"
 	// CartsInverseTable is the table name for the Cart entity.
@@ -71,10 +71,10 @@ func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }
 
-// ByOwnerField orders the results by owner field.
-func ByOwnerField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByUserOwnerField orders the results by user_owner field.
+func ByUserOwnerField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newOwnerStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newUserOwnerStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -91,11 +91,11 @@ func ByCarts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCartsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newOwnerStep() *sqlgraph.Step {
+func newUserOwnerStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(OwnerInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, true, OwnerTable, OwnerColumn),
+		sqlgraph.To(UserOwnerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, true, UserOwnerTable, UserOwnerColumn),
 	)
 }
 func newCartsStep() *sqlgraph.Step {

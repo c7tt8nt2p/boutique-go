@@ -2018,18 +2018,18 @@ func (m *UserMutation) ResetEdge(name string) error {
 // UserCartMutation represents an operation that mutates the UserCart nodes in the graph.
 type UserCartMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	clearedFields map[string]struct{}
-	owner         *uuid.UUID
-	clearedowner  bool
-	carts         map[uuid.UUID]struct{}
-	removedcarts  map[uuid.UUID]struct{}
-	clearedcarts  bool
-	done          bool
-	oldValue      func(context.Context) (*UserCart, error)
-	predicates    []predicate.UserCart
+	op                Op
+	typ               string
+	id                *uuid.UUID
+	clearedFields     map[string]struct{}
+	user_owner        *uuid.UUID
+	cleareduser_owner bool
+	carts             map[uuid.UUID]struct{}
+	removedcarts      map[uuid.UUID]struct{}
+	clearedcarts      bool
+	done              bool
+	oldValue          func(context.Context) (*UserCart, error)
+	predicates        []predicate.UserCart
 }
 
 var _ ent.Mutation = (*UserCartMutation)(nil)
@@ -2138,12 +2138,12 @@ func (m *UserCartMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 
 // SetUserID sets the "user_id" field.
 func (m *UserCartMutation) SetUserID(u uuid.UUID) {
-	m.owner = &u
+	m.user_owner = &u
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
 func (m *UserCartMutation) UserID() (r uuid.UUID, exists bool) {
-	v := m.owner
+	v := m.user_owner
 	if v == nil {
 		return
 	}
@@ -2169,47 +2169,47 @@ func (m *UserCartMutation) OldUserID(ctx context.Context) (v uuid.UUID, err erro
 
 // ResetUserID resets all changes to the "user_id" field.
 func (m *UserCartMutation) ResetUserID() {
-	m.owner = nil
+	m.user_owner = nil
 }
 
-// SetOwnerID sets the "owner" edge to the User entity by id.
-func (m *UserCartMutation) SetOwnerID(id uuid.UUID) {
-	m.owner = &id
+// SetUserOwnerID sets the "user_owner" edge to the User entity by id.
+func (m *UserCartMutation) SetUserOwnerID(id uuid.UUID) {
+	m.user_owner = &id
 }
 
-// ClearOwner clears the "owner" edge to the User entity.
-func (m *UserCartMutation) ClearOwner() {
-	m.clearedowner = true
+// ClearUserOwner clears the "user_owner" edge to the User entity.
+func (m *UserCartMutation) ClearUserOwner() {
+	m.cleareduser_owner = true
 	m.clearedFields[usercart.FieldUserID] = struct{}{}
 }
 
-// OwnerCleared reports if the "owner" edge to the User entity was cleared.
-func (m *UserCartMutation) OwnerCleared() bool {
-	return m.clearedowner
+// UserOwnerCleared reports if the "user_owner" edge to the User entity was cleared.
+func (m *UserCartMutation) UserOwnerCleared() bool {
+	return m.cleareduser_owner
 }
 
-// OwnerID returns the "owner" edge ID in the mutation.
-func (m *UserCartMutation) OwnerID() (id uuid.UUID, exists bool) {
-	if m.owner != nil {
-		return *m.owner, true
+// UserOwnerID returns the "user_owner" edge ID in the mutation.
+func (m *UserCartMutation) UserOwnerID() (id uuid.UUID, exists bool) {
+	if m.user_owner != nil {
+		return *m.user_owner, true
 	}
 	return
 }
 
-// OwnerIDs returns the "owner" edge IDs in the mutation.
+// UserOwnerIDs returns the "user_owner" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// OwnerID instead. It exists only for internal usage by the builders.
-func (m *UserCartMutation) OwnerIDs() (ids []uuid.UUID) {
-	if id := m.owner; id != nil {
+// UserOwnerID instead. It exists only for internal usage by the builders.
+func (m *UserCartMutation) UserOwnerIDs() (ids []uuid.UUID) {
+	if id := m.user_owner; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetOwner resets all changes to the "owner" edge.
-func (m *UserCartMutation) ResetOwner() {
-	m.owner = nil
-	m.clearedowner = false
+// ResetUserOwner resets all changes to the "user_owner" edge.
+func (m *UserCartMutation) ResetUserOwner() {
+	m.user_owner = nil
+	m.cleareduser_owner = false
 }
 
 // AddCartIDs adds the "carts" edge to the Cart entity by ids.
@@ -2301,7 +2301,7 @@ func (m *UserCartMutation) Type() string {
 // AddedFields().
 func (m *UserCartMutation) Fields() []string {
 	fields := make([]string, 0, 1)
-	if m.owner != nil {
+	if m.user_owner != nil {
 		fields = append(fields, usercart.FieldUserID)
 	}
 	return fields
@@ -2400,8 +2400,8 @@ func (m *UserCartMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserCartMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.owner != nil {
-		edges = append(edges, usercart.EdgeOwner)
+	if m.user_owner != nil {
+		edges = append(edges, usercart.EdgeUserOwner)
 	}
 	if m.carts != nil {
 		edges = append(edges, usercart.EdgeCarts)
@@ -2413,8 +2413,8 @@ func (m *UserCartMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *UserCartMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case usercart.EdgeOwner:
-		if id := m.owner; id != nil {
+	case usercart.EdgeUserOwner:
+		if id := m.user_owner; id != nil {
 			return []ent.Value{*id}
 		}
 	case usercart.EdgeCarts:
@@ -2453,8 +2453,8 @@ func (m *UserCartMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserCartMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedowner {
-		edges = append(edges, usercart.EdgeOwner)
+	if m.cleareduser_owner {
+		edges = append(edges, usercart.EdgeUserOwner)
 	}
 	if m.clearedcarts {
 		edges = append(edges, usercart.EdgeCarts)
@@ -2466,8 +2466,8 @@ func (m *UserCartMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *UserCartMutation) EdgeCleared(name string) bool {
 	switch name {
-	case usercart.EdgeOwner:
-		return m.clearedowner
+	case usercart.EdgeUserOwner:
+		return m.cleareduser_owner
 	case usercart.EdgeCarts:
 		return m.clearedcarts
 	}
@@ -2478,8 +2478,8 @@ func (m *UserCartMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *UserCartMutation) ClearEdge(name string) error {
 	switch name {
-	case usercart.EdgeOwner:
-		m.ClearOwner()
+	case usercart.EdgeUserOwner:
+		m.ClearUserOwner()
 		return nil
 	}
 	return fmt.Errorf("unknown UserCart unique edge %s", name)
@@ -2489,8 +2489,8 @@ func (m *UserCartMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserCartMutation) ResetEdge(name string) error {
 	switch name {
-	case usercart.EdgeOwner:
-		m.ResetOwner()
+	case usercart.EdgeUserOwner:
+		m.ResetUserOwner()
 		return nil
 	case usercart.EdgeCarts:
 		m.ResetCarts()

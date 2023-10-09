@@ -24,7 +24,7 @@ func NewUserUseCase(cartClient v1.CartClient, repo data.UserRepo, logger log.Log
 }
 
 func (uc *UserUseCase) SaveUser(ctx context.Context, req *pb.CreateUserReq) (*data.UserEntity, error) {
-	user, err1 := uc.repo.SaveUser(ctx, &data.UserEntity{Name: req.Name})
+	user, err1 := uc.repo.SaveUser(ctx, uc.repo.GetEntClient(), &data.UserEntity{Name: req.Name})
 	if err1 != nil {
 		return nil, err1
 	}
@@ -33,6 +33,7 @@ func (uc *UserUseCase) SaveUser(ctx context.Context, req *pb.CreateUserReq) (*da
 		UserId: user.Id.String(),
 	})
 	if err2 != nil {
+		_ = uc.repo.DeleteById(ctx, uc.repo.GetEntClient(), user.Id)
 		return nil, err2
 	}
 
@@ -40,11 +41,13 @@ func (uc *UserUseCase) SaveUser(ctx context.Context, req *pb.CreateUserReq) (*da
 }
 
 func (uc *UserUseCase) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) (*data.UserEntity, error) {
+	client := uc.repo.GetEntClient()
+
 	id, err := util.ParseUUID(req.Id)
 	if err != nil {
 		return nil, err
 	}
-	return uc.repo.FindById(ctx, id)
+	return uc.repo.FindById(ctx, client, id)
 }
 
 //func (uc *UserUseCase) GetUser(ctx context.Context, uid int64) (*User, error) {

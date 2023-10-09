@@ -21,12 +21,12 @@ import (
 // UserCartQuery is the builder for querying UserCart entities.
 type UserCartQuery struct {
 	config
-	ctx        *QueryContext
-	order      []usercart.OrderOption
-	inters     []Interceptor
-	predicates []predicate.UserCart
-	withOwner  *UserQuery
-	withCarts  *CartQuery
+	ctx           *QueryContext
+	order         []usercart.OrderOption
+	inters        []Interceptor
+	predicates    []predicate.UserCart
+	withUserOwner *UserQuery
+	withCarts     *CartQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,8 +63,8 @@ func (ucq *UserCartQuery) Order(o ...usercart.OrderOption) *UserCartQuery {
 	return ucq
 }
 
-// QueryOwner chains the current query on the "owner" edge.
-func (ucq *UserCartQuery) QueryOwner() *UserQuery {
+// QueryUserOwner chains the current query on the "user_owner" edge.
+func (ucq *UserCartQuery) QueryUserOwner() *UserQuery {
 	query := (&UserClient{config: ucq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ucq.prepareQuery(ctx); err != nil {
@@ -77,7 +77,7 @@ func (ucq *UserCartQuery) QueryOwner() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercart.Table, usercart.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, usercart.OwnerTable, usercart.OwnerColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, usercart.UserOwnerTable, usercart.UserOwnerColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ucq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,27 +294,27 @@ func (ucq *UserCartQuery) Clone() *UserCartQuery {
 		return nil
 	}
 	return &UserCartQuery{
-		config:     ucq.config,
-		ctx:        ucq.ctx.Clone(),
-		order:      append([]usercart.OrderOption{}, ucq.order...),
-		inters:     append([]Interceptor{}, ucq.inters...),
-		predicates: append([]predicate.UserCart{}, ucq.predicates...),
-		withOwner:  ucq.withOwner.Clone(),
-		withCarts:  ucq.withCarts.Clone(),
+		config:        ucq.config,
+		ctx:           ucq.ctx.Clone(),
+		order:         append([]usercart.OrderOption{}, ucq.order...),
+		inters:        append([]Interceptor{}, ucq.inters...),
+		predicates:    append([]predicate.UserCart{}, ucq.predicates...),
+		withUserOwner: ucq.withUserOwner.Clone(),
+		withCarts:     ucq.withCarts.Clone(),
 		// clone intermediate query.
 		sql:  ucq.sql.Clone(),
 		path: ucq.path,
 	}
 }
 
-// WithOwner tells the query-builder to eager-load the nodes that are connected to
-// the "owner" edge. The optional arguments are used to configure the query builder of the edge.
-func (ucq *UserCartQuery) WithOwner(opts ...func(*UserQuery)) *UserCartQuery {
+// WithUserOwner tells the query-builder to eager-load the nodes that are connected to
+// the "user_owner" edge. The optional arguments are used to configure the query builder of the edge.
+func (ucq *UserCartQuery) WithUserOwner(opts ...func(*UserQuery)) *UserCartQuery {
 	query := (&UserClient{config: ucq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	ucq.withOwner = query
+	ucq.withUserOwner = query
 	return ucq
 }
 
@@ -408,7 +408,7 @@ func (ucq *UserCartQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Us
 		nodes       = []*UserCart{}
 		_spec       = ucq.querySpec()
 		loadedTypes = [2]bool{
-			ucq.withOwner != nil,
+			ucq.withUserOwner != nil,
 			ucq.withCarts != nil,
 		}
 	)
@@ -430,9 +430,9 @@ func (ucq *UserCartQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Us
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := ucq.withOwner; query != nil {
-		if err := ucq.loadOwner(ctx, query, nodes, nil,
-			func(n *UserCart, e *User) { n.Edges.Owner = e }); err != nil {
+	if query := ucq.withUserOwner; query != nil {
+		if err := ucq.loadUserOwner(ctx, query, nodes, nil,
+			func(n *UserCart, e *User) { n.Edges.UserOwner = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -446,7 +446,7 @@ func (ucq *UserCartQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Us
 	return nodes, nil
 }
 
-func (ucq *UserCartQuery) loadOwner(ctx context.Context, query *UserQuery, nodes []*UserCart, init func(*UserCart), assign func(*UserCart, *User)) error {
+func (ucq *UserCartQuery) loadUserOwner(ctx context.Context, query *UserQuery, nodes []*UserCart, init func(*UserCart), assign func(*UserCart, *User)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*UserCart)
 	for i := range nodes {
@@ -531,7 +531,7 @@ func (ucq *UserCartQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if ucq.withOwner != nil {
+		if ucq.withUserOwner != nil {
 			_spec.Node.AddColumnOnce(usercart.FieldUserID)
 		}
 	}

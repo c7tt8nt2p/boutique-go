@@ -2,9 +2,9 @@ package data
 
 import (
 	"context"
-	"github.com/google/uuid"
-
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/google/uuid"
+	ent "github.com/kx-boutique/ent/generated"
 )
 
 type UserEntity struct {
@@ -13,8 +13,10 @@ type UserEntity struct {
 }
 
 type UserRepo interface {
-	SaveUser(ctx context.Context, u *UserEntity) (*UserEntity, error)
-	FindById(ctx context.Context, id uuid.UUID) (*UserEntity, error)
+	GetEntClient() *ent.Client
+	SaveUser(ctx context.Context, client *ent.Client, u *UserEntity) (*UserEntity, error)
+	FindById(ctx context.Context, client *ent.Client, id uuid.UUID) (*UserEntity, error)
+	DeleteById(ctx context.Context, client *ent.Client, id uuid.UUID) error
 }
 
 type userRepo struct {
@@ -29,8 +31,12 @@ func NewUserRepo(data *Data, logger log.Logger) UserRepo {
 	}
 }
 
-func (r *userRepo) SaveUser(ctx context.Context, ue *UserEntity) (*UserEntity, error) {
-	saved, err := r.data.db.User.
+func (r *userRepo) GetEntClient() *ent.Client {
+	return r.data.db
+}
+
+func (r *userRepo) SaveUser(ctx context.Context, client *ent.Client, ue *UserEntity) (*UserEntity, error) {
+	saved, err := client.User.
 		Create().
 		SetName(ue.Name).
 		Save(ctx)
@@ -45,8 +51,8 @@ func (r *userRepo) SaveUser(ctx context.Context, ue *UserEntity) (*UserEntity, e
 	}, nil
 }
 
-func (r *userRepo) FindById(ctx context.Context, id uuid.UUID) (*UserEntity, error) {
-	u, err := r.data.db.User.Get(ctx, id)
+func (r *userRepo) FindById(ctx context.Context, client *ent.Client, id uuid.UUID) (*UserEntity, error) {
+	u, err := client.User.Get(ctx, id)
 
 	if err != nil {
 		return nil, err
@@ -56,4 +62,13 @@ func (r *userRepo) FindById(ctx context.Context, id uuid.UUID) (*UserEntity, err
 		Id:   u.ID,
 		Name: u.Name,
 	}, nil
+}
+
+func (r *userRepo) DeleteById(ctx context.Context, client *ent.Client, id uuid.UUID) error {
+	err := client.User.DeleteOneID(id).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -36,15 +36,15 @@ func (ucu *UserCartUpdate) SetUserID(u uuid.UUID) *UserCartUpdate {
 	return ucu
 }
 
-// SetOwnerID sets the "owner" edge to the User entity by ID.
-func (ucu *UserCartUpdate) SetOwnerID(id uuid.UUID) *UserCartUpdate {
-	ucu.mutation.SetOwnerID(id)
+// SetUserOwnerID sets the "user_owner" edge to the User entity by ID.
+func (ucu *UserCartUpdate) SetUserOwnerID(id uuid.UUID) *UserCartUpdate {
+	ucu.mutation.SetUserOwnerID(id)
 	return ucu
 }
 
-// SetOwner sets the "owner" edge to the User entity.
-func (ucu *UserCartUpdate) SetOwner(u *User) *UserCartUpdate {
-	return ucu.SetOwnerID(u.ID)
+// SetUserOwner sets the "user_owner" edge to the User entity.
+func (ucu *UserCartUpdate) SetUserOwner(u *User) *UserCartUpdate {
+	return ucu.SetUserOwnerID(u.ID)
 }
 
 // AddCartIDs adds the "carts" edge to the Cart entity by IDs.
@@ -67,9 +67,9 @@ func (ucu *UserCartUpdate) Mutation() *UserCartMutation {
 	return ucu.mutation
 }
 
-// ClearOwner clears the "owner" edge to the User entity.
-func (ucu *UserCartUpdate) ClearOwner() *UserCartUpdate {
-	ucu.mutation.ClearOwner()
+// ClearUserOwner clears the "user_owner" edge to the User entity.
+func (ucu *UserCartUpdate) ClearUserOwner() *UserCartUpdate {
+	ucu.mutation.ClearUserOwner()
 	return ucu
 }
 
@@ -123,8 +123,8 @@ func (ucu *UserCartUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ucu *UserCartUpdate) check() error {
-	if _, ok := ucu.mutation.OwnerID(); ucu.mutation.OwnerCleared() && !ok {
-		return errors.New(`generated: clearing a required unique edge "UserCart.owner"`)
+	if _, ok := ucu.mutation.UserOwnerID(); ucu.mutation.UserOwnerCleared() && !ok {
+		return errors.New(`generated: clearing a required unique edge "UserCart.user_owner"`)
 	}
 	return nil
 }
@@ -141,12 +141,12 @@ func (ucu *UserCartUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if ucu.mutation.OwnerCleared() {
+	if ucu.mutation.UserOwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   usercart.OwnerTable,
-			Columns: []string{usercart.OwnerColumn},
+			Table:   usercart.UserOwnerTable,
+			Columns: []string{usercart.UserOwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -154,12 +154,12 @@ func (ucu *UserCartUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ucu.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := ucu.mutation.UserOwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   usercart.OwnerTable,
-			Columns: []string{usercart.OwnerColumn},
+			Table:   usercart.UserOwnerTable,
+			Columns: []string{usercart.UserOwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -241,15 +241,15 @@ func (ucuo *UserCartUpdateOne) SetUserID(u uuid.UUID) *UserCartUpdateOne {
 	return ucuo
 }
 
-// SetOwnerID sets the "owner" edge to the User entity by ID.
-func (ucuo *UserCartUpdateOne) SetOwnerID(id uuid.UUID) *UserCartUpdateOne {
-	ucuo.mutation.SetOwnerID(id)
+// SetUserOwnerID sets the "user_owner" edge to the User entity by ID.
+func (ucuo *UserCartUpdateOne) SetUserOwnerID(id uuid.UUID) *UserCartUpdateOne {
+	ucuo.mutation.SetUserOwnerID(id)
 	return ucuo
 }
 
-// SetOwner sets the "owner" edge to the User entity.
-func (ucuo *UserCartUpdateOne) SetOwner(u *User) *UserCartUpdateOne {
-	return ucuo.SetOwnerID(u.ID)
+// SetUserOwner sets the "user_owner" edge to the User entity.
+func (ucuo *UserCartUpdateOne) SetUserOwner(u *User) *UserCartUpdateOne {
+	return ucuo.SetUserOwnerID(u.ID)
 }
 
 // AddCartIDs adds the "carts" edge to the Cart entity by IDs.
@@ -272,9 +272,9 @@ func (ucuo *UserCartUpdateOne) Mutation() *UserCartMutation {
 	return ucuo.mutation
 }
 
-// ClearOwner clears the "owner" edge to the User entity.
-func (ucuo *UserCartUpdateOne) ClearOwner() *UserCartUpdateOne {
-	ucuo.mutation.ClearOwner()
+// ClearUserOwner clears the "user_owner" edge to the User entity.
+func (ucuo *UserCartUpdateOne) ClearUserOwner() *UserCartUpdateOne {
+	ucuo.mutation.ClearUserOwner()
 	return ucuo
 }
 
@@ -341,8 +341,8 @@ func (ucuo *UserCartUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ucuo *UserCartUpdateOne) check() error {
-	if _, ok := ucuo.mutation.OwnerID(); ucuo.mutation.OwnerCleared() && !ok {
-		return errors.New(`generated: clearing a required unique edge "UserCart.owner"`)
+	if _, ok := ucuo.mutation.UserOwnerID(); ucuo.mutation.UserOwnerCleared() && !ok {
+		return errors.New(`generated: clearing a required unique edge "UserCart.user_owner"`)
 	}
 	return nil
 }
@@ -376,12 +376,12 @@ func (ucuo *UserCartUpdateOne) sqlSave(ctx context.Context) (_node *UserCart, er
 			}
 		}
 	}
-	if ucuo.mutation.OwnerCleared() {
+	if ucuo.mutation.UserOwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   usercart.OwnerTable,
-			Columns: []string{usercart.OwnerColumn},
+			Table:   usercart.UserOwnerTable,
+			Columns: []string{usercart.UserOwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
@@ -389,12 +389,12 @@ func (ucuo *UserCartUpdateOne) sqlSave(ctx context.Context) (_node *UserCart, er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ucuo.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := ucuo.mutation.UserOwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   usercart.OwnerTable,
-			Columns: []string{usercart.OwnerColumn},
+			Table:   usercart.UserOwnerTable,
+			Columns: []string{usercart.UserOwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),

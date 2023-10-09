@@ -794,15 +794,15 @@ func (c *UserCartClient) GetX(ctx context.Context, id uuid.UUID) *UserCart {
 	return obj
 }
 
-// QueryOwner queries the owner edge of a UserCart.
-func (c *UserCartClient) QueryOwner(uc *UserCart) *UserQuery {
+// QueryUserOwner queries the user_owner edge of a UserCart.
+func (c *UserCartClient) QueryUserOwner(uc *UserCart) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercart.Table, usercart.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, usercart.OwnerTable, usercart.OwnerColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, usercart.UserOwnerTable, usercart.UserOwnerColumn),
 		)
 		fromV = sqlgraph.Neighbors(uc.driver.Dialect(), step)
 		return fromV, nil

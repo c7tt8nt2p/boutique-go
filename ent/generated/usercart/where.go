@@ -79,21 +79,21 @@ func UserIDNotIn(vs ...uuid.UUID) predicate.UserCart {
 	return predicate.UserCart(sql.FieldNotIn(FieldUserID, vs...))
 }
 
-// HasOwner applies the HasEdge predicate on the "owner" edge.
-func HasOwner() predicate.UserCart {
+// HasUserOwner applies the HasEdge predicate on the "user_owner" edge.
+func HasUserOwner() predicate.UserCart {
 	return predicate.UserCart(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, OwnerTable, OwnerColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, UserOwnerTable, UserOwnerColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasOwnerWith applies the HasEdge predicate on the "owner" edge with a given conditions (other predicates).
-func HasOwnerWith(preds ...predicate.User) predicate.UserCart {
+// HasUserOwnerWith applies the HasEdge predicate on the "user_owner" edge with a given conditions (other predicates).
+func HasUserOwnerWith(preds ...predicate.User) predicate.UserCart {
 	return predicate.UserCart(func(s *sql.Selector) {
-		step := newOwnerStep()
+		step := newUserOwnerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

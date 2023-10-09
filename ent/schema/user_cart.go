@@ -29,7 +29,7 @@ func (UserCart) Fields() []ent.Field {
 
 func (UserCart) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("owner", User.Type).
+		edge.From("user_owner", User.Type).
 			Ref("user_cart").
 			Field("user_id").
 			Unique().

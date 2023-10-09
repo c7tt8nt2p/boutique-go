@@ -42,15 +42,15 @@ func (ucc *UserCartCreate) SetNillableID(u *uuid.UUID) *UserCartCreate {
 	return ucc
 }
 
-// SetOwnerID sets the "owner" edge to the User entity by ID.
-func (ucc *UserCartCreate) SetOwnerID(id uuid.UUID) *UserCartCreate {
-	ucc.mutation.SetOwnerID(id)
+// SetUserOwnerID sets the "user_owner" edge to the User entity by ID.
+func (ucc *UserCartCreate) SetUserOwnerID(id uuid.UUID) *UserCartCreate {
+	ucc.mutation.SetUserOwnerID(id)
 	return ucc
 }
 
-// SetOwner sets the "owner" edge to the User entity.
-func (ucc *UserCartCreate) SetOwner(u *User) *UserCartCreate {
-	return ucc.SetOwnerID(u.ID)
+// SetUserOwner sets the "user_owner" edge to the User entity.
+func (ucc *UserCartCreate) SetUserOwner(u *User) *UserCartCreate {
+	return ucc.SetUserOwnerID(u.ID)
 }
 
 // AddCartIDs adds the "carts" edge to the Cart entity by IDs.
@@ -114,8 +114,8 @@ func (ucc *UserCartCreate) check() error {
 	if _, ok := ucc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`generated: missing required field "UserCart.user_id"`)}
 	}
-	if _, ok := ucc.mutation.OwnerID(); !ok {
-		return &ValidationError{Name: "owner", err: errors.New(`generated: missing required edge "UserCart.owner"`)}
+	if _, ok := ucc.mutation.UserOwnerID(); !ok {
+		return &ValidationError{Name: "user_owner", err: errors.New(`generated: missing required edge "UserCart.user_owner"`)}
 	}
 	return nil
 }
@@ -152,12 +152,12 @@ func (ucc *UserCartCreate) createSpec() (*UserCart, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if nodes := ucc.mutation.OwnerIDs(); len(nodes) > 0 {
+	if nodes := ucc.mutation.UserOwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: true,
-			Table:   usercart.OwnerTable,
-			Columns: []string{usercart.OwnerColumn},
+			Table:   usercart.UserOwnerTable,
+			Columns: []string{usercart.UserOwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),

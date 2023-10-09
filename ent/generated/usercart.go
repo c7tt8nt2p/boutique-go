@@ -28,8 +28,8 @@ type UserCart struct {
 
 // UserCartEdges holds the relations/edges for other nodes in the graph.
 type UserCartEdges struct {
-	// Owner holds the value of the owner edge.
-	Owner *User `json:"owner,omitempty"`
+	// UserOwner holds the value of the user_owner edge.
+	UserOwner *User `json:"user_owner,omitempty"`
 	// Carts holds the value of the carts edge.
 	Carts []*Cart `json:"carts,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -37,17 +37,17 @@ type UserCartEdges struct {
 	loadedTypes [2]bool
 }
 
-// OwnerOrErr returns the Owner value or an error if the edge
+// UserOwnerOrErr returns the UserOwner value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e UserCartEdges) OwnerOrErr() (*User, error) {
+func (e UserCartEdges) UserOwnerOrErr() (*User, error) {
 	if e.loadedTypes[0] {
-		if e.Owner == nil {
+		if e.UserOwner == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: user.Label}
 		}
-		return e.Owner, nil
+		return e.UserOwner, nil
 	}
-	return nil, &NotLoadedError{edge: "owner"}
+	return nil, &NotLoadedError{edge: "user_owner"}
 }
 
 // CartsOrErr returns the Carts value or an error if the edge
@@ -106,9 +106,9 @@ func (uc *UserCart) Value(name string) (ent.Value, error) {
 	return uc.selectValues.Get(name)
 }
 
-// QueryOwner queries the "owner" edge of the UserCart entity.
-func (uc *UserCart) QueryOwner() *UserQuery {
-	return NewUserCartClient(uc.config).QueryOwner(uc)
+// QueryUserOwner queries the "user_owner" edge of the UserCart entity.
+func (uc *UserCart) QueryUserOwner() *UserQuery {
+	return NewUserCartClient(uc.config).QueryUserOwner(uc)
 }
 
 // QueryCarts queries the "carts" edge of the UserCart entity.
