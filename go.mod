@@ -23,6 +23,7 @@ require (
 	github.com/go-kratos/aegis v0.2.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/go-playground/form/v4 v4.2.0 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect

@@ -2,12 +2,12 @@ package biz
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	pb "github.com/kx-boutique/api/auth/service/v1"
 	userv1 "github.com/kx-boutique/api/user/service/v1"
 	"github.com/kx-boutique/app/auth/service/internal/biz/password"
+	"github.com/kx-boutique/app/auth/service/internal/conf"
 	"github.com/kx-boutique/app/auth/service/internal/data"
 	"github.com/kx-boutique/pkg/util"
 )
@@ -17,13 +17,15 @@ var (
 )
 
 type AuthUseCase struct {
+	appConfig  *conf.App
 	userClient userv1.UserClient
 	repo       data.AuthRepo
 	log        *log.Helper
 }
 
-func NewAuthUseCase(userClient userv1.UserClient, repo data.AuthRepo, logger log.Logger) *AuthUseCase {
+func NewAuthUseCase(appConfig *conf.App, userClient userv1.UserClient, repo data.AuthRepo, logger log.Logger) *AuthUseCase {
 	return &AuthUseCase{
+		appConfig:  appConfig,
 		userClient: userClient,
 		repo:       repo,
 		log:        log.NewHelper(log.With(logger, "module", "usecase/auth"))}
@@ -56,25 +58,32 @@ func (uc *AuthUseCase) Login(ctx context.Context, req *pb.LoginReq) (string, err
 		Email: req.Email,
 	})
 	if err1 != nil {
+		uc.log.Error(err1)
 		return "", ErrInvalidCredentials
 	}
 
 	id, err2 := util.ParseUUID(resp.Id)
 	if err2 != nil {
+		uc.log.Error(err2)
 		return "", ErrInvalidCredentials
 	}
 
 	passwordHash, err3 := uc.repo.FindPasswordHashByUserId(ctx, uc.repo.GetEntClient(), id)
 	if err3 != nil {
+		uc.log.Error(err3)
 		return "", ErrInvalidCredentials
 	}
 
-	ok, xxx := password.ComparePassword(req.Password, passwordHash)
+	ok, _ := password.ComparePassword(req.Password, passwordHash)
 	if !ok {
-		fmt.Println("	invalid password", xxx)
 		return "", ErrInvalidCredentials
 	}
-	fmt.Println("ok password")
 
-	return passwordHash, nil
+	token, err4 := password.GenerateJWT(uc.appConfig.Jwt, id, req.Email)
+	if err4 != nil {
+		uc.log.Error(err4)
+		return "", ErrInvalidCredentials
+	}
+
+	return token, nil
 }

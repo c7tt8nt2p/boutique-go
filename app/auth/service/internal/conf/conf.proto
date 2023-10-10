@@ -9,6 +9,7 @@ message Bootstrap {
     Server server = 1;
     Data data = 2;
     Client client = 3;
+    App app = 4;
 }
 
 message Server {
@@ -35,4 +36,12 @@ message Client {
         string url = 1;
     }
     ClientService user_service = 1;
+}
+
+message App {
+    message Jwt {
+        string secret = 1;
+        google.protobuf.Duration expiration = 900; // 15 minutes
+    }
+    Jwt jwt = 1;
 }

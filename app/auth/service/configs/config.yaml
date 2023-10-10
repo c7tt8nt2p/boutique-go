@@ -13,3 +13,8 @@ data:
 client:
   user_service:
     url: localhost:9000
+
+app:
+  jwt:
+    secret: 'super-secret'
+    expiration: 900s # 15 mins
