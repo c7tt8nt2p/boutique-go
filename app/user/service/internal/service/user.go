@@ -44,3 +44,14 @@ func (s *UserService) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) (
 		Name: user.Name,
 	}, nil
 }
+
+func (s *UserService) GetIdByEmail(ctx context.Context, req *pb.GetIdByEmailReq) (*pb.GetIdByEmailResp, error) {
+	id, err := s.uc.GetIdByEmail(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetIdByEmailResp{
+		Id: id.String(),
+	}, nil
+}

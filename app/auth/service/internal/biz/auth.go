@@ -39,3 +39,7 @@ func (uc *AuthUseCase) NewAuth(ctx context.Context, req *pb.RegisterReq) (*data.
 
 	return entity, nil
 }
+
+func (uc *AuthUseCase) Login(ctx context.Context, req *pb.LoginReq) (string, error) {
+
+}

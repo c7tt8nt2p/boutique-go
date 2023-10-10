@@ -59,6 +59,14 @@
         }
       }
     },
+    "v1GetIdByEmailResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
     "v1GetUserByIdResp": {
       "type": "object",
       "properties": {

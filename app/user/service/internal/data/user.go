@@ -5,6 +5,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
 	ent "github.com/kx-boutique/ent/generated"
+	"github.com/kx-boutique/ent/generated/user"
 )
 
 type UserEntity struct {
@@ -17,6 +18,7 @@ type UserRepo interface {
 	GetEntClient() *ent.Client
 	SaveUser(ctx context.Context, client *ent.Client, u *UserEntity) (*UserEntity, error)
 	FindById(ctx context.Context, client *ent.Client, id uuid.UUID) (*UserEntity, error)
+	FindIdByEmail(ctx context.Context, client *ent.Client, email string) (uuid.UUID, error)
 	DeleteById(ctx context.Context, client *ent.Client, id uuid.UUID) error
 }
 
@@ -65,6 +67,19 @@ func (r *userRepo) FindById(ctx context.Context, client *ent.Client, id uuid.UUI
 		Id:   u.ID,
 		Name: u.Name,
 	}, nil
+}
+
+func (r *userRepo) FindIdByEmail(ctx context.Context, client *ent.Client, email string) (uuid.UUID, error) {
+	entity, err := client.User.
+		Query().
+		Where(user.Email(email)).
+		Only(ctx)
+
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	return entity.ID, nil
 }
 
 func (r *userRepo) DeleteById(ctx context.Context, client *ent.Client, id uuid.UUID) error {

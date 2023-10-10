@@ -9,6 +9,7 @@ import "validate/validate.proto";
 service User {
   rpc CreateUser (CreateUserReq) returns (CreateUserResp) {}
   rpc GetUserById (GetUserByIdReq) returns (GetUserByIdResp) {}
+  rpc GetIdByEmail (GetIdByEmailReq) returns (GetIdByEmailResp) {}
 }
 
 message CreateUserReq {
@@ -30,4 +31,12 @@ message GetUserByIdReq {
 message GetUserByIdResp {
   string id = 1;
   string name = 2;
+}
+
+message GetIdByEmailReq {
+  string email = 1 [(validate.rules).string.email = true];
+}
+
+message GetIdByEmailResp {
+  string id = 1;
 }

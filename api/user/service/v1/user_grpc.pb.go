@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	User_CreateUser_FullMethodName  = "/user.service.v1.User/CreateUser"
-	User_GetUserById_FullMethodName = "/user.service.v1.User/GetUserById"
+	User_CreateUser_FullMethodName   = "/user.service.v1.User/CreateUser"
+	User_GetUserById_FullMethodName  = "/user.service.v1.User/GetUserById"
+	User_GetIdByEmail_FullMethodName = "/user.service.v1.User/GetIdByEmail"
 )
 
 // UserClient is the client API for User service.
@@ -29,6 +30,7 @@ const (
 type UserClient interface {
 	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*CreateUserResp, error)
 	GetUserById(ctx context.Context, in *GetUserByIdReq, opts ...grpc.CallOption) (*GetUserByIdResp, error)
+	GetIdByEmail(ctx context.Context, in *GetIdByEmailReq, opts ...grpc.CallOption) (*GetIdByEmailResp, error)
 }
 
 type userClient struct {
@@ -57,12 +59,22 @@ func (c *userClient) GetUserById(ctx context.Context, in *GetUserByIdReq, opts .
 	return out, nil
 }
 
+func (c *userClient) GetIdByEmail(ctx context.Context, in *GetIdByEmailReq, opts ...grpc.CallOption) (*GetIdByEmailResp, error) {
+	out := new(GetIdByEmailResp)
+	err := c.cc.Invoke(ctx, User_GetIdByEmail_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {
 	CreateUser(context.Context, *CreateUserReq) (*CreateUserResp, error)
 	GetUserById(context.Context, *GetUserByIdReq) (*GetUserByIdResp, error)
+	GetIdByEmail(context.Context, *GetIdByEmailReq) (*GetIdByEmailResp, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -75,6 +87,9 @@ func (UnimplementedUserServer) CreateUser(context.Context, *CreateUserReq) (*Cre
 }
 func (UnimplementedUserServer) GetUserById(context.Context, *GetUserByIdReq) (*GetUserByIdResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
+}
+func (UnimplementedUserServer) GetIdByEmail(context.Context, *GetIdByEmailReq) (*GetIdByEmailResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIdByEmail not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -125,6 +140,24 @@ func _User_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_GetIdByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetIdByEmailReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetIdByEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_GetIdByEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetIdByEmail(ctx, req.(*GetIdByEmailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +172,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserById",
 			Handler:    _User_GetUserById_Handler,
+		},
+		{
+			MethodName: "GetIdByEmail",
+			Handler:    _User_GetIdByEmail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

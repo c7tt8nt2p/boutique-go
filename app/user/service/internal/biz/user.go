@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"github.com/google/uuid"
 	authv1 "github.com/kx-boutique/api/auth/service/v1"
 	cartv1 "github.com/kx-boutique/api/cart/service/v1"
 	pb "github.com/kx-boutique/api/user/service/v1"
@@ -67,10 +68,8 @@ func (uc *UserUseCase) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) 
 	return uc.repo.FindById(ctx, client, id)
 }
 
-//func (uc *UserUseCase) GetUser(ctx context.Context, uid int64) (*User, error) {
-//	return uc.repo.GetUser(ctx, uid)
-//}
-//
-//func (uc *UserUseCase) DeleteUser(ctx context.Context, uid int64) error {
-//	return uc.repo.DeleteUser(ctx, uid)
-//}
+func (uc *UserUseCase) GetIdByEmail(ctx context.Context, req *pb.GetIdByEmailReq) (uuid.UUID, error) {
+	client := uc.repo.GetEntClient()
+
+	return uc.repo.FindIdByEmail(ctx, client, req.Email)
+}
