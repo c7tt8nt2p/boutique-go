@@ -2,8 +2,11 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
+	ent "github.com/kx-boutique/ent/generated"
+	"github.com/kx-boutique/ent/generated/auth"
 )
 
 type AuthEntity struct {
@@ -13,7 +16,9 @@ type AuthEntity struct {
 }
 
 type AuthRepo interface {
-	Save(ctx context.Context, ae *AuthEntity) (*AuthEntity, error)
+	GetEntClient() *ent.Client
+	Save(ctx context.Context, client *ent.Client, ae *AuthEntity) (*AuthEntity, error)
+	FindPasswordHashByUserId(ctx context.Context, client *ent.Client, userId uuid.UUID) (string, error)
 }
 
 type authRepo struct {
@@ -28,8 +33,12 @@ func NewAuthRepo(data *Data, logger log.Logger) AuthRepo {
 	}
 }
 
-func (r *authRepo) Save(ctx context.Context, ae *AuthEntity) (*AuthEntity, error) {
-	entity, err := r.data.db.Auth.
+func (r *authRepo) GetEntClient() *ent.Client {
+	return r.data.db
+}
+
+func (r *authRepo) Save(ctx context.Context, client *ent.Client, ae *AuthEntity) (*AuthEntity, error) {
+	entity, err := client.Auth.
 		Create().
 		SetPasswordHash(ae.PasswordHash).
 		SetUserID(ae.UserId).
@@ -42,4 +51,19 @@ func (r *authRepo) Save(ctx context.Context, ae *AuthEntity) (*AuthEntity, error
 		Id:     entity.ID,
 		UserId: entity.UserID,
 	}, nil
+}
+
+func (r *authRepo) FindPasswordHashByUserId(ctx context.Context, client *ent.Client, userId uuid.UUID) (string, error) {
+	passwordHash, err := client.Auth.
+		Query().
+		Where(auth.UserID(userId)).
+		Select(auth.FieldPasswordHash).
+		String(ctx)
+
+	fmt.Println("	passwordHash", passwordHash)
+
+	if err != nil {
+		return "", err
+	}
+	return passwordHash, err
 }

@@ -33,5 +33,6 @@ func (a *AuthService) Register(ctx context.Context, req *pb.RegisterReq) (*pb.Re
 }
 
 func (a *AuthService) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginResp, error) {
+	a.uc.Login(ctx, req)
 	return &pb.LoginResp{}, nil
 }

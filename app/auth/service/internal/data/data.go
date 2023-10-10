@@ -6,11 +6,12 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"github.com/kx-boutique/app/auth/service/internal/conf"
+	"github.com/kx-boutique/app/auth/service/internal/data/client"
 	ent "github.com/kx-boutique/ent/generated"
 	_ "github.com/lib/pq"
 )
 
-var ProviderSet = wire.NewSet(NewEntClient, NewData, NewAuthRepo)
+var ProviderSet = wire.NewSet(NewEntClient, NewData, NewAuthRepo, client.NewUserClient)
 
 type Data struct {
 	db  *ent.Client
