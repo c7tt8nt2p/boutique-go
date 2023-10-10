@@ -37,20 +37,20 @@ func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.GetProduct
 	return uc.repo.FindById(ctx, id)
 }
 
-func (uc *ProductUseCase) ValidateProduct(ctx context.Context, req *pb.ValidatePurchasableProductReq) (bool, error) {
+func (uc *ProductUseCase) ValidatePurchasableProduct(ctx context.Context, req *pb.ValidatePurchasableProductReq) error {
 	id, err1 := util.ParseUUID(req.Id)
 	if err1 != nil {
-		return false, err1
+		return err1
 	}
 
 	ok, err2 := uc.repo.IsPurchasable(ctx, id, req.Qty)
 	if err2 != nil {
-		return false, err2
+		return err2
 	}
 
 	if !ok {
-		return false, fmt.Errorf("product is not purchaseable due to invalid product or quantity")
+		return fmt.Errorf("product is not purchaseable due to invalid product or quantity")
 	}
 
-	return uc.repo.IsPurchasable(ctx, id, req.Qty)
+	return nil
 }

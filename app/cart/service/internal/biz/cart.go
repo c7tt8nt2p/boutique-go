@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	pb "github.com/kx-boutique/api/cart/service/v1"
+	v1 "github.com/kx-boutique/api/product/service/v1"
 	"github.com/kx-boutique/app/cart/service/internal/data"
 	"github.com/kx-boutique/pkg/util"
 
@@ -11,16 +12,19 @@ import (
 )
 
 type CartUseCase struct {
+	productClient v1.ProductClient
+
 	cartRepo     data.CartRepo
 	cartItemRepo data.CartItemRepo
 	log          *log.Helper
 }
 
-func NewCartUseCase(cartRepo data.CartRepo, cartItemRepo data.CartItemRepo, logger log.Logger) *CartUseCase {
+func NewCartUseCase(productClient v1.ProductClient, cartRepo data.CartRepo, cartItemRepo data.CartItemRepo, logger log.Logger) *CartUseCase {
 	return &CartUseCase{
-		cartRepo:     cartRepo,
-		cartItemRepo: cartItemRepo,
-		log:          log.NewHelper(log.With(logger, "module", "usecase/cart")),
+		productClient: productClient,
+		cartRepo:      cartRepo,
+		cartItemRepo:  cartItemRepo,
+		log:           log.NewHelper(log.With(logger, "module", "usecase/cart")),
 	}
 }
 
@@ -34,6 +38,25 @@ func (uc *CartUseCase) NewCart(ctx context.Context, req *pb.NewCartReq) (uuid.UU
 }
 
 func (uc *CartUseCase) AddItemToCart(ctx context.Context, req *pb.AddItemToCartReq) (*data.CartItemEntity, error) {
+	if err := validateAddItemToCart(ctx, uc, req); err != nil {
+		return nil, err
+	}
+
+	return doAddItemToCart(ctx, uc, req)
+}
+
+func validateAddItemToCart(ctx context.Context, uc *CartUseCase, req *pb.AddItemToCartReq) error {
+	_, err := uc.productClient.ValidatePurchasableProduct(ctx, &v1.ValidatePurchasableProductReq{
+		Id:  req.ProductId,
+		Qty: req.Qty,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func doAddItemToCart(ctx context.Context, uc *CartUseCase, req *pb.AddItemToCartReq) (*data.CartItemEntity, error) {
 	userId, err1 := util.ParseUUID(req.UserId)
 	if err1 != nil {
 		return nil, err1

@@ -12,6 +12,7 @@ import (
 	"github.com/kx-boutique/app/user/service/internal/biz"
 	"github.com/kx-boutique/app/user/service/internal/conf"
 	"github.com/kx-boutique/app/user/service/internal/data"
+	"github.com/kx-boutique/app/user/service/internal/data/client"
 	"github.com/kx-boutique/app/user/service/internal/server"
 	"github.com/kx-boutique/app/user/service/internal/service"
 )
@@ -19,8 +20,8 @@ import (
 // Injectors from wire.go:
 
 // initApp init kratos application.
-func initApp(confServer *conf.Server, client *conf.Client, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	cartClient, err := data.NewCartClient(client)
+func initApp(confServer *conf.Server, confClient *conf.Client, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+	cartClient, err := client.NewCartClient(confClient)
 	if err != nil {
 		return nil, nil, err
 	}

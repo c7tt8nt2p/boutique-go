@@ -12,6 +12,7 @@ import (
 	"github.com/kx-boutique/app/cart/service/internal/biz"
 	"github.com/kx-boutique/app/cart/service/internal/conf"
 	"github.com/kx-boutique/app/cart/service/internal/data"
+	"github.com/kx-boutique/app/cart/service/internal/data/client"
 	"github.com/kx-boutique/app/cart/service/internal/server"
 	"github.com/kx-boutique/app/cart/service/internal/service"
 )
@@ -19,14 +20,19 @@ import (
 // Injectors from wire.go:
 
 // initApp init kratos application.
-func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	client := data.NewEntClient(confData, logger)
-	dataData, cleanup, err := data.NewData(client, logger)
+func initApp(confServer *conf.Server, confClient *conf.Client, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+	productClient, err := client.NewProductClient(confClient)
+	if err != nil {
+		return nil, nil, err
+	}
+	generatedClient := data.NewEntClient(confData, logger)
+	dataData, cleanup, err := data.NewData(generatedClient, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	cartRepo := data.NewCartRepo(dataData, logger)
-	cartUseCase := biz.NewCartUseCase(cartRepo, logger)
+	cartItemRepo := data.NewCartItemRepo(dataData, logger)
+	cartUseCase := biz.NewCartUseCase(productClient, cartRepo, cartItemRepo, logger)
 	cartService := service.NewCartService(cartUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, logger, cartService)
 	app := newApp(logger, grpcServer)

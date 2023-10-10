@@ -4,11 +4,11 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	v1 "github.com/kx-boutique/api/cart/service/v1"
+	v1 "github.com/kx-boutique/api/product/service/v1"
 	"github.com/kx-boutique/app/cart/service/internal/conf"
 )
 
-func NewProductClient(conf *conf.Client) (v1.CartClient, error) {
+func NewProductClient(conf *conf.Client) (v1.ProductClient, error) {
 	conn, err := grpc.DialInsecure(
 		context.Background(),
 		grpc.WithMiddleware(metadata.Client()),
@@ -18,7 +18,7 @@ func NewProductClient(conf *conf.Client) (v1.CartClient, error) {
 		return nil, err
 	}
 
-	c := v1.NewCartClient(conn)
+	c := v1.NewProductClient(conn)
 
 	return c, nil
 }

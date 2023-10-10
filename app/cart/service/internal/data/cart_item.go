@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
 	"time"
@@ -33,6 +34,9 @@ func NewCartItemRepo(data *Data, logger log.Logger) CartItemRepo {
 }
 
 func (r *cartItemRepo) Save(ctx context.Context, cie *CartItemEntity) (*CartItemEntity, error) {
+	fmt.Println("[insert] cartId", cie.CartId)
+	fmt.Println("[insert] ProductId", cie.ProductId)
+	fmt.Println("[insert] Qty", cie.Qty)
 	entity, err := r.data.db.CartItem.
 		Create().
 		SetCartID(cie.CartId).

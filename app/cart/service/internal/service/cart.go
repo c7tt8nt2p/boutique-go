@@ -33,10 +33,14 @@ func (s *CartService) NewCart(ctx context.Context, req *pb.NewCartReq) (*pb.NewC
 }
 
 func (s *CartService) AddItemToCart(ctx context.Context, req *pb.AddItemToCartReq) (*pb.AddItemToCartResp, error) {
-	id, err := s.uc.AddItemToCart(ctx, req)
-
+	cie, err := s.uc.AddItemToCart(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	
 	return &pb.AddItemToCartResp{
-		Id: id.String(),
+		ProductId: cie.ProductId.String(),
+		Qty:       cie.Qty,
 	}, nil
 }
 

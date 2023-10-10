@@ -52,5 +52,5 @@ func (r *cartRepo) FindIdByUserId(ctx context.Context, userId uuid.UUID) (uuid.U
 		return uuid.Nil, err
 	}
 
-	return entity.UserID, nil
+	return entity.ID, nil
 }
