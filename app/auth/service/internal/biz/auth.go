@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	pb "github.com/kx-boutique/api/auth/service/v1"
@@ -55,15 +56,25 @@ func (uc *AuthUseCase) Login(ctx context.Context, req *pb.LoginReq) (string, err
 		Email: req.Email,
 	})
 	if err1 != nil {
-		return "", errors.Unauthorized("authentication failed", "invalid credentials")
+		return "", ErrInvalidCredentials
 	}
 
 	id, err2 := util.ParseUUID(resp.Id)
 	if err2 != nil {
-		return "", err2
+		return "", ErrInvalidCredentials
 	}
 
-	passwordHash, err1 := uc.repo.FindPasswordHashByUserId(ctx, uc.repo.GetEntClient(), id)
+	passwordHash, err3 := uc.repo.FindPasswordHashByUserId(ctx, uc.repo.GetEntClient(), id)
+	if err3 != nil {
+		return "", ErrInvalidCredentials
+	}
+
+	ok, xxx := password.ComparePassword(req.Password, passwordHash)
+	if !ok {
+		fmt.Println("	invalid password", xxx)
+		return "", ErrInvalidCredentials
+	}
+	fmt.Println("ok password")
 
 	return passwordHash, nil
 }

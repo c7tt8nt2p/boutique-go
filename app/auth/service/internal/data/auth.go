@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
 	ent "github.com/kx-boutique/ent/generated"
@@ -59,11 +58,9 @@ func (r *authRepo) FindPasswordHashByUserId(ctx context.Context, client *ent.Cli
 		Where(auth.UserID(userId)).
 		Select(auth.FieldPasswordHash).
 		String(ctx)
-
-	fmt.Println("	passwordHash", passwordHash)
-
 	if err != nil {
 		return "", err
 	}
+
 	return passwordHash, err
 }
