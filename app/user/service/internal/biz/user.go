@@ -2,7 +2,8 @@ package biz
 
 import (
 	"context"
-	v1 "github.com/kx-boutique/api/cart/service/v1"
+	authv1 "github.com/kx-boutique/api/auth/service/v1"
+	cartv1 "github.com/kx-boutique/api/cart/service/v1"
 	pb "github.com/kx-boutique/api/user/service/v1"
 	"github.com/kx-boutique/app/user/service/internal/data"
 	"github.com/kx-boutique/pkg/util"
@@ -11,19 +12,21 @@ import (
 )
 
 type UserUseCase struct {
-	cartClient v1.CartClient
+	authClient authv1.AuthClient
+	cartClient cartv1.CartClient
 	repo       data.UserRepo
 	log        *log.Helper
 }
 
-func NewUserUseCase(cartClient v1.CartClient, repo data.UserRepo, logger log.Logger) *UserUseCase {
+func NewUserUseCase(cartClient cartv1.CartClient, authClient authv1.AuthClient, repo data.UserRepo, logger log.Logger) *UserUseCase {
 	return &UserUseCase{
 		cartClient: cartClient,
+		authClient: authClient,
 		repo:       repo,
 		log:        log.NewHelper(log.With(logger, "module", "usecase/user"))}
 }
 
-func (uc *UserUseCase) SaveUser(ctx context.Context, req *pb.CreateUserReq) (*data.UserEntity, error) {
+func (uc *UserUseCase) RegisterNewUser(ctx context.Context, req *pb.CreateUserReq) (*data.UserEntity, error) {
 	user, err1 := uc.repo.SaveUser(ctx, uc.repo.GetEntClient(), &data.UserEntity{
 		Name:  req.Name,
 		Email: req.Email,
@@ -32,12 +35,23 @@ func (uc *UserUseCase) SaveUser(ctx context.Context, req *pb.CreateUserReq) (*da
 		return nil, err1
 	}
 
-	_, err2 := uc.cartClient.NewCart(ctx, &v1.NewCartReq{
-		UserId: user.Id.String(),
+	// new auth
+	_, err2 := uc.authClient.Register(ctx, &authv1.RegisterReq{
+		UserId:   user.Id.String(),
+		Password: req.Password,
 	})
 	if err2 != nil {
 		_ = uc.repo.DeleteById(ctx, uc.repo.GetEntClient(), user.Id)
 		return nil, err2
+	}
+
+	// new cart
+	_, err3 := uc.cartClient.NewCart(ctx, &cartv1.NewCartReq{
+		UserId: user.Id.String(),
+	})
+	if err3 != nil {
+		_ = uc.repo.DeleteById(ctx, uc.repo.GetEntClient(), user.Id)
+		return nil, err3
 	}
 
 	return user, nil

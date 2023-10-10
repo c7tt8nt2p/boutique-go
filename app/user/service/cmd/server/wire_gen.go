@@ -25,13 +25,17 @@ func initApp(confServer *conf.Server, confClient *conf.Client, confData *conf.Da
 	if err != nil {
 		return nil, nil, err
 	}
+	authClient, err := client.NewAuthClient(confClient)
+	if err != nil {
+		return nil, nil, err
+	}
 	generatedClient := data.NewEntClient(confData, logger)
 	dataData, cleanup, err := data.NewData(generatedClient, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	userRepo := data.NewUserRepo(dataData, logger)
-	userUseCase := biz.NewUserUseCase(cartClient, userRepo, logger)
+	userUseCase := biz.NewUserUseCase(cartClient, authClient, userRepo, logger)
 	userService := service.NewUserService(userUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, logger, userService)
 	app := newApp(logger, grpcServer)

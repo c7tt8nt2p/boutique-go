@@ -1,14 +1,13 @@
 syntax = "proto3";
 package kratos.api;
 
-option go_package = "app/cart/service/internal/conf;conf";
+option go_package = "app/auth/service/internal/conf;conf";
 
 import "google/protobuf/duration.proto";
 
 message Bootstrap {
     Server server = 1;
     Data data = 2;
-    Client client = 3;
 }
 
 message Server {
@@ -28,12 +27,4 @@ message Data {
         string db_name = 4;
     }
     Database database = 1;
-}
-
-message Client {
-    message ClientService {
-        string url = 1;
-    }
-    ClientService auth_service = 1;
-    ClientService cart_service = 2;
 }

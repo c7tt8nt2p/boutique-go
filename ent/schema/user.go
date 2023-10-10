@@ -29,5 +29,7 @@ func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("cart", Cart.Type).
 			Unique(),
+		edge.To("auth", Auth.Type).
+			Unique(),
 	}
 }

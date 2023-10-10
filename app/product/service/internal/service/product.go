@@ -22,32 +22,32 @@ func NewProductService(uc *biz.ProductUseCase, logger log.Logger) *ProductServic
 }
 
 func (s *ProductService) CreateProduct(ctx context.Context, req *pb.CreateProductReq) (*pb.CreateProductResp, error) {
-	product, err := s.uc.CreateProduct(ctx, req)
+	entity, err := s.uc.CreateProduct(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.CreateProductResp{
-		Id:          product.Id,
-		Name:        product.Name,
-		Description: product.Description,
-		Stock:       product.Stock,
-		UnitPrice:   product.UnitPrice,
+		Id:          entity.Id,
+		Name:        entity.Name,
+		Description: entity.Description,
+		Stock:       entity.Stock,
+		UnitPrice:   entity.UnitPrice,
 	}, nil
 }
 
 func (s *ProductService) GetProductById(ctx context.Context, req *pb.GetProductByIdReq) (*pb.GetProductByIdResp, error) {
-	product, err := s.uc.GetProductById(ctx, req)
+	entity, err := s.uc.GetProductById(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.GetProductByIdResp{
-		Id:          product.Id,
-		Name:        product.Name,
-		Description: product.Description,
-		Stock:       product.Stock,
-		UnitPrice:   product.UnitPrice,
+		Id:          entity.Id,
+		Name:        entity.Name,
+		Description: entity.Description,
+		Stock:       entity.Stock,
+		UnitPrice:   entity.UnitPrice,
 	}, nil
 }
 

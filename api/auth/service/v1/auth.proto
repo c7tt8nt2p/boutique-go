@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package user.service.v1;
+
+option go_package = "github.com/kx-boutique/api/auth/service/v1;v1";
+
+import "validate/validate.proto";
+
+service Auth {
+  rpc Register (RegisterReq) returns (RegisterResp) {}
+  rpc Login (LoginReq) returns (LoginResp) {}
+}
+
+message RegisterReq {
+  string userId = 1 [(validate.rules).string.uuid = true];
+  string password = 2 [(validate.rules).string = {min_len: 5, max_len: 20}];
+}
+
+message RegisterResp {
+  string id = 1;
+}
+
+message LoginReq {
+  string email = 1 [(validate.rules).string.email = true];
+  string password = 2 [(validate.rules).string = {min_len: 5, max_len: 20}];
+}
+
+message LoginResp {
+  string access_token = 1;
+}

@@ -21,7 +21,7 @@ func NewUserService(uc *biz.UserUseCase, logger log.Logger) *UserService {
 }
 
 func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*pb.CreateUserResp, error) {
-	user, err := s.uc.SaveUser(ctx, req)
+	user, err := s.uc.RegisterNewUser(ctx, req)
 	if err != nil {
 		return nil, err
 	}
