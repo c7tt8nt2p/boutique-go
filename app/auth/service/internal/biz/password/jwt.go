@@ -13,10 +13,10 @@ func GenerateJWT(c *conf.App_Jwt, userId uuid.UUID, userEmail string) (string, e
 	now := time.Now()
 	claims := token.Claims.(jwt.MapClaims)
 	claims["iss"] = "kx-boutique-auth-service"
-	claims["sub"] = userEmail
 	claims["iat"] = now.Unix()
 	claims["nbf"] = now.Unix()
 	claims["exp"] = now.Add(c.Expiration.AsDuration()).Unix()
+	claims["sub"] = userEmail
 	claims["user_id"] = userId.String()
 
 	tokenString, err := token.SignedString([]byte(c.Secret))

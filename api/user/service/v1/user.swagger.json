@@ -67,6 +67,20 @@
         }
       }
     },
+    "v1GetMeResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
     "v1GetUserByIdResp": {
       "type": "object",
       "properties": {

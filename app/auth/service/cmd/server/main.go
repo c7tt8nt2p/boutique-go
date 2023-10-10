@@ -46,6 +46,7 @@ func main() {
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
 	)
+	loggerFilter := log.NewFilter(logger, log.FilterKey("password"))
 
 	c := config.New(
 		config.WithSource(
@@ -61,7 +62,7 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := initApp(bc.Server, bc.Client, bc.App, bc.Data, logger)
+	app, cleanup, err := initApp(bc.Server, bc.Client, bc.App, bc.Data, loggerFilter)
 	if err != nil {
 		panic(err)
 	}

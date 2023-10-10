@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	pb "github.com/kx-boutique/api/user/service/v1"
 	"github.com/kx-boutique/app/user/service/internal/biz"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type UserService struct {
@@ -18,6 +20,11 @@ func NewUserService(uc *biz.UserUseCase, logger log.Logger) *UserService {
 	return &UserService{
 		uc:  uc,
 		log: log.NewHelper(log.With(logger, "module", "service/user"))}
+}
+
+func (s *UserService) GetMe(ctx context.Context, _ *emptypb.Empty) (*pb.GetMeResp, error) {
+	return nil, nil
+
 }
 
 func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*pb.CreateUserResp, error) {
@@ -46,6 +53,7 @@ func (s *UserService) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) (
 }
 
 func (s *UserService) GetIdByEmail(ctx context.Context, req *pb.GetIdByEmailReq) (*pb.GetIdByEmailResp, error) {
+	fmt.Println("okokoko")
 	id, err := s.uc.GetIdByEmail(ctx, req)
 	if err != nil {
 		return nil, err

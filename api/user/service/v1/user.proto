@@ -4,12 +4,20 @@ package user.service.v1;
 
 option go_package = "github.com/kx-boutique/api/user/service/v1;v1";
 
+import "google/protobuf/empty.proto";
 import "validate/validate.proto";
 
 service User {
+  rpc GetMe (google.protobuf.Empty) returns (GetMeResp) {}
   rpc CreateUser (CreateUserReq) returns (CreateUserResp) {}
   rpc GetUserById (GetUserByIdReq) returns (GetUserByIdResp) {}
   rpc GetIdByEmail (GetIdByEmailReq) returns (GetIdByEmailResp) {}
+}
+
+message GetMeResp {
+  string id = 1;
+  string name = 2;
+  string email = 3;
 }
 
 message CreateUserReq {
