@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
+	jwtv4 "github.com/golang-jwt/jwt/v4"
 	pb "github.com/kx-boutique/api/user/service/v1"
 	"github.com/kx-boutique/app/user/service/internal/biz"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -40,7 +42,28 @@ func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*p
 	}, nil
 }
 
+type CustomerClaims struct {
+	UserId string `json:"user_id,omitempty"`
+	jwtv4.RegisteredClaims
+}
+
+type authKey struct{}
+
 func (s *UserService) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) (*pb.GetUserByIdResp, error) {
+	claims, ok := jwt.FromContext(ctx)
+	if ok {
+		fmt.Println("	ok1", claims)
+		iss := claims.(jwtv4.MapClaims)["iss"].(string)
+		user_id := claims.(jwtv4.MapClaims)["user_id"].(string)
+		fmt.Println("		>>>>> iss", iss)
+		fmt.Println("		>>>>> user_id", user_id)
+		//if cc, ok := claims.(*CustomerClaims); ok {
+		//	fmt.Println("	ok2")
+		//	fmt.Println("	>>> cc", cc)
+		//}
+		//fmt.Println("	>>> userid", claims["user_id"])
+	}
+
 	user, err := s.uc.GetUserById(ctx, req)
 	if err != nil {
 		return nil, err
@@ -53,7 +76,6 @@ func (s *UserService) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) (
 }
 
 func (s *UserService) GetIdByEmail(ctx context.Context, req *pb.GetIdByEmailReq) (*pb.GetIdByEmailResp, error) {
-	fmt.Println("okokoko")
 	id, err := s.uc.GetIdByEmail(ctx, req)
 	if err != nil {
 		return nil, err

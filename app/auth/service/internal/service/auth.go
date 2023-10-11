@@ -44,6 +44,6 @@ func (a *AuthService) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginRes
 	}, nil
 }
 
-func (a *AuthService) Validate(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+func (a *AuthService) Validate(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
 	return &emptypb.Empty{}, nil
 }

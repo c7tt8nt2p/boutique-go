@@ -20,7 +20,6 @@ var whitelist = map[string]struct{}{
 	v1.Auth_Login_FullMethodName:    {},
 }
 
-// NewGRPCServer new a gRPC server.
 func NewGRPCServer(serverConf *conf.Server, appConf *conf.App, logger log.Logger, s *service.AuthService) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
