@@ -16,7 +16,6 @@ func JWTValidation(authClient authv1.AuthClient) middleware.Middleware {
 	return func(handler middleware.Handler) middleware.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			defer func() {
-				// do something after the handler finishes
 			}()
 			ctx = appendAuthorizationToClientCtx(ctx)
 			_, err = authClient.Validate(ctx, &emptypb.Empty{})

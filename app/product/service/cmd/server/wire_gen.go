@@ -12,6 +12,7 @@ import (
 	"github.com/kx-boutique/app/product/service/internal/biz"
 	"github.com/kx-boutique/app/product/service/internal/conf"
 	"github.com/kx-boutique/app/product/service/internal/data"
+	"github.com/kx-boutique/app/product/service/internal/data/client"
 	"github.com/kx-boutique/app/product/service/internal/server"
 	"github.com/kx-boutique/app/product/service/internal/service"
 )
@@ -19,16 +20,20 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func initApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
-	client := data.NewEntClient(confData, logger)
-	dataData, cleanup, err := data.NewData(client, logger)
+func initApp(confServer *conf.Server, confData *conf.Data, confClient *conf.Client, logger log.Logger) (*kratos.App, func(), error) {
+	authClient, err := client.NewAuthClient(confClient)
+	if err != nil {
+		return nil, nil, err
+	}
+	generatedClient := data.NewEntClient(confData, logger)
+	dataData, cleanup, err := data.NewData(generatedClient, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	productRepo := data.NewProductRepo(dataData, logger)
 	productUseCase := biz.NewProductUseCase(productRepo, logger)
 	productService := service.NewProductService(productUseCase, logger)
-	grpcServer := server.NewGRPCServer(confServer, logger, productService)
+	grpcServer := server.NewGRPCServer(confServer, logger, authClient, productService)
 	app := newApp(logger, grpcServer)
 	return app, func() {
 		cleanup()

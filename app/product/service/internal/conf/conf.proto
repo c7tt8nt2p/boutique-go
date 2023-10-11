@@ -8,6 +8,7 @@ import "google/protobuf/duration.proto";
 message Bootstrap {
     Server server = 1;
     Data data = 2;
+    Client client = 3;
 }
 
 message Server {
@@ -27,4 +28,11 @@ message Data {
         string db_name = 4;
     }
     Database database = 1;
+}
+
+message Client {
+    message ClientService {
+        string url = 1;
+    }
+    ClientService auth_service = 1;
 }
