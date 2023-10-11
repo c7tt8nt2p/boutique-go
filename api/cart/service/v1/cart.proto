@@ -4,12 +4,13 @@ package cart.service.v1;
 
 option go_package = "github.com/kx-boutique/api/cart/service/v1;v1";
 
+import "google/protobuf/empty.proto";
 import "validate/validate.proto";
 
 service Cart {
   rpc NewCart (NewCartReq) returns (NewCartResp) {}
   rpc AddItemToCart (AddItemToCartReq) returns (AddItemToCartResp) {}
-  rpc ViewCart (ViewCartReq) returns (ViewCartResp) {}
+  rpc ViewCart (google.protobuf.Empty) returns (ViewCartResp) {}
 }
 
 message NewCartReq {
@@ -30,14 +31,12 @@ message AddItemToCartResp {
   int32 qty = 2;
 }
 
-message ViewCartReq {
-  int64 user_id = 1;
-}
-
 message ViewCartResp {
   message Item {
-    int64 item_id = 1;
-    int64 quantity = 2;
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    int64 quantity = 4;
   }
   repeated Item items = 1;
 }

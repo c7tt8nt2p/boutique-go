@@ -20,9 +20,14 @@
     "ViewCartRespItem": {
       "type": "object",
       "properties": {
-        "itemId": {
-          "type": "string",
-          "format": "int64"
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
         },
         "quantity": {
           "type": "string",

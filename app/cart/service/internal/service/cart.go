@@ -5,6 +5,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	pb "github.com/kx-boutique/api/cart/service/v1"
 	"github.com/kx-boutique/app/cart/service/internal/biz"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type CartService struct {
@@ -43,7 +44,20 @@ func (s *CartService) AddItemToCart(ctx context.Context, req *pb.AddItemToCartRe
 	}, nil
 }
 
-func (s *CartService) ViewCart(ctx context.Context, req *pb.ViewCartReq) (*pb.ViewCartResp, error) {
-	reply := &pb.ViewCartResp{Items: make([]*pb.ViewCartResp_Item, 0)}
-	return reply, nil
+func (s *CartService) ViewCart(ctx context.Context, req *emptypb.Empty) (*pb.ViewCartResp, error) {
+	result, err := s.uc.ViewCart(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var items []*pb.ViewCartResp_Item
+
+	for _, e := range result {
+		items = append(items, &pb.ViewCartResp_Item{
+			Id:          e.Id.String(),
+			Name:        e.Name,
+			Description: e.Description,
+		})
+	}
+	return &pb.ViewCartResp{Items: items}, nil
 }

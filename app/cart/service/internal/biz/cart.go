@@ -34,7 +34,7 @@ func (uc *CartUseCase) NewCart(ctx context.Context, req *pb.NewCartReq) (uuid.UU
 		return uuid.Nil, err
 	}
 
-	return uc.cartRepo.Save(ctx, id)
+	return uc.cartRepo.Save(ctx, uc.cartRepo.GetEntClient(), id)
 }
 
 func (uc *CartUseCase) AddItemToCart(ctx context.Context, req *pb.AddItemToCartReq) (*data.CartItemEntity, error) {
@@ -48,7 +48,7 @@ func (uc *CartUseCase) AddItemToCart(ctx context.Context, req *pb.AddItemToCartR
 		return nil, err1
 	}
 
-	cartId, err2 := uc.cartRepo.FindIdByUserId(ctx, userId)
+	cartId, err2 := uc.cartRepo.FindIdByUserId(ctx, uc.cartRepo.GetEntClient(), userId)
 	if err2 != nil {
 		return nil, err2
 	}
@@ -77,7 +77,7 @@ func validateAddItemToCart(ctx context.Context, uc *CartUseCase, req *pb.AddItem
 }
 
 func validateItemAlreadyInCart(ctx context.Context, uc *CartUseCase, cartId uuid.UUID, productId uuid.UUID) error {
-	exist, err := uc.cartItemRepo.ExistsByCartIdAndProductId(ctx, cartId, productId)
+	exist, err := uc.cartItemRepo.ExistsByCartIdAndProductId(ctx, uc.cartItemRepo.GetEntClient(), cartId, productId)
 	if err != nil {
 		return err
 	}
@@ -88,13 +88,30 @@ func validateItemAlreadyInCart(ctx context.Context, uc *CartUseCase, cartId uuid
 }
 
 func doAddItemToCart(ctx context.Context, uc *CartUseCase, cartId uuid.UUID, productId uuid.UUID, qty int32) (*data.CartItemEntity, error) {
-	return uc.cartItemRepo.Save(ctx, &data.CartItemEntity{
-		CartId:    cartId,
-		ProductId: productId,
-		Qty:       qty,
-	})
+	return uc.cartItemRepo.Save(ctx, uc.cartItemRepo.GetEntClient(),
+		&data.CartItemEntity{
+			CartId:    cartId,
+			ProductId: productId,
+			Qty:       qty,
+		})
 }
 
-func (uc *CartUseCase) GetCart(ctx context.Context, uid int64) (*data.CartEntity, error) {
-	return nil, nil
+func (uc *CartUseCase) ViewCart(ctx context.Context) ([]*data.CartItemProductEntity, error) {
+	myself := util.Myself(ctx)
+	userId, err1 := util.ParseUUID(myself.UserId)
+	if err1 != nil {
+		return nil, err1
+	}
+
+	cartId, err2 := uc.cartRepo.FindIdByUserId(ctx, uc.cartRepo.GetEntClient(), userId)
+	if err2 != nil {
+		return nil, err2
+	}
+
+	result, err3 := uc.cartItemRepo.FindByCartId(ctx, uc.cartItemRepo.GetEntClient(), cartId)
+	if err3 != nil {
+		return nil, err3
+	}
+
+	return result, nil
 }

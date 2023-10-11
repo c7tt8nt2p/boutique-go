@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -30,7 +31,7 @@ const (
 type CartClient interface {
 	NewCart(ctx context.Context, in *NewCartReq, opts ...grpc.CallOption) (*NewCartResp, error)
 	AddItemToCart(ctx context.Context, in *AddItemToCartReq, opts ...grpc.CallOption) (*AddItemToCartResp, error)
-	ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc.CallOption) (*ViewCartResp, error)
+	ViewCart(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ViewCartResp, error)
 }
 
 type cartClient struct {
@@ -59,7 +60,7 @@ func (c *cartClient) AddItemToCart(ctx context.Context, in *AddItemToCartReq, op
 	return out, nil
 }
 
-func (c *cartClient) ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc.CallOption) (*ViewCartResp, error) {
+func (c *cartClient) ViewCart(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ViewCartResp, error) {
 	out := new(ViewCartResp)
 	err := c.cc.Invoke(ctx, Cart_ViewCart_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -74,7 +75,7 @@ func (c *cartClient) ViewCart(ctx context.Context, in *ViewCartReq, opts ...grpc
 type CartServer interface {
 	NewCart(context.Context, *NewCartReq) (*NewCartResp, error)
 	AddItemToCart(context.Context, *AddItemToCartReq) (*AddItemToCartResp, error)
-	ViewCart(context.Context, *ViewCartReq) (*ViewCartResp, error)
+	ViewCart(context.Context, *emptypb.Empty) (*ViewCartResp, error)
 	mustEmbedUnimplementedCartServer()
 }
 
@@ -88,7 +89,7 @@ func (UnimplementedCartServer) NewCart(context.Context, *NewCartReq) (*NewCartRe
 func (UnimplementedCartServer) AddItemToCart(context.Context, *AddItemToCartReq) (*AddItemToCartResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddItemToCart not implemented")
 }
-func (UnimplementedCartServer) ViewCart(context.Context, *ViewCartReq) (*ViewCartResp, error) {
+func (UnimplementedCartServer) ViewCart(context.Context, *emptypb.Empty) (*ViewCartResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ViewCart not implemented")
 }
 func (UnimplementedCartServer) mustEmbedUnimplementedCartServer() {}
@@ -141,7 +142,7 @@ func _Cart_AddItemToCart_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _Cart_ViewCart_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ViewCartReq)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -153,7 +154,7 @@ func _Cart_ViewCart_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: Cart_ViewCart_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServer).ViewCart(ctx, req.(*ViewCartReq))
+		return srv.(CartServer).ViewCart(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
