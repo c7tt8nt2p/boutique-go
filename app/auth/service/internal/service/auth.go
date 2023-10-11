@@ -5,6 +5,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	pb "github.com/kx-boutique/api/auth/service/v1"
 	"github.com/kx-boutique/app/auth/service/internal/biz"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type AuthService struct {
@@ -41,4 +42,8 @@ func (a *AuthService) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginRes
 	return &pb.LoginResp{
 		AccessToken: accessToken,
 	}, nil
+}
+
+func (a *AuthService) Validate(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, nil
 }

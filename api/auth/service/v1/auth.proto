@@ -4,11 +4,13 @@ package user.service.v1;
 
 option go_package = "github.com/kx-boutique/api/auth/service/v1;v1";
 
+import "google/protobuf/empty.proto";
 import "validate/validate.proto";
 
 service Auth {
   rpc Register (RegisterReq) returns (RegisterResp) {}
   rpc Login (LoginReq) returns (LoginResp) {}
+  rpc Validate (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 
 message RegisterReq {

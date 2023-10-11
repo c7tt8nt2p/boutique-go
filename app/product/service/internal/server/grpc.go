@@ -2,20 +2,30 @@ package server
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/middleware/selector"
 	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	jwtv4 "github.com/golang-jwt/jwt/v4"
 	"github.com/kx-boutique/api/product/service/v1"
 	"github.com/kx-boutique/app/product/service/internal/conf"
 	"github.com/kx-boutique/app/product/service/internal/service"
+	server "github.com/kx-boutique/pkg/middleware"
 )
 
-// NewGRPCServer new a gRPC server.
+var whitelist = map[string]struct{}{}
+
 func NewGRPCServer(c *conf.Server, logger log.Logger, s *service.ProductService) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
+			selector.Server(
+				jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
+					return []byte("super-secret"), nil
+				}),
+			).Match(server.NewWhiteListMatcher(whitelist)).Build(),
 			logging.Server(logger),
 			validate.Validator(),
 		),

@@ -33,7 +33,7 @@ func initApp(confServer *conf.Server, confClient *conf.Client, app *conf.App, co
 	authRepo := data.NewAuthRepo(dataData, logger)
 	authUseCase := biz.NewAuthUseCase(app, userClient, authRepo, logger)
 	authService := service.NewAuthService(authUseCase, logger)
-	grpcServer := server.NewGRPCServer(confServer, logger, authService)
+	grpcServer := server.NewGRPCServer(confServer, app, logger, authService)
 	kratosApp := newApp(logger, grpcServer)
 	return kratosApp, func() {
 		cleanup()
