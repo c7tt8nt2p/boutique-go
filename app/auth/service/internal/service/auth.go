@@ -22,8 +22,8 @@ func NewAuthService(uc *biz.AuthUseCase, logger log.Logger) *AuthService {
 	}
 }
 
-func (a *AuthService) Register(ctx context.Context, req *pb.RegisterReq) (*pb.RegisterResp, error) {
-	entity, err := a.uc.NewAuth(ctx, req)
+func (s *AuthService) Register(ctx context.Context, req *pb.RegisterReq) (*pb.RegisterResp, error) {
+	entity, err := s.uc.NewAuth(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -33,8 +33,8 @@ func (a *AuthService) Register(ctx context.Context, req *pb.RegisterReq) (*pb.Re
 	}, nil
 }
 
-func (a *AuthService) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginResp, error) {
-	accessToken, err := a.uc.Login(ctx, req)
+func (s *AuthService) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginResp, error) {
+	accessToken, err := s.uc.Login(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +44,14 @@ func (a *AuthService) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginRes
 	}, nil
 }
 
-func (a *AuthService) Validate(ctx context.Context, req *emptypb.Empty) (*emptypb.Empty, error) {
-	return &emptypb.Empty{}, nil
+func (s *AuthService) Validate(ctx context.Context, req *emptypb.Empty) (*pb.ValidateResp, error) {
+	data, err := s.uc.ExtractJWTClaims(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ValidateResp{
+		UserId: data.UserId,
+		Email:  data.Email,
+	}, nil
 }

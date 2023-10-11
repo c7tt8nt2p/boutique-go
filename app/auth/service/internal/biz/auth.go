@@ -4,11 +4,14 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
+	jwtv4 "github.com/golang-jwt/jwt/v4"
 	pb "github.com/kx-boutique/api/auth/service/v1"
 	userv1 "github.com/kx-boutique/api/user/service/v1"
 	"github.com/kx-boutique/app/auth/service/internal/biz/password"
 	"github.com/kx-boutique/app/auth/service/internal/conf"
 	"github.com/kx-boutique/app/auth/service/internal/data"
+	"github.com/kx-boutique/pkg/model"
 	"github.com/kx-boutique/pkg/util"
 )
 
@@ -86,4 +89,18 @@ func (uc *AuthUseCase) Login(ctx context.Context, req *pb.LoginReq) (string, err
 	}
 
 	return token, nil
+}
+
+func (uc *AuthUseCase) ExtractJWTClaims(ctx context.Context) (*model.Myself, error) {
+	claims, ok := jwt.FromContext(ctx)
+	if !ok {
+		uc.log.Error("cannot extract claims from jwt")
+		return nil, ErrInvalidCredentials
+	}
+	mapClaims := claims.(jwtv4.MapClaims)
+
+	return &model.Myself{
+		UserId: mapClaims["user_id"].(string),
+		Email:  mapClaims["sub"].(string),
+	}, nil
 }

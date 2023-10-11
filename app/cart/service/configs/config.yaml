@@ -11,5 +11,7 @@ data:
     db_name: kx_boutique
 
 client:
+  auth_service:
+    url: localhost:8999
   product_service:
     url: localhost:9001

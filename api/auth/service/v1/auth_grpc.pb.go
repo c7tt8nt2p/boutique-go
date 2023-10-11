@@ -31,7 +31,7 @@ const (
 type AuthClient interface {
 	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
-	Validate(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	Validate(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ValidateResp, error)
 }
 
 type authClient struct {
@@ -60,8 +60,8 @@ func (c *authClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallO
 	return out, nil
 }
 
-func (c *authClient) Validate(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *authClient) Validate(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ValidateResp, error) {
+	out := new(ValidateResp)
 	err := c.cc.Invoke(ctx, Auth_Validate_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func (c *authClient) Validate(ctx context.Context, in *emptypb.Empty, opts ...gr
 type AuthServer interface {
 	Register(context.Context, *RegisterReq) (*RegisterResp, error)
 	Login(context.Context, *LoginReq) (*LoginResp, error)
-	Validate(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
+	Validate(context.Context, *emptypb.Empty) (*ValidateResp, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -89,7 +89,7 @@ func (UnimplementedAuthServer) Register(context.Context, *RegisterReq) (*Registe
 func (UnimplementedAuthServer) Login(context.Context, *LoginReq) (*LoginResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
-func (UnimplementedAuthServer) Validate(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+func (UnimplementedAuthServer) Validate(context.Context, *emptypb.Empty) (*ValidateResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Validate not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}

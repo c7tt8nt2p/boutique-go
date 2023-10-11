@@ -60,6 +60,17 @@
           "type": "string"
         }
       }
+    },
+    "v1ValidateResp": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
     }
   }
 }

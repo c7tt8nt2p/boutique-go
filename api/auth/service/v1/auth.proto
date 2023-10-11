@@ -10,7 +10,7 @@ import "validate/validate.proto";
 service Auth {
   rpc Register (RegisterReq) returns (RegisterResp) {}
   rpc Login (LoginReq) returns (LoginResp) {}
-  rpc Validate (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc Validate (google.protobuf.Empty) returns (ValidateResp) {}
 }
 
 message RegisterReq {
@@ -29,4 +29,9 @@ message LoginReq {
 
 message LoginResp {
   string access_token = 1;
+}
+
+message ValidateResp {
+  string user_id = 1;
+  string email = 2;
 }

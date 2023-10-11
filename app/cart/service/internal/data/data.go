@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var ProviderSet = wire.NewSet(NewEntClient, NewData, NewCartRepo, NewCartItemRepo, client.NewProductClient)
+var ProviderSet = wire.NewSet(NewEntClient, NewData, NewCartRepo, NewCartItemRepo, client.NewAuthClient, client.NewProductClient)
 
 type Data struct {
 	db  *ent.Client

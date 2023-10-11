@@ -31,8 +31,9 @@ message Data {
 }
 
 message Client {
-    message ProductService {
+    message ClientService {
         string url = 1;
     }
-    ProductService product_service = 1;
+    ClientService auth_service = 1;
+    ClientService product_service = 2;
 }

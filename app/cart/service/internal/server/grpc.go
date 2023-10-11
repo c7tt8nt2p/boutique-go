@@ -4,21 +4,27 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/middleware/selector"
+	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	authv1 "github.com/kx-boutique/api/auth/service/v1"
 	"github.com/kx-boutique/api/cart/service/v1"
 	"github.com/kx-boutique/app/cart/service/internal/conf"
 	"github.com/kx-boutique/app/cart/service/internal/service"
+	server "github.com/kx-boutique/pkg/middleware"
 )
 
-// NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, logger log.Logger, s *service.CartService) *grpc.Server {
+var whitelist = map[string]struct{}{}
+
+func NewGRPCServer(c *conf.Server, logger log.Logger, authClient authv1.AuthClient, s *service.CartService) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
+			selector.Server(
+				server.JWTValidation(authClient),
+			).Match(server.NewWhiteListMatcher(whitelist)).Build(),
 			logging.Server(logger),
-			//jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
-			//	return []byte("1234"), nil
-			//}),
+			validate.Validator(),
 		),
 	}
 	if c.Grpc.Network != "" {

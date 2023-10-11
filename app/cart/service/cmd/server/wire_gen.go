@@ -21,6 +21,10 @@ import (
 
 // initApp init kratos application.
 func initApp(confServer *conf.Server, confClient *conf.Client, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+	authClient, err := client.NewAuthClient(confClient)
+	if err != nil {
+		return nil, nil, err
+	}
 	productClient, err := client.NewProductClient(confClient)
 	if err != nil {
 		return nil, nil, err
@@ -34,7 +38,7 @@ func initApp(confServer *conf.Server, confClient *conf.Client, confData *conf.Da
 	cartItemRepo := data.NewCartItemRepo(dataData, logger)
 	cartUseCase := biz.NewCartUseCase(productClient, cartRepo, cartItemRepo, logger)
 	cartService := service.NewCartService(cartUseCase, logger)
-	grpcServer := server.NewGRPCServer(confServer, logger, cartService)
+	grpcServer := server.NewGRPCServer(confServer, logger, authClient, cartService)
 	app := newApp(logger, grpcServer)
 	return app, func() {
 		cleanup()
