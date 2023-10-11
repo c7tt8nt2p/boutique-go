@@ -280,18 +280,6 @@ func (m *AddItemToCartReq) validate(all bool) error {
 
 	var errors []error
 
-	if err := m._validateUuid(m.GetUserId()); err != nil {
-		err = AddItemToCartReqValidationError{
-			field:  "UserId",
-			reason: "value must be a valid UUID",
-			cause:  err,
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if err := m._validateUuid(m.GetProductId()); err != nil {
 		err = AddItemToCartReqValidationError{
 			field:  "ProductId",

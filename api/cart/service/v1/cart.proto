@@ -21,9 +21,8 @@ message NewCartResp {
 }
 
 message AddItemToCartReq {
-  string user_id = 1 [(validate.rules).string.uuid = true];
-  string product_id = 2 [(validate.rules).string.uuid = true];
-  int32 qty = 3 [(validate.rules).int32.gt = 0];
+  string product_id = 1 [(validate.rules).string.uuid = true];
+  int32 qty = 2 [(validate.rules).int32.gt = 0];
 }
 
 message AddItemToCartResp {

@@ -3,9 +3,8 @@ package service
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/kx-boutique/app/cart/service/internal/biz"
-
 	pb "github.com/kx-boutique/api/cart/service/v1"
+	"github.com/kx-boutique/app/cart/service/internal/biz"
 )
 
 type CartService struct {
@@ -37,7 +36,7 @@ func (s *CartService) AddItemToCart(ctx context.Context, req *pb.AddItemToCartRe
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &pb.AddItemToCartResp{
 		ProductId: cie.ProductId.String(),
 		Qty:       cie.Qty,

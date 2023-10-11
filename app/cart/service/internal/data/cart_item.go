@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/ent/generated/cartitem"
 	"time"
 )
 
@@ -19,6 +20,7 @@ type CartItemEntity struct {
 
 type CartItemRepo interface {
 	Save(ctx context.Context, cie *CartItemEntity) (*CartItemEntity, error)
+	ExistsByCartIdAndProductId(ctx context.Context, cartId uuid.UUID, productId uuid.UUID) (bool, error)
 }
 
 type cartItemRepo struct {
@@ -56,4 +58,22 @@ func (r *cartItemRepo) Save(ctx context.Context, cie *CartItemEntity) (*CartItem
 		CreatedAt: entity.CreatedAt,
 		UpdatedAt: entity.UpdatedAt,
 	}, nil
+}
+
+func (r *cartItemRepo) ExistsByCartIdAndProductId(ctx context.Context, cartId uuid.UUID, productId uuid.UUID) (bool, error) {
+	ok, err := r.data.db.CartItem.
+		Query().
+		Where(
+			cartitem.And(
+				cartitem.CartID(cartId),
+				cartitem.ProductID(productId),
+			),
+		).
+		Exist(ctx)
+
+	if err != nil {
+		return false, err
+	}
+
+	return ok, nil
 }
