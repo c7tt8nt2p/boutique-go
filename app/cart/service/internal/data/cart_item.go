@@ -49,26 +49,27 @@ func (r *cartItemRepo) Save(ctx context.Context, client *ent.Client, cie *entMod
 }
 
 func (r *cartItemRepo) FindByCartId(ctx context.Context, client *ent.Client, cartId uuid.UUID) *entModel.CartWithProducts {
-	ci, err := client.CartItem.
+	cis, err := client.Debug().CartItem.
 		Query().
+		WithProductIDOwner().
 		Where(
 			cartitem.And(
 				cartitem.CartID(cartId),
 			),
 		).
-		Select(cartitem.FieldQty).
-		QueryProductIDOwner().
 		All(ctx)
 	if err != nil {
 		panic(errors.AppInternalErr(err.Error()))
 	}
 
 	var cp []*entModel.CartProduct
-	for _, e := range ci {
+	for _, ci := range cis {
+		p := ci.Edges.ProductIDOwner
 		cp = append(cp, &entModel.CartProduct{
-			Id:    e.ID,
-			Name:  e.Name,
-			Price: e.UnitPrice,
+			Id:    ci.ID,
+			Name:  p.Name,
+			Price: p.UnitPrice,
+			Qty:   ci.Qty,
 		})
 	}
 

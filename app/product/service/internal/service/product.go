@@ -26,7 +26,7 @@ func (s *ProductService) CreateProduct(ctx context.Context, req *pb.CreateProduc
 	p := s.uc.CreateProduct(ctx, req)
 
 	return &pb.CreateProductResp{
-		Id:          p.Id,
+		Id:          p.Id.String(),
 		Name:        p.Name,
 		Description: p.Description,
 		Stock:       p.Stock,
@@ -38,7 +38,7 @@ func (s *ProductService) GetProductById(ctx context.Context, req *pb.GetProductB
 	p := s.uc.GetProductById(ctx, req)
 
 	return &pb.GetProductByIdResp{
-		Id:          p.Id,
+		Id:          p.Id.String(),
 		Name:        p.Name,
 		Description: p.Description,
 		Stock:       p.Stock,

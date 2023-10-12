@@ -44,9 +44,10 @@ func (s *CartService) ViewCart(ctx context.Context, _ *emptypb.Empty) (*pb.ViewC
 	c := s.uc.ViewCart(ctx)
 	for _, e := range c.Product {
 		items = append(items, &pb.ViewCartResp_Item{
-			Id:    e.Id.String(),
-			Name:  e.Name,
-			Price: e.Price,
+			Id:       e.Id.String(),
+			Name:     e.Name,
+			Price:    e.Price,
+			Quantity: e.Qty,
 		})
 	}
 	return &pb.ViewCartResp{

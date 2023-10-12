@@ -35,7 +35,7 @@ func (r *productRepo) Save(ctx context.Context, p *entModel.Product) *entModel.P
 	}
 
 	return &entModel.Product{
-		Id:          saved.ID.String(),
+		Id:          saved.ID,
 		Name:        saved.Name,
 		Description: saved.Description,
 		Stock:       saved.Stock,
@@ -52,7 +52,7 @@ func (r *productRepo) FindById(ctx context.Context, id uuid.UUID) *entModel.Prod
 	}
 
 	return &entModel.Product{
-		Id:          p.ID.String(),
+		Id:          p.ID,
 		Name:        p.Name,
 		Description: p.Description,
 		Stock:       p.Stock,
