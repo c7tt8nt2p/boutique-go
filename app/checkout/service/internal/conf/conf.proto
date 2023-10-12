@@ -1,0 +1,38 @@
+syntax = "proto3";
+package kratos.api;
+
+option go_package = "app/checkout/service/internal/conf;conf";
+
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+    Server server = 1;
+    Data data = 2;
+    Client client = 3;
+}
+
+message Server {
+    message GRPC {
+        string network = 1;
+        string addr = 2;
+        google.protobuf.Duration timeout = 3;
+    }
+    GRPC grpc = 1;
+}
+
+message Data {
+    message Database {
+        string url = 1;
+        string user = 2;
+        string password = 3;
+        string db_name = 4;
+    }
+    Database database = 1;
+}
+
+message Client {
+    message ClientService {
+        string url = 1;
+    }
+    ClientService auth_service = 1;
+}

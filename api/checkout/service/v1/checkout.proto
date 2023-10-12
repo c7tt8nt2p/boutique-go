@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package cart.service.v1;
+
+option go_package = "github.com/kx-boutique/api/checkout/service/v1;v1";
+
+import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+
+service Checkout {
+  rpc Checkout (CheckoutReq) returns (CheckoutResp) {}
+}
+
+message CheckoutReq {}
+message CheckoutResp {}
+
