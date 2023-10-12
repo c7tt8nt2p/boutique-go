@@ -495,6 +495,232 @@ var _ interface {
 	ErrorName() string
 } = AddItemToCartRespValidationError{}
 
+// Validate checks the field values on RemoveItemFromCartReq with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RemoveItemFromCartReq) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RemoveItemFromCartReq with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RemoveItemFromCartReqMultiError, or nil if none found.
+func (m *RemoveItemFromCartReq) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RemoveItemFromCartReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if err := m._validateUuid(m.GetProductId()); err != nil {
+		err = RemoveItemFromCartReqValidationError{
+			field:  "ProductId",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return RemoveItemFromCartReqMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *RemoveItemFromCartReq) _validateUuid(uuid string) error {
+	if matched := _cart_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// RemoveItemFromCartReqMultiError is an error wrapping multiple validation
+// errors returned by RemoveItemFromCartReq.ValidateAll() if the designated
+// constraints aren't met.
+type RemoveItemFromCartReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RemoveItemFromCartReqMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RemoveItemFromCartReqMultiError) AllErrors() []error { return m }
+
+// RemoveItemFromCartReqValidationError is the validation error returned by
+// RemoveItemFromCartReq.Validate if the designated constraints aren't met.
+type RemoveItemFromCartReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RemoveItemFromCartReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RemoveItemFromCartReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RemoveItemFromCartReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RemoveItemFromCartReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RemoveItemFromCartReqValidationError) ErrorName() string {
+	return "RemoveItemFromCartReqValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RemoveItemFromCartReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRemoveItemFromCartReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RemoveItemFromCartReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RemoveItemFromCartReqValidationError{}
+
+// Validate checks the field values on RemoveItemFromCartResp with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RemoveItemFromCartResp) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RemoveItemFromCartResp with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RemoveItemFromCartRespMultiError, or nil if none found.
+func (m *RemoveItemFromCartResp) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RemoveItemFromCartResp) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ProductId
+
+	if len(errors) > 0 {
+		return RemoveItemFromCartRespMultiError(errors)
+	}
+
+	return nil
+}
+
+// RemoveItemFromCartRespMultiError is an error wrapping multiple validation
+// errors returned by RemoveItemFromCartResp.ValidateAll() if the designated
+// constraints aren't met.
+type RemoveItemFromCartRespMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RemoveItemFromCartRespMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RemoveItemFromCartRespMultiError) AllErrors() []error { return m }
+
+// RemoveItemFromCartRespValidationError is the validation error returned by
+// RemoveItemFromCartResp.Validate if the designated constraints aren't met.
+type RemoveItemFromCartRespValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RemoveItemFromCartRespValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RemoveItemFromCartRespValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RemoveItemFromCartRespValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RemoveItemFromCartRespValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RemoveItemFromCartRespValidationError) ErrorName() string {
+	return "RemoveItemFromCartRespValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RemoveItemFromCartRespValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRemoveItemFromCartResp.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RemoveItemFromCartRespValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RemoveItemFromCartRespValidationError{}
+
 // Validate checks the field values on ViewCartResp with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.

@@ -95,3 +95,19 @@ func (r *cartItemRepo) ExistsByCartIdAndProductId(ctx context.Context, client *e
 
 	return ok
 }
+
+func (r *cartItemRepo) DeleteByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) uuid.UUID {
+	_, err := client.CartItem.
+		Delete().
+		Where(
+			cartitem.And(
+				cartitem.CartID(cartId),
+				cartitem.ProductID(productId),
+			),
+		).Exec(ctx)
+	if err != nil {
+		panic(errors.AppInternalErr(err.Error()))
+	}
+
+	return productId
+}

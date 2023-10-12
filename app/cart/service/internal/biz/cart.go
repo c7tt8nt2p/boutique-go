@@ -23,6 +23,7 @@ type CartItemRepo interface {
 	Save(ctx context.Context, client *ent.Client, cie *entModel.CartItem) *entModel.CartItem
 	FindByCartId(ctx context.Context, client *ent.Client, cartId uuid.UUID) *entModel.CartWithProducts
 	ExistsByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) bool
+	DeleteByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) uuid.UUID
 }
 
 type CartUseCase struct {
@@ -42,6 +43,13 @@ func NewCartUseCase(productClient v1.ProductClient, cartRepo CartRepo, cartItemR
 	}
 }
 
+func findMyCartId(ctx context.Context, uc *CartUseCase) uuid.UUID {
+	myself := util.Me(ctx)
+	userId := util.ParseUUID(myself.UserId)
+	cartId := uc.cartRepo.FindIdByUserId(ctx, uc.cartRepo.GetEntClient(), userId)
+	return cartId
+}
+
 func (uc *CartUseCase) NewCart(ctx context.Context, req *pb.NewCartReq) uuid.UUID {
 	id := util.ParseUUID(req.UserId)
 
@@ -51,9 +59,7 @@ func (uc *CartUseCase) NewCart(ctx context.Context, req *pb.NewCartReq) uuid.UUI
 func (uc *CartUseCase) AddItemToCart(ctx context.Context, req *pb.AddItemToCartReq) *entModel.CartItem {
 	validateAddItemToCart(ctx, uc, req)
 
-	myself := util.Me(ctx)
-	userId := util.ParseUUID(myself.UserId)
-	cartId := uc.cartRepo.FindIdByUserId(ctx, uc.cartRepo.GetEntClient(), userId)
+	cartId := findMyCartId(ctx, uc)
 	productId := util.ParseUUID(req.ProductId)
 
 	validateItemAlreadyInCart(ctx, uc, cartId, productId)
@@ -64,6 +70,13 @@ func (uc *CartUseCase) AddItemToCart(ctx context.Context, req *pb.AddItemToCartR
 			ProductId: productId,
 			Qty:       req.Qty,
 		})
+}
+
+func (uc *CartUseCase) RemoveItemFromCart(ctx context.Context, req *pb.RemoveItemFromCartReq) uuid.UUID {
+	cartId := findMyCartId(ctx, uc)
+	productId := util.ParseUUID(req.ProductId)
+
+	return uc.cartItemRepo.DeleteByCartIdAndProductId(ctx, uc.cartItemRepo.GetEntClient(), cartId, productId)
 }
 
 func validateAddItemToCart(ctx context.Context, uc *CartUseCase, req *pb.AddItemToCartReq) {

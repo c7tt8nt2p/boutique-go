@@ -38,6 +38,14 @@ func (s *CartService) AddItemToCart(ctx context.Context, req *pb.AddItemToCartRe
 	}, nil
 }
 
+func (s *CartService) RemoveItemFromCart(ctx context.Context, req *pb.RemoveItemFromCartReq) (*pb.RemoveItemFromCartResp, error) {
+	productId := s.uc.RemoveItemFromCart(ctx, req)
+
+	return &pb.RemoveItemFromCartResp{
+		ProductId: productId.String(),
+	}, nil
+}
+
 func (s *CartService) ViewCart(ctx context.Context, _ *emptypb.Empty) (*pb.ViewCartResp, error) {
 	var items []*pb.ViewCartResp_Item
 

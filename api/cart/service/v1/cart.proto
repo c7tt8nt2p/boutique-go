@@ -10,6 +10,7 @@ import "validate/validate.proto";
 service Cart {
   rpc NewCart (NewCartReq) returns (NewCartResp) {}
   rpc AddItemToCart (AddItemToCartReq) returns (AddItemToCartResp) {}
+  rpc RemoveItemFromCart (RemoveItemFromCartReq) returns (RemoveItemFromCartResp) {}
   rpc ViewCart (google.protobuf.Empty) returns (ViewCartResp) {}
 }
 
@@ -29,6 +30,14 @@ message AddItemToCartReq {
 message AddItemToCartResp {
   string product_id = 1;
   int32 qty = 2;
+}
+
+message RemoveItemFromCartReq {
+  string product_id = 1 [(validate.rules).string.uuid = true];
+}
+
+message RemoveItemFromCartResp {
+  string product_id = 1;
 }
 
 message ViewCartResp {

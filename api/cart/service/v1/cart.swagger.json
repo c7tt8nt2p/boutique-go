@@ -84,6 +84,14 @@
         }
       }
     },
+    "v1RemoveItemFromCartResp": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        }
+      }
+    },
     "v1ViewCartResp": {
       "type": "object",
       "properties": {
