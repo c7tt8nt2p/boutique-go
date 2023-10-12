@@ -5,8 +5,8 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
 	"github.com/kx-boutique/app/product/service/internal/biz"
+	entModel "github.com/kx-boutique/app/product/service/internal/biz/model"
 	"github.com/kx-boutique/ent/generated/product"
-	entModel "github.com/kx-boutique/ent/model"
 	"github.com/kx-boutique/pkg/errors"
 )
 

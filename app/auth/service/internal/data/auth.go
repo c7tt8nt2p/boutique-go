@@ -5,9 +5,9 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
 	"github.com/kx-boutique/app/auth/service/internal/biz"
+	entModel "github.com/kx-boutique/app/auth/service/internal/biz/model"
 	ent "github.com/kx-boutique/ent/generated"
 	"github.com/kx-boutique/ent/generated/auth"
-	entModel "github.com/kx-boutique/ent/model"
 	"github.com/kx-boutique/pkg/errors"
 )
 

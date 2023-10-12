@@ -6,8 +6,8 @@ import (
 	authv1 "github.com/kx-boutique/api/auth/service/v1"
 	cartv1 "github.com/kx-boutique/api/cart/service/v1"
 	pb "github.com/kx-boutique/api/user/service/v1"
+	entModel "github.com/kx-boutique/app/user/service/internal/biz/model"
 	ent "github.com/kx-boutique/ent/generated"
-	entModel "github.com/kx-boutique/ent/model"
 	"github.com/kx-boutique/pkg/errors"
 	"github.com/kx-boutique/pkg/util"
 

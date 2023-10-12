@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	pb "github.com/kx-boutique/api/product/service/v1"
-	entModel "github.com/kx-boutique/ent/model"
+	entModel "github.com/kx-boutique/app/product/service/internal/biz/model"
 	"github.com/kx-boutique/pkg/util"
 
 	"github.com/go-kratos/kratos/v2/log"

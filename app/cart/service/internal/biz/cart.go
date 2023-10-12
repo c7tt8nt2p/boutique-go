@@ -6,8 +6,8 @@ import (
 	"github.com/google/uuid"
 	pb "github.com/kx-boutique/api/cart/service/v1"
 	v1 "github.com/kx-boutique/api/product/service/v1"
+	entModel "github.com/kx-boutique/app/cart/service/internal/biz/model"
 	ent "github.com/kx-boutique/ent/generated"
-	entModel "github.com/kx-boutique/ent/model"
 	"github.com/kx-boutique/pkg/errors"
 	"github.com/kx-boutique/pkg/util"
 )
