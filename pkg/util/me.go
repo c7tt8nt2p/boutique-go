@@ -7,7 +7,7 @@ import (
 
 type MyselfKey struct{}
 
-func Myself(ctx context.Context) *model.Myself {
+func Me(ctx context.Context) *model.Me {
 	value := ctx.Value(MyselfKey{})
-	return value.(*model.Myself)
+	return value.(*model.Me)
 }

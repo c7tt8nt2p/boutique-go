@@ -4,31 +4,22 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/app/auth/service/internal/biz"
 	ent "github.com/kx-boutique/ent/generated"
 	"github.com/kx-boutique/ent/generated/auth"
+	entModel "github.com/kx-boutique/ent/model"
+	"github.com/kx-boutique/pkg/errors"
 )
-
-type AuthEntity struct {
-	Id           uuid.UUID
-	PasswordHash string
-	UserId       uuid.UUID
-}
-
-type AuthRepo interface {
-	GetEntClient() *ent.Client
-	Save(ctx context.Context, client *ent.Client, ae *AuthEntity) (*AuthEntity, error)
-	FindPasswordHashByUserId(ctx context.Context, client *ent.Client, userId uuid.UUID) (string, error)
-}
 
 type authRepo struct {
 	data *Data
 	log  *log.Helper
 }
 
-func NewAuthRepo(data *Data, logger log.Logger) AuthRepo {
+func NewAuthRepo(data *Data, logger log.Logger) biz.AuthRepo {
 	return &authRepo{
 		data: data,
-		log:  log.NewHelper(log.With(logger, "module", "repo/product")),
+		log:  log.NewHelper(log.With(logger, "module", "repo/auth")),
 	}
 }
 
@@ -36,31 +27,31 @@ func (r *authRepo) GetEntClient() *ent.Client {
 	return r.data.db
 }
 
-func (r *authRepo) Save(ctx context.Context, client *ent.Client, ae *AuthEntity) (*AuthEntity, error) {
+func (r *authRepo) Save(ctx context.Context, client *ent.Client, ae *entModel.Auth) *entModel.Auth {
 	entity, err := client.Auth.
 		Create().
 		SetPasswordHash(ae.PasswordHash).
 		SetUserID(ae.UserId).
 		Save(ctx)
 	if err != nil {
-		return nil, err
+		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return &AuthEntity{
+	return &entModel.Auth{
 		Id:     entity.ID,
 		UserId: entity.UserID,
-	}, nil
+	}
 }
 
-func (r *authRepo) FindPasswordHashByUserId(ctx context.Context, client *ent.Client, userId uuid.UUID) (string, error) {
+func (r *authRepo) FindPasswordHashByUserId(ctx context.Context, client *ent.Client, userId uuid.UUID) string {
 	passwordHash, err := client.Auth.
 		Query().
 		Where(auth.UserID(userId)).
 		Select(auth.FieldPasswordHash).
 		String(ctx)
 	if err != nil {
-		return "", err
+		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return passwordHash, err
+	return passwordHash
 }

@@ -1,6 +1,6 @@
 package model
 
-type Myself struct {
+type Me struct {
 	UserId string
 	Email  string
 }

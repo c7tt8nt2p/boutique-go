@@ -5,6 +5,7 @@ package user.service.v1;
 option go_package = "github.com/kx-boutique/api/user/service/v1;v1";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 import "validate/validate.proto";
 
 service User {
@@ -30,6 +31,8 @@ message CreateUserResp {
   string id = 1;
   string name = 2;
   string email = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
 }
 
 message GetUserByIdReq {
@@ -39,6 +42,8 @@ message GetUserByIdReq {
 message GetUserByIdResp {
   string id = 1;
   string name = 2;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
 }
 
 message GetIdByEmailReq {

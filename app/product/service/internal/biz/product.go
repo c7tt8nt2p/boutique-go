@@ -4,15 +4,15 @@ import (
 	"context"
 	"github.com/google/uuid"
 	pb "github.com/kx-boutique/api/product/service/v1"
-	"github.com/kx-boutique/ent/model"
+	entModel "github.com/kx-boutique/ent/model"
 	"github.com/kx-boutique/pkg/util"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
 
 type ProductRepo interface {
-	Save(ctx context.Context, pp *model.Product) *model.Product
-	FindById(ctx context.Context, id uuid.UUID) *model.Product
+	Save(ctx context.Context, pp *entModel.Product) *entModel.Product
+	FindById(ctx context.Context, id uuid.UUID) *entModel.Product
 	IsPurchasable(ctx context.Context, id uuid.UUID, qty int32) bool
 }
 
@@ -25,8 +25,8 @@ func NewProductUseCase(repo ProductRepo, logger log.Logger) *ProductUseCase {
 	return &ProductUseCase{repo: repo, log: log.NewHelper(log.With(logger, "module", "usecase/product"))}
 }
 
-func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProductReq) *model.Product {
-	pe := &model.Product{
+func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProductReq) *entModel.Product {
+	pe := &entModel.Product{
 		Name:        req.Name,
 		Description: req.Description,
 		Stock:       req.Stock,
@@ -35,7 +35,7 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProdu
 	return uc.repo.Save(ctx, pe)
 }
 
-func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.GetProductByIdReq) *model.Product {
+func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.GetProductByIdReq) *entModel.Product {
 	id := util.ParseUUID(req.Id)
 
 	return uc.repo.FindById(ctx, id)

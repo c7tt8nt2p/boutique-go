@@ -1,9 +1,12 @@
 package model
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Product struct {
-	Id          string
+	Id          uuid.UUID
 	Name        string
 	Description string
 	Stock       int32

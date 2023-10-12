@@ -26,8 +26,9 @@
         "name": {
           "type": "string"
         },
-        "description": {
-          "type": "string"
+        "price": {
+          "type": "number",
+          "format": "double"
         },
         "quantity": {
           "type": "string",
@@ -86,6 +87,9 @@
     "v1ViewCartResp": {
       "type": "object",
       "properties": {
+        "cartId": {
+          "type": "string"
+        },
         "items": {
           "type": "array",
           "items": {

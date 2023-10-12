@@ -4,41 +4,19 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/app/cart/service/internal/biz"
 	ent "github.com/kx-boutique/ent/generated"
 	"github.com/kx-boutique/ent/generated/cartitem"
-	"time"
+	entModel "github.com/kx-boutique/ent/model"
+	"github.com/kx-boutique/pkg/errors"
 )
-
-type CartItemProductEntity struct {
-	Id          uuid.UUID
-	Name        string
-	Description string
-	Stock       int32
-	UnitPrice   float64
-}
-
-type CartItemEntity struct {
-	Id        uuid.UUID
-	CartId    uuid.UUID
-	ProductId uuid.UUID
-	Qty       int32
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
-type CartItemRepo interface {
-	GetEntClient() *ent.Client
-	Save(ctx context.Context, client *ent.Client, cie *CartItemEntity) (*CartItemEntity, error)
-	FindByCartId(ctx context.Context, client *ent.Client, cartId uuid.UUID) ([]*CartItemProductEntity, error)
-	ExistsByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) (bool, error)
-}
 
 type cartItemRepo struct {
 	data *Data
 	log  *log.Helper
 }
 
-func NewCartItemRepo(data *Data, logger log.Logger) CartItemRepo {
+func NewCartItemRepo(data *Data, logger log.Logger) biz.CartItemRepo {
 	return &cartItemRepo{
 		data: data,
 		log:  log.NewHelper(log.With(logger, "module", "repo/cart_item")),
@@ -49,30 +27,29 @@ func (r *cartItemRepo) GetEntClient() *ent.Client {
 	return r.data.db
 }
 
-func (r *cartItemRepo) Save(ctx context.Context, client *ent.Client, cie *CartItemEntity) (*CartItemEntity, error) {
-	entity, err := client.CartItem.
+func (r *cartItemRepo) Save(ctx context.Context, client *ent.Client, cie *entModel.CartItem) *entModel.CartItem {
+	ci, err := client.CartItem.
 		Create().
 		SetCartID(cie.CartId).
 		SetProductID(cie.ProductId).
 		SetQty(cie.Qty).
 		Save(ctx)
-
 	if err != nil {
-		return nil, err
+		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return &CartItemEntity{
-		Id:        entity.ID,
-		CartId:    entity.CartID,
-		ProductId: entity.ProductID,
-		Qty:       entity.Qty,
-		CreatedAt: entity.CreatedAt,
-		UpdatedAt: entity.UpdatedAt,
-	}, nil
+	return &entModel.CartItem{
+		Id:        ci.ID,
+		CartId:    ci.CartID,
+		ProductId: ci.ProductID,
+		Qty:       ci.Qty,
+		CreatedAt: ci.CreatedAt,
+		UpdatedAt: ci.UpdatedAt,
+	}
 }
 
-func (r *cartItemRepo) FindByCartId(ctx context.Context, client *ent.Client, cartId uuid.UUID) ([]*CartItemProductEntity, error) {
-	entity, err := client.CartItem.
+func (r *cartItemRepo) FindByCartId(ctx context.Context, client *ent.Client, cartId uuid.UUID) *entModel.CartWithProducts {
+	ci, err := client.CartItem.
 		Query().
 		Where(
 			cartitem.And(
@@ -82,26 +59,26 @@ func (r *cartItemRepo) FindByCartId(ctx context.Context, client *ent.Client, car
 		Select(cartitem.FieldQty).
 		QueryProductIDOwner().
 		All(ctx)
-	var result []*CartItemProductEntity
+	if err != nil {
+		panic(errors.AppInternalErr(err.Error()))
+	}
 
-	for _, e := range entity {
-		result = append(result, &CartItemProductEntity{
-			Id:          e.ID,
-			Name:        e.Name,
-			Description: e.Description,
-			Stock:       e.Stock,
-			UnitPrice:   e.UnitPrice,
+	var cp []*entModel.CartProduct
+	for _, e := range ci {
+		cp = append(cp, &entModel.CartProduct{
+			Id:    e.ID,
+			Name:  e.Name,
+			Price: e.UnitPrice,
 		})
 	}
 
-	if err != nil {
-		return nil, err
+	return &entModel.CartWithProducts{
+		CartId:  cartId,
+		Product: cp,
 	}
-
-	return result, nil
 }
 
-func (r *cartItemRepo) ExistsByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) (bool, error) {
+func (r *cartItemRepo) ExistsByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) bool {
 	ok, err := client.CartItem.
 		Query().
 		Where(
@@ -111,10 +88,9 @@ func (r *cartItemRepo) ExistsByCartIdAndProductId(ctx context.Context, client *e
 			),
 		).
 		Exist(ctx)
-
 	if err != nil {
-		return false, err
+		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return ok, nil
+	return ok
 }

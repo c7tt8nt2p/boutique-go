@@ -43,7 +43,7 @@ func appendAuthorizationToClientCtx(ctx context.Context) context.Context {
 }
 
 func appendMyselfToServerContext(ctx context.Context, validateResp *authv1.ValidateResp) context.Context {
-	ctx = context.WithValue(ctx, util.MyselfKey{}, &model.Myself{
+	ctx = context.WithValue(ctx, util.MyselfKey{}, &model.Me{
 		UserId: validateResp.UserId,
 		Email:  validateResp.Email,
 	})

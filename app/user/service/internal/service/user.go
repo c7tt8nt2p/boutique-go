@@ -6,6 +6,7 @@ import (
 	pb "github.com/kx-boutique/api/user/service/v1"
 	"github.com/kx-boutique/app/user/service/internal/biz"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type UserService struct {
@@ -22,40 +23,41 @@ func NewUserService(uc *biz.UserUseCase, logger log.Logger) *UserService {
 }
 
 func (s *UserService) GetMe(ctx context.Context, _ *emptypb.Empty) (*pb.GetMeResp, error) {
-	return nil, nil
+	u := s.uc.GetMe(ctx)
+
+	return &pb.GetMeResp{
+		Id:    u.Id.String(),
+		Name:  u.Name,
+		Email: u.Email,
+	}, nil
 
 }
 
 func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*pb.CreateUserResp, error) {
-	user, err := s.uc.RegisterNewUser(ctx, req)
-	if err != nil {
-		return nil, err
-	}
+	u := s.uc.RegisterNewUser(ctx, req)
 
 	return &pb.CreateUserResp{
-		Id:    user.Id.String(),
-		Name:  user.Name,
-		Email: user.Email,
+		Id:        u.Id.String(),
+		Name:      u.Name,
+		Email:     u.Email,
+		CreatedAt: timestamppb.New(u.CreatedAt),
+		UpdatedAt: timestamppb.New(u.UpdatedAt),
 	}, nil
 }
 
 func (s *UserService) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) (*pb.GetUserByIdResp, error) {
-	user, err := s.uc.GetUserById(ctx, req)
-	if err != nil {
-		return nil, err
-	}
+	u := s.uc.GetUserById(ctx, req)
 
 	return &pb.GetUserByIdResp{
-		Id:   user.Id.String(),
-		Name: user.Name,
+		Id:        u.Id.String(),
+		Name:      u.Name,
+		CreatedAt: timestamppb.New(u.CreatedAt),
+		UpdatedAt: timestamppb.New(u.UpdatedAt),
 	}, nil
 }
 
 func (s *UserService) GetIdByEmail(ctx context.Context, req *pb.GetIdByEmailReq) (*pb.GetIdByEmailResp, error) {
-	id, err := s.uc.GetIdByEmail(ctx, req)
-	if err != nil {
-		return nil, err
-	}
+	id := s.uc.GetIdByEmail(ctx, req)
 
 	return &pb.GetIdByEmailResp{
 		Id: id.String(),

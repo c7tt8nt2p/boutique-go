@@ -4,30 +4,19 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
+	"github.com/kx-boutique/app/user/service/internal/biz"
 	ent "github.com/kx-boutique/ent/generated"
 	"github.com/kx-boutique/ent/generated/user"
+	entModel "github.com/kx-boutique/ent/model"
+	"github.com/kx-boutique/pkg/errors"
 )
-
-type UserEntity struct {
-	Id    uuid.UUID
-	Name  string
-	Email string
-}
-
-type UserRepo interface {
-	GetEntClient() *ent.Client
-	SaveUser(ctx context.Context, client *ent.Client, u *UserEntity) (*UserEntity, error)
-	FindById(ctx context.Context, client *ent.Client, id uuid.UUID) (*UserEntity, error)
-	FindIdByEmail(ctx context.Context, client *ent.Client, email string) (uuid.UUID, error)
-	DeleteById(ctx context.Context, client *ent.Client, id uuid.UUID) error
-}
 
 type userRepo struct {
 	data *Data
 	log  *log.Helper
 }
 
-func NewUserRepo(data *Data, logger log.Logger) UserRepo {
+func NewUserRepo(data *Data, logger log.Logger) biz.UserRepo {
 	return &userRepo{
 		data: data,
 		log:  log.NewHelper(log.With(logger, "module", "repo/user")),
@@ -38,55 +27,57 @@ func (r *userRepo) GetEntClient() *ent.Client {
 	return r.data.db
 }
 
-func (r *userRepo) SaveUser(ctx context.Context, client *ent.Client, ue *UserEntity) (*UserEntity, error) {
+func (r *userRepo) SaveUser(ctx context.Context, client *ent.Client, u *entModel.User) *entModel.User {
 	saved, err := client.User.
 		Create().
-		SetName(ue.Name).
-		SetEmail(ue.Email).
+		SetName(u.Name).
+		SetEmail(u.Email).
 		Save(ctx)
-
 	if err != nil {
-		return nil, err
+		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return &UserEntity{
-		Id:    saved.ID,
-		Name:  saved.Name,
-		Email: saved.Email,
-	}, nil
+	return &entModel.User{
+		Id:        saved.ID,
+		Name:      saved.Name,
+		Email:     saved.Email,
+		CreatedAt: saved.CreatedAt,
+		UpdatedAt: saved.UpdatedAt,
+	}
 }
 
-func (r *userRepo) FindById(ctx context.Context, client *ent.Client, id uuid.UUID) (*UserEntity, error) {
+func (r *userRepo) FindById(ctx context.Context, client *ent.Client, id uuid.UUID) *entModel.User {
 	u, err := client.User.Get(ctx, id)
-
 	if err != nil {
-		return nil, err
+		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return &UserEntity{
-		Id:   u.ID,
-		Name: u.Name,
-	}, nil
+	return &entModel.User{
+		Id:        u.ID,
+		Name:      u.Name,
+		Email:     u.Email,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
+	}
 }
 
-func (r *userRepo) FindIdByEmail(ctx context.Context, client *ent.Client, email string) (uuid.UUID, error) {
-	entity, err := client.User.
+func (r *userRepo) FindIdByEmail(ctx context.Context, client *ent.Client, email string) uuid.UUID {
+	u, err := client.User.
 		Query().
 		Where(user.Email(email)).
 		Only(ctx)
-
 	if err != nil {
-		return uuid.Nil, err
+		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return entity.ID, nil
+	return u.ID
 }
 
-func (r *userRepo) DeleteById(ctx context.Context, client *ent.Client, id uuid.UUID) error {
+func (r *userRepo) DeleteById(ctx context.Context, client *ent.Client, id uuid.UUID) uuid.UUID {
 	err := client.User.DeleteOneID(id).Exec(ctx)
 	if err != nil {
-		return err
+		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return nil
+	return id
 }

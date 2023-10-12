@@ -11,7 +11,7 @@ import (
 	"github.com/kx-boutique/api/cart/service/v1"
 	"github.com/kx-boutique/app/cart/service/internal/conf"
 	"github.com/kx-boutique/app/cart/service/internal/service"
-	server "github.com/kx-boutique/pkg/middleware"
+	"github.com/kx-boutique/pkg/middleware"
 )
 
 var whitelist = map[string]struct{}{}
@@ -20,9 +20,10 @@ func NewGRPCServer(c *conf.Server, logger log.Logger, authClient authv1.AuthClie
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
+			middleware.AppRecovery(),
 			selector.Server(
-				server.JWTValidation(authClient),
-			).Match(server.NewWhiteListMatcher(whitelist)).Build(),
+				middleware.JWTValidation(authClient),
+			).Match(middleware.NewWhiteListMatcher(whitelist)).Build(),
 			logging.Server(logger),
 			validate.Validator(),
 		),

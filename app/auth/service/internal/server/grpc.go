@@ -12,7 +12,7 @@ import (
 	"github.com/kx-boutique/api/auth/service/v1"
 	"github.com/kx-boutique/app/auth/service/internal/conf"
 	"github.com/kx-boutique/app/auth/service/internal/service"
-	server "github.com/kx-boutique/pkg/middleware"
+	"github.com/kx-boutique/pkg/middleware"
 )
 
 var whitelist = map[string]struct{}{
@@ -24,11 +24,12 @@ func NewGRPCServer(serverConf *conf.Server, appConf *conf.App, logger log.Logger
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
+			middleware.AppRecovery(),
 			selector.Server(
 				jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
 					return []byte(appConf.Jwt.Secret), nil
 				}),
-			).Match(server.NewWhiteListMatcher(whitelist)).Build(),
+			).Match(middleware.NewWhiteListMatcher(whitelist)).Build(),
 			logging.Server(logger),
 			validate.Validator(),
 		),

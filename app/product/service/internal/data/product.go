@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kx-boutique/app/product/service/internal/biz"
 	"github.com/kx-boutique/ent/generated/product"
-	"github.com/kx-boutique/ent/model"
+	entModel "github.com/kx-boutique/ent/model"
 	"github.com/kx-boutique/pkg/errors"
 )
 
@@ -22,7 +22,7 @@ func NewProductRepo(data *Data, logger log.Logger) biz.ProductRepo {
 	}
 }
 
-func (r *productRepo) Save(ctx context.Context, p *model.Product) *model.Product {
+func (r *productRepo) Save(ctx context.Context, p *entModel.Product) *entModel.Product {
 	saved, err := r.data.db.Product.
 		Create().
 		SetName(p.Name).
@@ -34,7 +34,7 @@ func (r *productRepo) Save(ctx context.Context, p *model.Product) *model.Product
 		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return &model.Product{
+	return &entModel.Product{
 		Id:          saved.ID.String(),
 		Name:        saved.Name,
 		Description: saved.Description,
@@ -45,13 +45,13 @@ func (r *productRepo) Save(ctx context.Context, p *model.Product) *model.Product
 	}
 }
 
-func (r *productRepo) FindById(ctx context.Context, id uuid.UUID) *model.Product {
+func (r *productRepo) FindById(ctx context.Context, id uuid.UUID) *entModel.Product {
 	p, err := r.data.db.Product.Get(ctx, id)
 	if err != nil {
 		panic(errors.AppInternalErr("Product not found"))
 	}
 
-	return &model.Product{
+	return &entModel.Product{
 		Id:          p.ID.String(),
 		Name:        p.Name,
 		Description: p.Description,

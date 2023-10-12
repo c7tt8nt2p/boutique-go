@@ -22,10 +22,7 @@ func NewCartService(uc *biz.CartUseCase, logger log.Logger) *CartService {
 }
 
 func (s *CartService) NewCart(ctx context.Context, req *pb.NewCartReq) (*pb.NewCartResp, error) {
-	id, err := s.uc.NewCart(ctx, req)
-	if err != nil {
-		return nil, err
-	}
+	id := s.uc.NewCart(ctx, req)
 
 	return &pb.NewCartResp{
 		Id: id.String(),
@@ -33,31 +30,27 @@ func (s *CartService) NewCart(ctx context.Context, req *pb.NewCartReq) (*pb.NewC
 }
 
 func (s *CartService) AddItemToCart(ctx context.Context, req *pb.AddItemToCartReq) (*pb.AddItemToCartResp, error) {
-	cie, err := s.uc.AddItemToCart(ctx, req)
-	if err != nil {
-		return nil, err
-	}
+	ci := s.uc.AddItemToCart(ctx, req)
 
 	return &pb.AddItemToCartResp{
-		ProductId: cie.ProductId.String(),
-		Qty:       cie.Qty,
+		ProductId: ci.ProductId.String(),
+		Qty:       ci.Qty,
 	}, nil
 }
 
-func (s *CartService) ViewCart(ctx context.Context, req *emptypb.Empty) (*pb.ViewCartResp, error) {
-	result, err := s.uc.ViewCart(ctx)
-	if err != nil {
-		return nil, err
-	}
-
+func (s *CartService) ViewCart(ctx context.Context, _ *emptypb.Empty) (*pb.ViewCartResp, error) {
 	var items []*pb.ViewCartResp_Item
 
-	for _, e := range result {
+	c := s.uc.ViewCart(ctx)
+	for _, e := range c.Product {
 		items = append(items, &pb.ViewCartResp_Item{
-			Id:          e.Id.String(),
-			Name:        e.Name,
-			Description: e.Description,
+			Id:    e.Id.String(),
+			Name:  e.Name,
+			Price: e.Price,
 		})
 	}
-	return &pb.ViewCartResp{Items: items}, nil
+	return &pb.ViewCartResp{
+		CartId: c.CartId.String(),
+		Items:  items,
+	}, nil
 }
