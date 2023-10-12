@@ -29,10 +29,7 @@ func NewCartUseCase(productClient v1.ProductClient, cartRepo data.CartRepo, cart
 }
 
 func (uc *CartUseCase) NewCart(ctx context.Context, req *pb.NewCartReq) (uuid.UUID, error) {
-	id, err := util.ParseUUID(req.UserId)
-	if err != nil {
-		return uuid.Nil, err
-	}
+	id := util.ParseUUID(req.UserId)
 
 	return uc.cartRepo.Save(ctx, uc.cartRepo.GetEntClient(), id)
 }
@@ -43,20 +40,14 @@ func (uc *CartUseCase) AddItemToCart(ctx context.Context, req *pb.AddItemToCartR
 	}
 
 	myself := util.Myself(ctx)
-	userId, err1 := util.ParseUUID(myself.UserId)
-	if err1 != nil {
-		return nil, err1
-	}
+	userId := util.ParseUUID(myself.UserId)
 
 	cartId, err2 := uc.cartRepo.FindIdByUserId(ctx, uc.cartRepo.GetEntClient(), userId)
 	if err2 != nil {
 		return nil, err2
 	}
 
-	productId, err3 := util.ParseUUID(req.ProductId)
-	if err3 != nil {
-		return nil, err3
-	}
+	productId := util.ParseUUID(req.ProductId)
 
 	if err4 := validateItemAlreadyInCart(ctx, uc, cartId, productId); err4 != nil {
 		return nil, err4
@@ -82,7 +73,7 @@ func validateItemAlreadyInCart(ctx context.Context, uc *CartUseCase, cartId uuid
 		return err
 	}
 	if exist {
-		return errors.ErrValidationFailed("Item already exists in the cart")
+		panic(errors.AppValidationErr("Item already exists in the cart"))
 	}
 	return nil
 }
@@ -98,10 +89,7 @@ func doAddItemToCart(ctx context.Context, uc *CartUseCase, cartId uuid.UUID, pro
 
 func (uc *CartUseCase) ViewCart(ctx context.Context) ([]*data.CartItemProductEntity, error) {
 	myself := util.Myself(ctx)
-	userId, err1 := util.ParseUUID(myself.UserId)
-	if err1 != nil {
-		return nil, err1
-	}
+	userId := util.ParseUUID(myself.UserId)
 
 	cartId, err2 := uc.cartRepo.FindIdByUserId(ctx, uc.cartRepo.GetEntClient(), userId)
 	if err2 != nil {

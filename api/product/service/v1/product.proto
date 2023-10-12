@@ -4,6 +4,7 @@ package cart.service.v1;
 
 option go_package = "github.com/kx-boutique/api/product/service/v1;v1";
 
+import "google/protobuf/timestamp.proto";
 import "validate/validate.proto";
 
 service Product {
@@ -37,6 +38,8 @@ message GetProductByIdResp {
   string description = 3;
   int32 stock = 4;
   double unit_price = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
 }
 
 message ValidatePurchasableProductReq {

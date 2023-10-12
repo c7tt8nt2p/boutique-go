@@ -20,6 +20,7 @@ func NewGRPCServer(c *conf.Server, logger log.Logger, authClient authv1.AuthClie
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
+			middleware.AppRecovery(),
 			selector.Server(
 				middleware.JWTValidation(authClient),
 			).Match(middleware.NewWhiteListMatcher(whitelist)).Build(),

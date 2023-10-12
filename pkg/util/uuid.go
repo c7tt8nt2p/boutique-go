@@ -5,10 +5,10 @@ import (
 	"github.com/kx-boutique/pkg/errors"
 )
 
-func ParseUUID(s string) (uuid.UUID, error) {
+func ParseUUID(s string) uuid.UUID {
 	parsed, err := uuid.Parse(s)
 	if err != nil {
-		return uuid.Nil, errors.ErrValidationFailed(err.Error())
+		panic(errors.AppInternalErr(err.Error()))
 	}
-	return parsed, nil
+	return parsed
 }

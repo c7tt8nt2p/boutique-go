@@ -2,8 +2,18 @@ package errors
 
 import "github.com/go-kratos/kratos/v2/errors"
 
-var ErrUInvalidCredentials = errors.Unauthorized("UNAUTHORIZED", "Invalid credentials")
-
-func ErrValidationFailed(msg string) *errors.Error {
-	return errors.New(422, "Validation failed", msg)
+type AppErr struct {
+	Err *errors.Error
 }
+
+func AppInternalErr(msg string) *AppErr {
+	err := errors.BadRequest("BAD REQUEST", msg)
+	return &AppErr{Err: err}
+}
+
+func AppValidationErr(msg string) *AppErr {
+	err := errors.New(422, "VALIDATION FAILED", msg)
+	return &AppErr{Err: err}
+}
+
+var ErrUInvalidCredentials = errors.Unauthorized("UNAUTHORIZED", "Invalid credentials")

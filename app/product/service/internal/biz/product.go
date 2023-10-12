@@ -2,25 +2,31 @@ package biz
 
 import (
 	"context"
-	"fmt"
+	"github.com/google/uuid"
 	pb "github.com/kx-boutique/api/product/service/v1"
-	"github.com/kx-boutique/app/product/service/internal/data"
+	"github.com/kx-boutique/ent/model"
 	"github.com/kx-boutique/pkg/util"
 
 	"github.com/go-kratos/kratos/v2/log"
 )
 
+type ProductRepo interface {
+	Save(ctx context.Context, pp *model.Product) *model.Product
+	FindById(ctx context.Context, id uuid.UUID) *model.Product
+	IsPurchasable(ctx context.Context, id uuid.UUID, qty int32) bool
+}
+
 type ProductUseCase struct {
-	repo data.ProductRepo
+	repo ProductRepo
 	log  *log.Helper
 }
 
-func NewProductUseCase(repo data.ProductRepo, logger log.Logger) *ProductUseCase {
+func NewProductUseCase(repo ProductRepo, logger log.Logger) *ProductUseCase {
 	return &ProductUseCase{repo: repo, log: log.NewHelper(log.With(logger, "module", "usecase/product"))}
 }
 
-func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProductReq) (*data.ProductEntity, error) {
-	pe := &data.ProductEntity{
+func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProductReq) *model.Product {
+	pe := &model.Product{
 		Name:        req.Name,
 		Description: req.Description,
 		Stock:       req.Stock,
@@ -29,28 +35,14 @@ func (uc *ProductUseCase) CreateProduct(ctx context.Context, req *pb.CreateProdu
 	return uc.repo.Save(ctx, pe)
 }
 
-func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.GetProductByIdReq) (*data.ProductEntity, error) {
-	id, err := util.ParseUUID(req.Id)
-	if err != nil {
-		return nil, err
-	}
+func (uc *ProductUseCase) GetProductById(ctx context.Context, req *pb.GetProductByIdReq) *model.Product {
+	id := util.ParseUUID(req.Id)
+
 	return uc.repo.FindById(ctx, id)
 }
 
-func (uc *ProductUseCase) ValidatePurchasableProduct(ctx context.Context, req *pb.ValidatePurchasableProductReq) error {
-	id, err1 := util.ParseUUID(req.Id)
-	if err1 != nil {
-		return err1
-	}
-
-	ok, err2 := uc.repo.IsPurchasable(ctx, id, req.Qty)
-	if err2 != nil {
-		return err2
-	}
-
-	if !ok {
-		return fmt.Errorf("product is not purchaseable due to invalid product or quantity")
-	}
-
-	return nil
+func (uc *ProductUseCase) ValidatePurchasableProduct(ctx context.Context, req *pb.ValidatePurchasableProductReq) bool {
+	id := util.ParseUUID(req.Id)
+	ok := uc.repo.IsPurchasable(ctx, id, req.Qty)
+	return ok
 }
