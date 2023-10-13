@@ -43,14 +43,14 @@ func (uc *UserUseCase) GetMe(ctx context.Context) *entModel.User {
 	return uc.repo.FindById(ctx, uc.repo.GetEntClient(), id)
 }
 
-func (uc *UserUseCase) RegisterNewUser(ctx context.Context, req *pb.CreateUserReq) *entModel.User {
+func (uc *UserUseCase) RegisterNewUser(ctx context.Context, req *pb.RegisterReq) *entModel.User {
 	user := uc.repo.SaveUser(ctx, uc.repo.GetEntClient(), &entModel.User{
 		Name:  req.Name,
 		Email: req.Email,
 	})
 
 	// new auth
-	_, err1 := uc.authClient.Register(ctx, &authv1.RegisterReq{
+	_, err1 := uc.authClient.NewAuth(ctx, &authv1.NewAuthReq{
 		UserId:   user.Id.String(),
 		Password: req.Password,
 	})
@@ -64,6 +64,7 @@ func (uc *UserUseCase) RegisterNewUser(ctx context.Context, req *pb.CreateUserRe
 		UserId: user.Id.String(),
 	})
 	if err2 != nil {
+		_, _ = uc.authClient.DeleteAuth(ctx, &authv1.DeleteAuthReq{UserId: user.Id.String()})
 		_ = uc.repo.DeleteById(ctx, uc.repo.GetEntClient(), user.Id)
 		panic(errors.AppInternalErr(err2.Error()))
 	}

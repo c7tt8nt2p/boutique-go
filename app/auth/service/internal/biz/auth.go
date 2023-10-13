@@ -21,6 +21,7 @@ type AuthRepo interface {
 	GetEntClient() *ent.Client
 	Save(ctx context.Context, client *ent.Client, ae *entModel.Auth) *entModel.Auth
 	FindPasswordHashByUserId(ctx context.Context, client *ent.Client, userId uuid.UUID) string
+	DeleteByUserId(ctx context.Context, client *ent.Client, userId uuid.UUID) uuid.UUID
 }
 
 type AuthUseCase struct {
@@ -38,7 +39,7 @@ func NewAuthUseCase(appConfig *conf.App, userClient userv1.UserClient, repo Auth
 		log:        log.NewHelper(log.With(logger, "module", "usecase/auth"))}
 }
 
-func (uc *AuthUseCase) NewAuth(ctx context.Context, req *pb.RegisterReq) *entModel.Auth {
+func (uc *AuthUseCase) NewAuth(ctx context.Context, req *pb.NewAuthReq) *entModel.Auth {
 	userId := util.ParseUUID(req.UserId)
 	hash, err := password.GeneratePasswordHash(req.Password)
 	if err != nil {
@@ -51,6 +52,13 @@ func (uc *AuthUseCase) NewAuth(ctx context.Context, req *pb.RegisterReq) *entMod
 	})
 
 	return entity
+}
+
+func (uc *AuthUseCase) DeleteAuth(ctx context.Context, req *pb.DeleteAuthReq) uuid.UUID {
+	userId := util.ParseUUID(req.UserId)
+	uc.repo.DeleteByUserId(ctx, uc.repo.GetEntClient(), userId)
+
+	return userId
 }
 
 func (uc *AuthUseCase) Login(ctx context.Context, req *pb.LoginReq) string {

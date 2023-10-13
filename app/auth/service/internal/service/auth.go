@@ -22,11 +22,19 @@ func NewAuthService(uc *biz.AuthUseCase, logger log.Logger) *AuthService {
 	}
 }
 
-func (s *AuthService) Register(ctx context.Context, req *pb.RegisterReq) (*pb.RegisterResp, error) {
+func (s *AuthService) NewAuth(ctx context.Context, req *pb.NewAuthReq) (*pb.NewAuthResp, error) {
 	a := s.uc.NewAuth(ctx, req)
 
-	return &pb.RegisterResp{
+	return &pb.NewAuthResp{
 		Id: a.Id.String(),
+	}, nil
+}
+
+func (s *AuthService) DeleteAuth(ctx context.Context, req *pb.DeleteAuthReq) (*pb.DeleteAuthResp, error) {
+	id := s.uc.DeleteAuth(ctx, req)
+
+	return &pb.DeleteAuthResp{
+		Id: id.String(),
 	}, nil
 }
 
@@ -38,7 +46,7 @@ func (s *AuthService) Login(ctx context.Context, req *pb.LoginReq) (*pb.LoginRes
 	}, nil
 }
 
-func (s *AuthService) Validate(ctx context.Context, req *emptypb.Empty) (*pb.ValidateResp, error) {
+func (s *AuthService) Validate(ctx context.Context, _ *emptypb.Empty) (*pb.ValidateResp, error) {
 	me := s.uc.ExtractJWTClaims(ctx)
 
 	return &pb.ValidateResp{

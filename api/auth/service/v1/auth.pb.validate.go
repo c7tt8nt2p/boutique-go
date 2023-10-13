@@ -38,22 +38,22 @@ var (
 // define the regex for a UUID once up-front
 var _auth_uuidPattern = regexp.MustCompile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
 
-// Validate checks the field values on RegisterReq with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
+// Validate checks the field values on NewAuthReq with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *RegisterReq) Validate() error {
+func (m *NewAuthReq) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on RegisterReq with the rules defined in
+// ValidateAll checks the field values on NewAuthReq with the rules defined in
 // the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in RegisterReqMultiError, or
+// result is a list of violation errors wrapped in NewAuthReqMultiError, or
 // nil if none found.
-func (m *RegisterReq) ValidateAll() error {
+func (m *NewAuthReq) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *RegisterReq) validate(all bool) error {
+func (m *NewAuthReq) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -61,7 +61,7 @@ func (m *RegisterReq) validate(all bool) error {
 	var errors []error
 
 	if err := m._validateUuid(m.GetUserId()); err != nil {
-		err = RegisterReqValidationError{
+		err = NewAuthReqValidationError{
 			field:  "UserId",
 			reason: "value must be a valid UUID",
 			cause:  err,
@@ -73,7 +73,7 @@ func (m *RegisterReq) validate(all bool) error {
 	}
 
 	if l := utf8.RuneCountInString(m.GetPassword()); l < 5 || l > 20 {
-		err := RegisterReqValidationError{
+		err := NewAuthReqValidationError{
 			field:  "Password",
 			reason: "value length must be between 5 and 20 runes, inclusive",
 		}
@@ -84,13 +84,13 @@ func (m *RegisterReq) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return RegisterReqMultiError(errors)
+		return NewAuthReqMultiError(errors)
 	}
 
 	return nil
 }
 
-func (m *RegisterReq) _validateUuid(uuid string) error {
+func (m *NewAuthReq) _validateUuid(uuid string) error {
 	if matched := _auth_uuidPattern.MatchString(uuid); !matched {
 		return errors.New("invalid uuid format")
 	}
@@ -98,12 +98,12 @@ func (m *RegisterReq) _validateUuid(uuid string) error {
 	return nil
 }
 
-// RegisterReqMultiError is an error wrapping multiple validation errors
-// returned by RegisterReq.ValidateAll() if the designated constraints aren't met.
-type RegisterReqMultiError []error
+// NewAuthReqMultiError is an error wrapping multiple validation errors
+// returned by NewAuthReq.ValidateAll() if the designated constraints aren't met.
+type NewAuthReqMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m RegisterReqMultiError) Error() string {
+func (m NewAuthReqMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -112,11 +112,11 @@ func (m RegisterReqMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m RegisterReqMultiError) AllErrors() []error { return m }
+func (m NewAuthReqMultiError) AllErrors() []error { return m }
 
-// RegisterReqValidationError is the validation error returned by
-// RegisterReq.Validate if the designated constraints aren't met.
-type RegisterReqValidationError struct {
+// NewAuthReqValidationError is the validation error returned by
+// NewAuthReq.Validate if the designated constraints aren't met.
+type NewAuthReqValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -124,22 +124,22 @@ type RegisterReqValidationError struct {
 }
 
 // Field function returns field value.
-func (e RegisterReqValidationError) Field() string { return e.field }
+func (e NewAuthReqValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e RegisterReqValidationError) Reason() string { return e.reason }
+func (e NewAuthReqValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e RegisterReqValidationError) Cause() error { return e.cause }
+func (e NewAuthReqValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e RegisterReqValidationError) Key() bool { return e.key }
+func (e NewAuthReqValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e RegisterReqValidationError) ErrorName() string { return "RegisterReqValidationError" }
+func (e NewAuthReqValidationError) ErrorName() string { return "NewAuthReqValidationError" }
 
 // Error satisfies the builtin error interface
-func (e RegisterReqValidationError) Error() string {
+func (e NewAuthReqValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -151,14 +151,14 @@ func (e RegisterReqValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sRegisterReq.%s: %s%s",
+		"invalid %sNewAuthReq.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = RegisterReqValidationError{}
+var _ error = NewAuthReqValidationError{}
 
 var _ interface {
 	Field() string
@@ -166,24 +166,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = RegisterReqValidationError{}
+} = NewAuthReqValidationError{}
 
-// Validate checks the field values on RegisterResp with the rules defined in
+// Validate checks the field values on NewAuthResp with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
-func (m *RegisterResp) Validate() error {
+func (m *NewAuthResp) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on RegisterResp with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in RegisterRespMultiError, or
+// ValidateAll checks the field values on NewAuthResp with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in NewAuthRespMultiError, or
 // nil if none found.
-func (m *RegisterResp) ValidateAll() error {
+func (m *NewAuthResp) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *RegisterResp) validate(all bool) error {
+func (m *NewAuthResp) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -193,18 +193,18 @@ func (m *RegisterResp) validate(all bool) error {
 	// no validation rules for Id
 
 	if len(errors) > 0 {
-		return RegisterRespMultiError(errors)
+		return NewAuthRespMultiError(errors)
 	}
 
 	return nil
 }
 
-// RegisterRespMultiError is an error wrapping multiple validation errors
-// returned by RegisterResp.ValidateAll() if the designated constraints aren't met.
-type RegisterRespMultiError []error
+// NewAuthRespMultiError is an error wrapping multiple validation errors
+// returned by NewAuthResp.ValidateAll() if the designated constraints aren't met.
+type NewAuthRespMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m RegisterRespMultiError) Error() string {
+func (m NewAuthRespMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -213,11 +213,11 @@ func (m RegisterRespMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m RegisterRespMultiError) AllErrors() []error { return m }
+func (m NewAuthRespMultiError) AllErrors() []error { return m }
 
-// RegisterRespValidationError is the validation error returned by
-// RegisterResp.Validate if the designated constraints aren't met.
-type RegisterRespValidationError struct {
+// NewAuthRespValidationError is the validation error returned by
+// NewAuthResp.Validate if the designated constraints aren't met.
+type NewAuthRespValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -225,22 +225,22 @@ type RegisterRespValidationError struct {
 }
 
 // Field function returns field value.
-func (e RegisterRespValidationError) Field() string { return e.field }
+func (e NewAuthRespValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e RegisterRespValidationError) Reason() string { return e.reason }
+func (e NewAuthRespValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e RegisterRespValidationError) Cause() error { return e.cause }
+func (e NewAuthRespValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e RegisterRespValidationError) Key() bool { return e.key }
+func (e NewAuthRespValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e RegisterRespValidationError) ErrorName() string { return "RegisterRespValidationError" }
+func (e NewAuthRespValidationError) ErrorName() string { return "NewAuthRespValidationError" }
 
 // Error satisfies the builtin error interface
-func (e RegisterRespValidationError) Error() string {
+func (e NewAuthRespValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -252,14 +252,14 @@ func (e RegisterRespValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sRegisterResp.%s: %s%s",
+		"invalid %sNewAuthResp.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = RegisterRespValidationError{}
+var _ error = NewAuthRespValidationError{}
 
 var _ interface {
 	Field() string
@@ -267,7 +267,229 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = RegisterRespValidationError{}
+} = NewAuthRespValidationError{}
+
+// Validate checks the field values on DeleteAuthReq with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *DeleteAuthReq) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteAuthReq with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in DeleteAuthReqMultiError, or
+// nil if none found.
+func (m *DeleteAuthReq) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteAuthReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if err := m._validateUuid(m.GetUserId()); err != nil {
+		err = DeleteAuthReqValidationError{
+			field:  "UserId",
+			reason: "value must be a valid UUID",
+			cause:  err,
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return DeleteAuthReqMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *DeleteAuthReq) _validateUuid(uuid string) error {
+	if matched := _auth_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// DeleteAuthReqMultiError is an error wrapping multiple validation errors
+// returned by DeleteAuthReq.ValidateAll() if the designated constraints
+// aren't met.
+type DeleteAuthReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteAuthReqMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteAuthReqMultiError) AllErrors() []error { return m }
+
+// DeleteAuthReqValidationError is the validation error returned by
+// DeleteAuthReq.Validate if the designated constraints aren't met.
+type DeleteAuthReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteAuthReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteAuthReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteAuthReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteAuthReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteAuthReqValidationError) ErrorName() string { return "DeleteAuthReqValidationError" }
+
+// Error satisfies the builtin error interface
+func (e DeleteAuthReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteAuthReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteAuthReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteAuthReqValidationError{}
+
+// Validate checks the field values on DeleteAuthResp with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *DeleteAuthResp) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteAuthResp with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in DeleteAuthRespMultiError,
+// or nil if none found.
+func (m *DeleteAuthResp) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteAuthResp) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return DeleteAuthRespMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteAuthRespMultiError is an error wrapping multiple validation errors
+// returned by DeleteAuthResp.ValidateAll() if the designated constraints
+// aren't met.
+type DeleteAuthRespMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteAuthRespMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteAuthRespMultiError) AllErrors() []error { return m }
+
+// DeleteAuthRespValidationError is the validation error returned by
+// DeleteAuthResp.Validate if the designated constraints aren't met.
+type DeleteAuthRespValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteAuthRespValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteAuthRespValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteAuthRespValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteAuthRespValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteAuthRespValidationError) ErrorName() string { return "DeleteAuthRespValidationError" }
+
+// Error satisfies the builtin error interface
+func (e DeleteAuthRespValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteAuthResp.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteAuthRespValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteAuthRespValidationError{}
 
 // Validate checks the field values on LoginReq with the rules defined in the
 // proto definition for this message. If any rules are violated, the first

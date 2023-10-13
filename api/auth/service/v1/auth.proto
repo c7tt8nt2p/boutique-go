@@ -8,17 +8,26 @@ import "google/protobuf/empty.proto";
 import "validate/validate.proto";
 
 service Auth {
-  rpc Register (RegisterReq) returns (RegisterResp) {}
+  rpc NewAuth (NewAuthReq) returns (NewAuthResp) {}
+  rpc DeleteAuth (DeleteAuthReq) returns (DeleteAuthResp) {}
   rpc Login (LoginReq) returns (LoginResp) {}
   rpc Validate (google.protobuf.Empty) returns (ValidateResp) {}
 }
 
-message RegisterReq {
+message NewAuthReq {
   string userId = 1 [(validate.rules).string.uuid = true];
   string password = 2 [(validate.rules).string = {min_len: 5, max_len: 20}];
 }
 
-message RegisterResp {
+message NewAuthResp {
+  string id = 1;
+}
+
+message DeleteAuthReq {
+  string userId = 1 [(validate.rules).string.uuid = true];
+}
+
+message DeleteAuthResp {
   string id = 1;
 }
 

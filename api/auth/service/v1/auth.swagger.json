@@ -45,6 +45,14 @@
         }
       }
     },
+    "v1DeleteAuthResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
     "v1LoginResp": {
       "type": "object",
       "properties": {
@@ -53,7 +61,7 @@
         }
       }
     },
-    "v1RegisterResp": {
+    "v1NewAuthResp": {
       "type": "object",
       "properties": {
         "id": {

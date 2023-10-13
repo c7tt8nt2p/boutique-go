@@ -15,6 +15,7 @@ import (
 )
 
 var whitelist = map[string]struct{}{
+	v1.User_Register_FullMethodName:     {},
 	v1.User_GetIdByEmail_FullMethodName: {},
 }
 

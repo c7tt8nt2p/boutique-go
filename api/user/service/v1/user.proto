@@ -10,7 +10,7 @@ import "validate/validate.proto";
 
 service User {
   rpc GetMe (google.protobuf.Empty) returns (GetMeResp) {}
-  rpc CreateUser (CreateUserReq) returns (CreateUserResp) {}
+  rpc Register (RegisterReq) returns (RegisterResp) {}
   rpc GetUserById (GetUserByIdReq) returns (GetUserByIdResp) {}
   rpc GetIdByEmail (GetIdByEmailReq) returns (GetIdByEmailResp) {}
 }
@@ -21,13 +21,13 @@ message GetMeResp {
   string email = 3;
 }
 
-message CreateUserReq {
+message RegisterReq {
   string name = 1 [(validate.rules).string.min_len = 1];
   string email = 2 [(validate.rules).string.email = true];
   string password = 3 [(validate.rules).string = {min_len: 5, max_len: 20}];
 }
 
-message CreateUserResp {
+message RegisterResp {
   string id = 1;
   string name = 2;
   string email = 3;

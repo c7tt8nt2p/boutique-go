@@ -33,10 +33,10 @@ func (s *UserService) GetMe(ctx context.Context, _ *emptypb.Empty) (*pb.GetMeRes
 
 }
 
-func (s *UserService) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*pb.CreateUserResp, error) {
+func (s *UserService) Register(ctx context.Context, req *pb.RegisterReq) (*pb.RegisterResp, error) {
 	u := s.uc.RegisterNewUser(ctx, req)
 
-	return &pb.CreateUserResp{
+	return &pb.RegisterResp{
 		Id:        u.Id.String(),
 		Name:      u.Name,
 		Email:     u.Email,

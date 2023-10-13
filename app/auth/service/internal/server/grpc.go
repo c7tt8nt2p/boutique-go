@@ -16,8 +16,9 @@ import (
 )
 
 var whitelist = map[string]struct{}{
-	v1.Auth_Register_FullMethodName: {},
-	v1.Auth_Login_FullMethodName:    {},
+	v1.Auth_NewAuth_FullMethodName:    {},
+	v1.Auth_DeleteAuth_FullMethodName: {},
+	v1.Auth_Login_FullMethodName:      {},
 }
 
 func NewGRPCServer(serverConf *conf.Server, appConf *conf.App, logger log.Logger, s *service.AuthService) *grpc.Server {

@@ -55,3 +55,14 @@ func (r *authRepo) FindPasswordHashByUserId(ctx context.Context, client *ent.Cli
 
 	return passwordHash
 }
+func (r *authRepo) DeleteByUserId(ctx context.Context, client *ent.Client, userId uuid.UUID) uuid.UUID {
+	_, err := client.Auth.
+		Delete().
+		Where(auth.UserID(userId)).
+		Exec(ctx)
+	if err != nil {
+		panic(errors.AppInternalErr(err.Error()))
+	}
+
+	return userId
+}

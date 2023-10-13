@@ -14,7 +14,9 @@ import (
 	"github.com/kx-boutique/pkg/middleware"
 )
 
-var whitelist = map[string]struct{}{}
+var whitelist = map[string]struct{}{
+	v1.Cart_NewCart_FullMethodName: {},
+}
 
 func NewGRPCServer(c *conf.Server, logger log.Logger, authClient authv1.AuthClient, s *service.CartService) *grpc.Server {
 	var opts = []grpc.ServerOption{
