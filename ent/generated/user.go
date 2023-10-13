@@ -40,9 +40,11 @@ type UserEdges struct {
 	Cart *Cart `json:"cart,omitempty"`
 	// Auth holds the value of the auth edge.
 	Auth *Auth `json:"auth,omitempty"`
+	// Checkout holds the value of the checkout edge.
+	Checkout []*Checkout `json:"checkout,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // CartOrErr returns the Cart value or an error if the edge
@@ -69,6 +71,15 @@ func (e UserEdges) AuthOrErr() (*Auth, error) {
 		return e.Auth, nil
 	}
 	return nil, &NotLoadedError{edge: "auth"}
+}
+
+// CheckoutOrErr returns the Checkout value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CheckoutOrErr() ([]*Checkout, error) {
+	if e.loadedTypes[2] {
+		return e.Checkout, nil
+	}
+	return nil, &NotLoadedError{edge: "checkout"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -148,6 +159,11 @@ func (u *User) QueryCart() *CartQuery {
 // QueryAuth queries the "auth" edge of the User entity.
 func (u *User) QueryAuth() *AuthQuery {
 	return NewUserClient(u.config).QueryAuth(u)
+}
+
+// QueryCheckout queries the "checkout" edge of the User entity.
+func (u *User) QueryCheckout() *CheckoutQuery {
+	return NewUserClient(u.config).QueryCheckout(u)
 }
 
 // Update returns a builder for updating this User.

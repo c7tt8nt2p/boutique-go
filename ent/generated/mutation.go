@@ -15,6 +15,8 @@ import (
 	"github.com/kx-boutique/ent/generated/auth"
 	"github.com/kx-boutique/ent/generated/cart"
 	"github.com/kx-boutique/ent/generated/cartitem"
+	"github.com/kx-boutique/ent/generated/checkout"
+	"github.com/kx-boutique/ent/generated/checkoutitem"
 	"github.com/kx-boutique/ent/generated/predicate"
 	"github.com/kx-boutique/ent/generated/product"
 	"github.com/kx-boutique/ent/generated/user"
@@ -29,11 +31,13 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAuth     = "Auth"
-	TypeCart     = "Cart"
-	TypeCartItem = "CartItem"
-	TypeProduct  = "Product"
-	TypeUser     = "User"
+	TypeAuth         = "Auth"
+	TypeCart         = "Cart"
+	TypeCartItem     = "CartItem"
+	TypeCheckout     = "Checkout"
+	TypeCheckoutItem = "CheckoutItem"
+	TypeProduct      = "Product"
+	TypeUser         = "User"
 )
 
 // AuthMutation represents an operation that mutates the Auth nodes in the graph.
@@ -984,6 +988,8 @@ type CartItemMutation struct {
 	created_at              *time.Time
 	updated_at              *time.Time
 	clearedFields           map[string]struct{}
+	checkout_item           *uuid.UUID
+	clearedcheckout_item    bool
 	cart_id_owner           *uuid.UUID
 	clearedcart_id_owner    bool
 	product_id_owner        *uuid.UUID
@@ -1297,6 +1303,45 @@ func (m *CartItemMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetCheckoutItemID sets the "checkout_item" edge to the CheckoutItem entity by id.
+func (m *CartItemMutation) SetCheckoutItemID(id uuid.UUID) {
+	m.checkout_item = &id
+}
+
+// ClearCheckoutItem clears the "checkout_item" edge to the CheckoutItem entity.
+func (m *CartItemMutation) ClearCheckoutItem() {
+	m.clearedcheckout_item = true
+}
+
+// CheckoutItemCleared reports if the "checkout_item" edge to the CheckoutItem entity was cleared.
+func (m *CartItemMutation) CheckoutItemCleared() bool {
+	return m.clearedcheckout_item
+}
+
+// CheckoutItemID returns the "checkout_item" edge ID in the mutation.
+func (m *CartItemMutation) CheckoutItemID() (id uuid.UUID, exists bool) {
+	if m.checkout_item != nil {
+		return *m.checkout_item, true
+	}
+	return
+}
+
+// CheckoutItemIDs returns the "checkout_item" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CheckoutItemID instead. It exists only for internal usage by the builders.
+func (m *CartItemMutation) CheckoutItemIDs() (ids []uuid.UUID) {
+	if id := m.checkout_item; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCheckoutItem resets all changes to the "checkout_item" edge.
+func (m *CartItemMutation) ResetCheckoutItem() {
+	m.checkout_item = nil
+	m.clearedcheckout_item = false
+}
+
 // SetCartIDOwnerID sets the "cart_id_owner" edge to the Cart entity by id.
 func (m *CartItemMutation) SetCartIDOwnerID(id uuid.UUID) {
 	m.cart_id_owner = &id
@@ -1593,7 +1638,10 @@ func (m *CartItemMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CartItemMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.checkout_item != nil {
+		edges = append(edges, cartitem.EdgeCheckoutItem)
+	}
 	if m.cart_id_owner != nil {
 		edges = append(edges, cartitem.EdgeCartIDOwner)
 	}
@@ -1607,6 +1655,10 @@ func (m *CartItemMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *CartItemMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case cartitem.EdgeCheckoutItem:
+		if id := m.checkout_item; id != nil {
+			return []ent.Value{*id}
+		}
 	case cartitem.EdgeCartIDOwner:
 		if id := m.cart_id_owner; id != nil {
 			return []ent.Value{*id}
@@ -1621,7 +1673,7 @@ func (m *CartItemMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CartItemMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -1633,7 +1685,10 @@ func (m *CartItemMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CartItemMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.clearedcheckout_item {
+		edges = append(edges, cartitem.EdgeCheckoutItem)
+	}
 	if m.clearedcart_id_owner {
 		edges = append(edges, cartitem.EdgeCartIDOwner)
 	}
@@ -1647,6 +1702,8 @@ func (m *CartItemMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *CartItemMutation) EdgeCleared(name string) bool {
 	switch name {
+	case cartitem.EdgeCheckoutItem:
+		return m.clearedcheckout_item
 	case cartitem.EdgeCartIDOwner:
 		return m.clearedcart_id_owner
 	case cartitem.EdgeProductIDOwner:
@@ -1659,6 +1716,9 @@ func (m *CartItemMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *CartItemMutation) ClearEdge(name string) error {
 	switch name {
+	case cartitem.EdgeCheckoutItem:
+		m.ClearCheckoutItem()
+		return nil
 	case cartitem.EdgeCartIDOwner:
 		m.ClearCartIDOwner()
 		return nil
@@ -1673,6 +1733,9 @@ func (m *CartItemMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CartItemMutation) ResetEdge(name string) error {
 	switch name {
+	case cartitem.EdgeCheckoutItem:
+		m.ResetCheckoutItem()
+		return nil
 	case cartitem.EdgeCartIDOwner:
 		m.ResetCartIDOwner()
 		return nil
@@ -1681,6 +1744,1146 @@ func (m *CartItemMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown CartItem edge %s", name)
+}
+
+// CheckoutMutation represents an operation that mutates the Checkout nodes in the graph.
+type CheckoutMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *uuid.UUID
+	total_price          *float64
+	addtotal_price       *float64
+	created_at           *time.Time
+	clearedFields        map[string]struct{}
+	checkout_item        map[uuid.UUID]struct{}
+	removedcheckout_item map[uuid.UUID]struct{}
+	clearedcheckout_item bool
+	user_id_owner        *uuid.UUID
+	cleareduser_id_owner bool
+	done                 bool
+	oldValue             func(context.Context) (*Checkout, error)
+	predicates           []predicate.Checkout
+}
+
+var _ ent.Mutation = (*CheckoutMutation)(nil)
+
+// checkoutOption allows management of the mutation configuration using functional options.
+type checkoutOption func(*CheckoutMutation)
+
+// newCheckoutMutation creates new mutation for the Checkout entity.
+func newCheckoutMutation(c config, op Op, opts ...checkoutOption) *CheckoutMutation {
+	m := &CheckoutMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCheckout,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCheckoutID sets the ID field of the mutation.
+func withCheckoutID(id uuid.UUID) checkoutOption {
+	return func(m *CheckoutMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Checkout
+		)
+		m.oldValue = func(ctx context.Context) (*Checkout, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Checkout.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCheckout sets the old Checkout of the mutation.
+func withCheckout(node *Checkout) checkoutOption {
+	return func(m *CheckoutMutation) {
+		m.oldValue = func(context.Context) (*Checkout, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CheckoutMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CheckoutMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("generated: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Checkout entities.
+func (m *CheckoutMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CheckoutMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CheckoutMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Checkout.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetUserID sets the "user_id" field.
+func (m *CheckoutMutation) SetUserID(u uuid.UUID) {
+	m.user_id_owner = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *CheckoutMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user_id_owner
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Checkout entity.
+// If the Checkout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckoutMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *CheckoutMutation) ResetUserID() {
+	m.user_id_owner = nil
+}
+
+// SetTotalPrice sets the "total_price" field.
+func (m *CheckoutMutation) SetTotalPrice(f float64) {
+	m.total_price = &f
+	m.addtotal_price = nil
+}
+
+// TotalPrice returns the value of the "total_price" field in the mutation.
+func (m *CheckoutMutation) TotalPrice() (r float64, exists bool) {
+	v := m.total_price
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalPrice returns the old "total_price" field's value of the Checkout entity.
+// If the Checkout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckoutMutation) OldTotalPrice(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalPrice is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalPrice requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalPrice: %w", err)
+	}
+	return oldValue.TotalPrice, nil
+}
+
+// AddTotalPrice adds f to the "total_price" field.
+func (m *CheckoutMutation) AddTotalPrice(f float64) {
+	if m.addtotal_price != nil {
+		*m.addtotal_price += f
+	} else {
+		m.addtotal_price = &f
+	}
+}
+
+// AddedTotalPrice returns the value that was added to the "total_price" field in this mutation.
+func (m *CheckoutMutation) AddedTotalPrice() (r float64, exists bool) {
+	v := m.addtotal_price
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalPrice resets all changes to the "total_price" field.
+func (m *CheckoutMutation) ResetTotalPrice() {
+	m.total_price = nil
+	m.addtotal_price = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CheckoutMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CheckoutMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Checkout entity.
+// If the Checkout object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckoutMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CheckoutMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// AddCheckoutItemIDs adds the "checkout_item" edge to the CheckoutItem entity by ids.
+func (m *CheckoutMutation) AddCheckoutItemIDs(ids ...uuid.UUID) {
+	if m.checkout_item == nil {
+		m.checkout_item = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.checkout_item[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCheckoutItem clears the "checkout_item" edge to the CheckoutItem entity.
+func (m *CheckoutMutation) ClearCheckoutItem() {
+	m.clearedcheckout_item = true
+}
+
+// CheckoutItemCleared reports if the "checkout_item" edge to the CheckoutItem entity was cleared.
+func (m *CheckoutMutation) CheckoutItemCleared() bool {
+	return m.clearedcheckout_item
+}
+
+// RemoveCheckoutItemIDs removes the "checkout_item" edge to the CheckoutItem entity by IDs.
+func (m *CheckoutMutation) RemoveCheckoutItemIDs(ids ...uuid.UUID) {
+	if m.removedcheckout_item == nil {
+		m.removedcheckout_item = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.checkout_item, ids[i])
+		m.removedcheckout_item[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCheckoutItem returns the removed IDs of the "checkout_item" edge to the CheckoutItem entity.
+func (m *CheckoutMutation) RemovedCheckoutItemIDs() (ids []uuid.UUID) {
+	for id := range m.removedcheckout_item {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CheckoutItemIDs returns the "checkout_item" edge IDs in the mutation.
+func (m *CheckoutMutation) CheckoutItemIDs() (ids []uuid.UUID) {
+	for id := range m.checkout_item {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCheckoutItem resets all changes to the "checkout_item" edge.
+func (m *CheckoutMutation) ResetCheckoutItem() {
+	m.checkout_item = nil
+	m.clearedcheckout_item = false
+	m.removedcheckout_item = nil
+}
+
+// SetUserIDOwnerID sets the "user_id_owner" edge to the User entity by id.
+func (m *CheckoutMutation) SetUserIDOwnerID(id uuid.UUID) {
+	m.user_id_owner = &id
+}
+
+// ClearUserIDOwner clears the "user_id_owner" edge to the User entity.
+func (m *CheckoutMutation) ClearUserIDOwner() {
+	m.cleareduser_id_owner = true
+	m.clearedFields[checkout.FieldUserID] = struct{}{}
+}
+
+// UserIDOwnerCleared reports if the "user_id_owner" edge to the User entity was cleared.
+func (m *CheckoutMutation) UserIDOwnerCleared() bool {
+	return m.cleareduser_id_owner
+}
+
+// UserIDOwnerID returns the "user_id_owner" edge ID in the mutation.
+func (m *CheckoutMutation) UserIDOwnerID() (id uuid.UUID, exists bool) {
+	if m.user_id_owner != nil {
+		return *m.user_id_owner, true
+	}
+	return
+}
+
+// UserIDOwnerIDs returns the "user_id_owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserIDOwnerID instead. It exists only for internal usage by the builders.
+func (m *CheckoutMutation) UserIDOwnerIDs() (ids []uuid.UUID) {
+	if id := m.user_id_owner; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUserIDOwner resets all changes to the "user_id_owner" edge.
+func (m *CheckoutMutation) ResetUserIDOwner() {
+	m.user_id_owner = nil
+	m.cleareduser_id_owner = false
+}
+
+// Where appends a list predicates to the CheckoutMutation builder.
+func (m *CheckoutMutation) Where(ps ...predicate.Checkout) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CheckoutMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CheckoutMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Checkout, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CheckoutMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CheckoutMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Checkout).
+func (m *CheckoutMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CheckoutMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.user_id_owner != nil {
+		fields = append(fields, checkout.FieldUserID)
+	}
+	if m.total_price != nil {
+		fields = append(fields, checkout.FieldTotalPrice)
+	}
+	if m.created_at != nil {
+		fields = append(fields, checkout.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CheckoutMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case checkout.FieldUserID:
+		return m.UserID()
+	case checkout.FieldTotalPrice:
+		return m.TotalPrice()
+	case checkout.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CheckoutMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case checkout.FieldUserID:
+		return m.OldUserID(ctx)
+	case checkout.FieldTotalPrice:
+		return m.OldTotalPrice(ctx)
+	case checkout.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Checkout field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CheckoutMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case checkout.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case checkout.FieldTotalPrice:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalPrice(v)
+		return nil
+	case checkout.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Checkout field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CheckoutMutation) AddedFields() []string {
+	var fields []string
+	if m.addtotal_price != nil {
+		fields = append(fields, checkout.FieldTotalPrice)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CheckoutMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case checkout.FieldTotalPrice:
+		return m.AddedTotalPrice()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CheckoutMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case checkout.FieldTotalPrice:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalPrice(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Checkout numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CheckoutMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CheckoutMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CheckoutMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Checkout nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CheckoutMutation) ResetField(name string) error {
+	switch name {
+	case checkout.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case checkout.FieldTotalPrice:
+		m.ResetTotalPrice()
+		return nil
+	case checkout.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Checkout field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CheckoutMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.checkout_item != nil {
+		edges = append(edges, checkout.EdgeCheckoutItem)
+	}
+	if m.user_id_owner != nil {
+		edges = append(edges, checkout.EdgeUserIDOwner)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CheckoutMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case checkout.EdgeCheckoutItem:
+		ids := make([]ent.Value, 0, len(m.checkout_item))
+		for id := range m.checkout_item {
+			ids = append(ids, id)
+		}
+		return ids
+	case checkout.EdgeUserIDOwner:
+		if id := m.user_id_owner; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CheckoutMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedcheckout_item != nil {
+		edges = append(edges, checkout.EdgeCheckoutItem)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CheckoutMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case checkout.EdgeCheckoutItem:
+		ids := make([]ent.Value, 0, len(m.removedcheckout_item))
+		for id := range m.removedcheckout_item {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CheckoutMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedcheckout_item {
+		edges = append(edges, checkout.EdgeCheckoutItem)
+	}
+	if m.cleareduser_id_owner {
+		edges = append(edges, checkout.EdgeUserIDOwner)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CheckoutMutation) EdgeCleared(name string) bool {
+	switch name {
+	case checkout.EdgeCheckoutItem:
+		return m.clearedcheckout_item
+	case checkout.EdgeUserIDOwner:
+		return m.cleareduser_id_owner
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CheckoutMutation) ClearEdge(name string) error {
+	switch name {
+	case checkout.EdgeUserIDOwner:
+		m.ClearUserIDOwner()
+		return nil
+	}
+	return fmt.Errorf("unknown Checkout unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CheckoutMutation) ResetEdge(name string) error {
+	switch name {
+	case checkout.EdgeCheckoutItem:
+		m.ResetCheckoutItem()
+		return nil
+	case checkout.EdgeUserIDOwner:
+		m.ResetUserIDOwner()
+		return nil
+	}
+	return fmt.Errorf("unknown Checkout edge %s", name)
+}
+
+// CheckoutItemMutation represents an operation that mutates the CheckoutItem nodes in the graph.
+type CheckoutItemMutation struct {
+	config
+	op                        Op
+	typ                       string
+	id                        *uuid.UUID
+	clearedFields             map[string]struct{}
+	checkout_id_owner         *uuid.UUID
+	clearedcheckout_id_owner  bool
+	cart_item_id_owner        *uuid.UUID
+	clearedcart_item_id_owner bool
+	done                      bool
+	oldValue                  func(context.Context) (*CheckoutItem, error)
+	predicates                []predicate.CheckoutItem
+}
+
+var _ ent.Mutation = (*CheckoutItemMutation)(nil)
+
+// checkoutitemOption allows management of the mutation configuration using functional options.
+type checkoutitemOption func(*CheckoutItemMutation)
+
+// newCheckoutItemMutation creates new mutation for the CheckoutItem entity.
+func newCheckoutItemMutation(c config, op Op, opts ...checkoutitemOption) *CheckoutItemMutation {
+	m := &CheckoutItemMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCheckoutItem,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCheckoutItemID sets the ID field of the mutation.
+func withCheckoutItemID(id uuid.UUID) checkoutitemOption {
+	return func(m *CheckoutItemMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CheckoutItem
+		)
+		m.oldValue = func(ctx context.Context) (*CheckoutItem, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CheckoutItem.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCheckoutItem sets the old CheckoutItem of the mutation.
+func withCheckoutItem(node *CheckoutItem) checkoutitemOption {
+	return func(m *CheckoutItemMutation) {
+		m.oldValue = func(context.Context) (*CheckoutItem, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CheckoutItemMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CheckoutItemMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("generated: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of CheckoutItem entities.
+func (m *CheckoutItemMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CheckoutItemMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CheckoutItemMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CheckoutItem.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCheckoutID sets the "checkout_id" field.
+func (m *CheckoutItemMutation) SetCheckoutID(u uuid.UUID) {
+	m.checkout_id_owner = &u
+}
+
+// CheckoutID returns the value of the "checkout_id" field in the mutation.
+func (m *CheckoutItemMutation) CheckoutID() (r uuid.UUID, exists bool) {
+	v := m.checkout_id_owner
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckoutID returns the old "checkout_id" field's value of the CheckoutItem entity.
+// If the CheckoutItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckoutItemMutation) OldCheckoutID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckoutID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckoutID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckoutID: %w", err)
+	}
+	return oldValue.CheckoutID, nil
+}
+
+// ResetCheckoutID resets all changes to the "checkout_id" field.
+func (m *CheckoutItemMutation) ResetCheckoutID() {
+	m.checkout_id_owner = nil
+}
+
+// SetCartItemID sets the "cart_item_id" field.
+func (m *CheckoutItemMutation) SetCartItemID(u uuid.UUID) {
+	m.cart_item_id_owner = &u
+}
+
+// CartItemID returns the value of the "cart_item_id" field in the mutation.
+func (m *CheckoutItemMutation) CartItemID() (r uuid.UUID, exists bool) {
+	v := m.cart_item_id_owner
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCartItemID returns the old "cart_item_id" field's value of the CheckoutItem entity.
+// If the CheckoutItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CheckoutItemMutation) OldCartItemID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCartItemID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCartItemID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCartItemID: %w", err)
+	}
+	return oldValue.CartItemID, nil
+}
+
+// ResetCartItemID resets all changes to the "cart_item_id" field.
+func (m *CheckoutItemMutation) ResetCartItemID() {
+	m.cart_item_id_owner = nil
+}
+
+// SetCheckoutIDOwnerID sets the "checkout_id_owner" edge to the Checkout entity by id.
+func (m *CheckoutItemMutation) SetCheckoutIDOwnerID(id uuid.UUID) {
+	m.checkout_id_owner = &id
+}
+
+// ClearCheckoutIDOwner clears the "checkout_id_owner" edge to the Checkout entity.
+func (m *CheckoutItemMutation) ClearCheckoutIDOwner() {
+	m.clearedcheckout_id_owner = true
+	m.clearedFields[checkoutitem.FieldCheckoutID] = struct{}{}
+}
+
+// CheckoutIDOwnerCleared reports if the "checkout_id_owner" edge to the Checkout entity was cleared.
+func (m *CheckoutItemMutation) CheckoutIDOwnerCleared() bool {
+	return m.clearedcheckout_id_owner
+}
+
+// CheckoutIDOwnerID returns the "checkout_id_owner" edge ID in the mutation.
+func (m *CheckoutItemMutation) CheckoutIDOwnerID() (id uuid.UUID, exists bool) {
+	if m.checkout_id_owner != nil {
+		return *m.checkout_id_owner, true
+	}
+	return
+}
+
+// CheckoutIDOwnerIDs returns the "checkout_id_owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CheckoutIDOwnerID instead. It exists only for internal usage by the builders.
+func (m *CheckoutItemMutation) CheckoutIDOwnerIDs() (ids []uuid.UUID) {
+	if id := m.checkout_id_owner; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCheckoutIDOwner resets all changes to the "checkout_id_owner" edge.
+func (m *CheckoutItemMutation) ResetCheckoutIDOwner() {
+	m.checkout_id_owner = nil
+	m.clearedcheckout_id_owner = false
+}
+
+// SetCartItemIDOwnerID sets the "cart_item_id_owner" edge to the CartItem entity by id.
+func (m *CheckoutItemMutation) SetCartItemIDOwnerID(id uuid.UUID) {
+	m.cart_item_id_owner = &id
+}
+
+// ClearCartItemIDOwner clears the "cart_item_id_owner" edge to the CartItem entity.
+func (m *CheckoutItemMutation) ClearCartItemIDOwner() {
+	m.clearedcart_item_id_owner = true
+	m.clearedFields[checkoutitem.FieldCartItemID] = struct{}{}
+}
+
+// CartItemIDOwnerCleared reports if the "cart_item_id_owner" edge to the CartItem entity was cleared.
+func (m *CheckoutItemMutation) CartItemIDOwnerCleared() bool {
+	return m.clearedcart_item_id_owner
+}
+
+// CartItemIDOwnerID returns the "cart_item_id_owner" edge ID in the mutation.
+func (m *CheckoutItemMutation) CartItemIDOwnerID() (id uuid.UUID, exists bool) {
+	if m.cart_item_id_owner != nil {
+		return *m.cart_item_id_owner, true
+	}
+	return
+}
+
+// CartItemIDOwnerIDs returns the "cart_item_id_owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CartItemIDOwnerID instead. It exists only for internal usage by the builders.
+func (m *CheckoutItemMutation) CartItemIDOwnerIDs() (ids []uuid.UUID) {
+	if id := m.cart_item_id_owner; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCartItemIDOwner resets all changes to the "cart_item_id_owner" edge.
+func (m *CheckoutItemMutation) ResetCartItemIDOwner() {
+	m.cart_item_id_owner = nil
+	m.clearedcart_item_id_owner = false
+}
+
+// Where appends a list predicates to the CheckoutItemMutation builder.
+func (m *CheckoutItemMutation) Where(ps ...predicate.CheckoutItem) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CheckoutItemMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CheckoutItemMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CheckoutItem, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CheckoutItemMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CheckoutItemMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CheckoutItem).
+func (m *CheckoutItemMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CheckoutItemMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.checkout_id_owner != nil {
+		fields = append(fields, checkoutitem.FieldCheckoutID)
+	}
+	if m.cart_item_id_owner != nil {
+		fields = append(fields, checkoutitem.FieldCartItemID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CheckoutItemMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case checkoutitem.FieldCheckoutID:
+		return m.CheckoutID()
+	case checkoutitem.FieldCartItemID:
+		return m.CartItemID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CheckoutItemMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case checkoutitem.FieldCheckoutID:
+		return m.OldCheckoutID(ctx)
+	case checkoutitem.FieldCartItemID:
+		return m.OldCartItemID(ctx)
+	}
+	return nil, fmt.Errorf("unknown CheckoutItem field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CheckoutItemMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case checkoutitem.FieldCheckoutID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckoutID(v)
+		return nil
+	case checkoutitem.FieldCartItemID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCartItemID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CheckoutItem field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CheckoutItemMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CheckoutItemMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CheckoutItemMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown CheckoutItem numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CheckoutItemMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CheckoutItemMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CheckoutItemMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown CheckoutItem nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CheckoutItemMutation) ResetField(name string) error {
+	switch name {
+	case checkoutitem.FieldCheckoutID:
+		m.ResetCheckoutID()
+		return nil
+	case checkoutitem.FieldCartItemID:
+		m.ResetCartItemID()
+		return nil
+	}
+	return fmt.Errorf("unknown CheckoutItem field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CheckoutItemMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.checkout_id_owner != nil {
+		edges = append(edges, checkoutitem.EdgeCheckoutIDOwner)
+	}
+	if m.cart_item_id_owner != nil {
+		edges = append(edges, checkoutitem.EdgeCartItemIDOwner)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CheckoutItemMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case checkoutitem.EdgeCheckoutIDOwner:
+		if id := m.checkout_id_owner; id != nil {
+			return []ent.Value{*id}
+		}
+	case checkoutitem.EdgeCartItemIDOwner:
+		if id := m.cart_item_id_owner; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CheckoutItemMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CheckoutItemMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CheckoutItemMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedcheckout_id_owner {
+		edges = append(edges, checkoutitem.EdgeCheckoutIDOwner)
+	}
+	if m.clearedcart_item_id_owner {
+		edges = append(edges, checkoutitem.EdgeCartItemIDOwner)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CheckoutItemMutation) EdgeCleared(name string) bool {
+	switch name {
+	case checkoutitem.EdgeCheckoutIDOwner:
+		return m.clearedcheckout_id_owner
+	case checkoutitem.EdgeCartItemIDOwner:
+		return m.clearedcart_item_id_owner
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CheckoutItemMutation) ClearEdge(name string) error {
+	switch name {
+	case checkoutitem.EdgeCheckoutIDOwner:
+		m.ClearCheckoutIDOwner()
+		return nil
+	case checkoutitem.EdgeCartItemIDOwner:
+		m.ClearCartItemIDOwner()
+		return nil
+	}
+	return fmt.Errorf("unknown CheckoutItem unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CheckoutItemMutation) ResetEdge(name string) error {
+	switch name {
+	case checkoutitem.EdgeCheckoutIDOwner:
+		m.ResetCheckoutIDOwner()
+		return nil
+	case checkoutitem.EdgeCartItemIDOwner:
+		m.ResetCartItemIDOwner()
+		return nil
+	}
+	return fmt.Errorf("unknown CheckoutItem edge %s", name)
 }
 
 // ProductMutation represents an operation that mutates the Product nodes in the graph.
@@ -2450,21 +3653,24 @@ func (m *ProductMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	name          *string
-	email         *string
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	cart          *uuid.UUID
-	clearedcart   bool
-	auth          *uuid.UUID
-	clearedauth   bool
-	done          bool
-	oldValue      func(context.Context) (*User, error)
-	predicates    []predicate.User
+	op              Op
+	typ             string
+	id              *uuid.UUID
+	name            *string
+	email           *string
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	cart            *uuid.UUID
+	clearedcart     bool
+	auth            *uuid.UUID
+	clearedauth     bool
+	checkout        map[uuid.UUID]struct{}
+	removedcheckout map[uuid.UUID]struct{}
+	clearedcheckout bool
+	done            bool
+	oldValue        func(context.Context) (*User, error)
+	predicates      []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -2793,6 +3999,60 @@ func (m *UserMutation) ResetAuth() {
 	m.clearedauth = false
 }
 
+// AddCheckoutIDs adds the "checkout" edge to the Checkout entity by ids.
+func (m *UserMutation) AddCheckoutIDs(ids ...uuid.UUID) {
+	if m.checkout == nil {
+		m.checkout = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.checkout[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCheckout clears the "checkout" edge to the Checkout entity.
+func (m *UserMutation) ClearCheckout() {
+	m.clearedcheckout = true
+}
+
+// CheckoutCleared reports if the "checkout" edge to the Checkout entity was cleared.
+func (m *UserMutation) CheckoutCleared() bool {
+	return m.clearedcheckout
+}
+
+// RemoveCheckoutIDs removes the "checkout" edge to the Checkout entity by IDs.
+func (m *UserMutation) RemoveCheckoutIDs(ids ...uuid.UUID) {
+	if m.removedcheckout == nil {
+		m.removedcheckout = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.checkout, ids[i])
+		m.removedcheckout[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCheckout returns the removed IDs of the "checkout" edge to the Checkout entity.
+func (m *UserMutation) RemovedCheckoutIDs() (ids []uuid.UUID) {
+	for id := range m.removedcheckout {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CheckoutIDs returns the "checkout" edge IDs in the mutation.
+func (m *UserMutation) CheckoutIDs() (ids []uuid.UUID) {
+	for id := range m.checkout {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCheckout resets all changes to the "checkout" edge.
+func (m *UserMutation) ResetCheckout() {
+	m.checkout = nil
+	m.clearedcheckout = false
+	m.removedcheckout = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -2977,12 +4237,15 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.cart != nil {
 		edges = append(edges, user.EdgeCart)
 	}
 	if m.auth != nil {
 		edges = append(edges, user.EdgeAuth)
+	}
+	if m.checkout != nil {
+		edges = append(edges, user.EdgeCheckout)
 	}
 	return edges
 }
@@ -2999,30 +4262,50 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 		if id := m.auth; id != nil {
 			return []ent.Value{*id}
 		}
+	case user.EdgeCheckout:
+		ids := make([]ent.Value, 0, len(m.checkout))
+		for id := range m.checkout {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.removedcheckout != nil {
+		edges = append(edges, user.EdgeCheckout)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *UserMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case user.EdgeCheckout:
+		ids := make([]ent.Value, 0, len(m.removedcheckout))
+		for id := range m.removedcheckout {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedcart {
 		edges = append(edges, user.EdgeCart)
 	}
 	if m.clearedauth {
 		edges = append(edges, user.EdgeAuth)
+	}
+	if m.clearedcheckout {
+		edges = append(edges, user.EdgeCheckout)
 	}
 	return edges
 }
@@ -3035,6 +4318,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedcart
 	case user.EdgeAuth:
 		return m.clearedauth
+	case user.EdgeCheckout:
+		return m.clearedcheckout
 	}
 	return false
 }
@@ -3062,6 +4347,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeAuth:
 		m.ResetAuth()
+		return nil
+	case user.EdgeCheckout:
+		m.ResetCheckout()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

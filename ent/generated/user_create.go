@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kx-boutique/ent/generated/auth"
 	"github.com/kx-boutique/ent/generated/cart"
+	"github.com/kx-boutique/ent/generated/checkout"
 	"github.com/kx-boutique/ent/generated/user"
 )
 
@@ -113,6 +114,21 @@ func (uc *UserCreate) SetNillableAuthID(id *uuid.UUID) *UserCreate {
 // SetAuth sets the "auth" edge to the Auth entity.
 func (uc *UserCreate) SetAuth(a *Auth) *UserCreate {
 	return uc.SetAuthID(a.ID)
+}
+
+// AddCheckoutIDs adds the "checkout" edge to the Checkout entity by IDs.
+func (uc *UserCreate) AddCheckoutIDs(ids ...uuid.UUID) *UserCreate {
+	uc.mutation.AddCheckoutIDs(ids...)
+	return uc
+}
+
+// AddCheckout adds the "checkout" edges to the Checkout entity.
+func (uc *UserCreate) AddCheckout(c ...*Checkout) *UserCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uc.AddCheckoutIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -254,6 +270,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(auth.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.CheckoutIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CheckoutTable,
+			Columns: []string{user.CheckoutColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkout.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

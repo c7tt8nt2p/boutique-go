@@ -241,6 +241,29 @@ func UpdatedAtLTE(v time.Time) predicate.CartItem {
 	return predicate.CartItem(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
+// HasCheckoutItem applies the HasEdge predicate on the "checkout_item" edge.
+func HasCheckoutItem() predicate.CartItem {
+	return predicate.CartItem(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, CheckoutItemTable, CheckoutItemColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCheckoutItemWith applies the HasEdge predicate on the "checkout_item" edge with a given conditions (other predicates).
+func HasCheckoutItemWith(preds ...predicate.CheckoutItem) predicate.CartItem {
+	return predicate.CartItem(func(s *sql.Selector) {
+		step := newCheckoutItemStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasCartIDOwner applies the HasEdge predicate on the "cart_id_owner" edge.
 func HasCartIDOwner() predicate.CartItem {
 	return predicate.CartItem(func(s *sql.Selector) {

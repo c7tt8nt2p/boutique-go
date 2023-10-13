@@ -45,6 +45,30 @@ func (f CartItemFunc) Mutate(ctx context.Context, m generated.Mutation) (generat
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.CartItemMutation", m)
 }
 
+// The CheckoutFunc type is an adapter to allow the use of ordinary
+// function as Checkout mutator.
+type CheckoutFunc func(context.Context, *generated.CheckoutMutation) (generated.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CheckoutFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.Value, error) {
+	if mv, ok := m.(*generated.CheckoutMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.CheckoutMutation", m)
+}
+
+// The CheckoutItemFunc type is an adapter to allow the use of ordinary
+// function as CheckoutItem mutator.
+type CheckoutItemFunc func(context.Context, *generated.CheckoutItemMutation) (generated.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CheckoutItemFunc) Mutate(ctx context.Context, m generated.Mutation) (generated.Value, error) {
+	if mv, ok := m.(*generated.CheckoutItemMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *generated.CheckoutItemMutation", m)
+}
+
 // The ProductFunc type is an adapter to allow the use of ordinary
 // function as Product mutator.
 type ProductFunc func(context.Context, *generated.ProductMutation) (generated.Value, error)

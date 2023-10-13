@@ -9,6 +9,8 @@ import (
 	"github.com/kx-boutique/ent/generated/auth"
 	"github.com/kx-boutique/ent/generated/cart"
 	"github.com/kx-boutique/ent/generated/cartitem"
+	"github.com/kx-boutique/ent/generated/checkout"
+	"github.com/kx-boutique/ent/generated/checkoutitem"
 	"github.com/kx-boutique/ent/generated/product"
 	"github.com/kx-boutique/ent/generated/user"
 	"github.com/kx-boutique/ent/schema"
@@ -44,6 +46,22 @@ func init() {
 	cartitemDescID := cartitemFields[0].Descriptor()
 	// cartitem.DefaultID holds the default value on creation for the id field.
 	cartitem.DefaultID = cartitemDescID.Default.(func() uuid.UUID)
+	checkoutFields := schema.Checkout{}.Fields()
+	_ = checkoutFields
+	// checkoutDescCreatedAt is the schema descriptor for created_at field.
+	checkoutDescCreatedAt := checkoutFields[3].Descriptor()
+	// checkout.DefaultCreatedAt holds the default value on creation for the created_at field.
+	checkout.DefaultCreatedAt = checkoutDescCreatedAt.Default.(func() time.Time)
+	// checkoutDescID is the schema descriptor for id field.
+	checkoutDescID := checkoutFields[0].Descriptor()
+	// checkout.DefaultID holds the default value on creation for the id field.
+	checkout.DefaultID = checkoutDescID.Default.(func() uuid.UUID)
+	checkoutitemFields := schema.CheckoutItem{}.Fields()
+	_ = checkoutitemFields
+	// checkoutitemDescID is the schema descriptor for id field.
+	checkoutitemDescID := checkoutitemFields[0].Descriptor()
+	// checkoutitem.DefaultID holds the default value on creation for the id field.
+	checkoutitem.DefaultID = checkoutitemDescID.Default.(func() uuid.UUID)
 	productFields := schema.Product{}.Fields()
 	_ = productFields
 	// productDescCreatedAt is the schema descriptor for created_at field.

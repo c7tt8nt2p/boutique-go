@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kx-boutique/ent/generated/cart"
 	"github.com/kx-boutique/ent/generated/cartitem"
+	"github.com/kx-boutique/ent/generated/checkoutitem"
 	"github.com/kx-boutique/ent/generated/predicate"
 	"github.com/kx-boutique/ent/generated/product"
 )
@@ -84,6 +85,25 @@ func (ciu *CartItemUpdate) SetNillableUpdatedAt(t *time.Time) *CartItemUpdate {
 	return ciu
 }
 
+// SetCheckoutItemID sets the "checkout_item" edge to the CheckoutItem entity by ID.
+func (ciu *CartItemUpdate) SetCheckoutItemID(id uuid.UUID) *CartItemUpdate {
+	ciu.mutation.SetCheckoutItemID(id)
+	return ciu
+}
+
+// SetNillableCheckoutItemID sets the "checkout_item" edge to the CheckoutItem entity by ID if the given value is not nil.
+func (ciu *CartItemUpdate) SetNillableCheckoutItemID(id *uuid.UUID) *CartItemUpdate {
+	if id != nil {
+		ciu = ciu.SetCheckoutItemID(*id)
+	}
+	return ciu
+}
+
+// SetCheckoutItem sets the "checkout_item" edge to the CheckoutItem entity.
+func (ciu *CartItemUpdate) SetCheckoutItem(c *CheckoutItem) *CartItemUpdate {
+	return ciu.SetCheckoutItemID(c.ID)
+}
+
 // SetCartIDOwnerID sets the "cart_id_owner" edge to the Cart entity by ID.
 func (ciu *CartItemUpdate) SetCartIDOwnerID(id uuid.UUID) *CartItemUpdate {
 	ciu.mutation.SetCartIDOwnerID(id)
@@ -109,6 +129,12 @@ func (ciu *CartItemUpdate) SetProductIDOwner(p *Product) *CartItemUpdate {
 // Mutation returns the CartItemMutation object of the builder.
 func (ciu *CartItemUpdate) Mutation() *CartItemMutation {
 	return ciu.mutation
+}
+
+// ClearCheckoutItem clears the "checkout_item" edge to the CheckoutItem entity.
+func (ciu *CartItemUpdate) ClearCheckoutItem() *CartItemUpdate {
+	ciu.mutation.ClearCheckoutItem()
+	return ciu
 }
 
 // ClearCartIDOwner clears the "cart_id_owner" edge to the Cart entity.
@@ -184,6 +210,35 @@ func (ciu *CartItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ciu.mutation.UpdatedAt(); ok {
 		_spec.SetField(cartitem.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if ciu.mutation.CheckoutItemCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   cartitem.CheckoutItemTable,
+			Columns: []string{cartitem.CheckoutItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkoutitem.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ciu.mutation.CheckoutItemIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   cartitem.CheckoutItemTable,
+			Columns: []string{cartitem.CheckoutItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkoutitem.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if ciu.mutation.CartIDOwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -316,6 +371,25 @@ func (ciuo *CartItemUpdateOne) SetNillableUpdatedAt(t *time.Time) *CartItemUpdat
 	return ciuo
 }
 
+// SetCheckoutItemID sets the "checkout_item" edge to the CheckoutItem entity by ID.
+func (ciuo *CartItemUpdateOne) SetCheckoutItemID(id uuid.UUID) *CartItemUpdateOne {
+	ciuo.mutation.SetCheckoutItemID(id)
+	return ciuo
+}
+
+// SetNillableCheckoutItemID sets the "checkout_item" edge to the CheckoutItem entity by ID if the given value is not nil.
+func (ciuo *CartItemUpdateOne) SetNillableCheckoutItemID(id *uuid.UUID) *CartItemUpdateOne {
+	if id != nil {
+		ciuo = ciuo.SetCheckoutItemID(*id)
+	}
+	return ciuo
+}
+
+// SetCheckoutItem sets the "checkout_item" edge to the CheckoutItem entity.
+func (ciuo *CartItemUpdateOne) SetCheckoutItem(c *CheckoutItem) *CartItemUpdateOne {
+	return ciuo.SetCheckoutItemID(c.ID)
+}
+
 // SetCartIDOwnerID sets the "cart_id_owner" edge to the Cart entity by ID.
 func (ciuo *CartItemUpdateOne) SetCartIDOwnerID(id uuid.UUID) *CartItemUpdateOne {
 	ciuo.mutation.SetCartIDOwnerID(id)
@@ -341,6 +415,12 @@ func (ciuo *CartItemUpdateOne) SetProductIDOwner(p *Product) *CartItemUpdateOne 
 // Mutation returns the CartItemMutation object of the builder.
 func (ciuo *CartItemUpdateOne) Mutation() *CartItemMutation {
 	return ciuo.mutation
+}
+
+// ClearCheckoutItem clears the "checkout_item" edge to the CheckoutItem entity.
+func (ciuo *CartItemUpdateOne) ClearCheckoutItem() *CartItemUpdateOne {
+	ciuo.mutation.ClearCheckoutItem()
+	return ciuo
 }
 
 // ClearCartIDOwner clears the "cart_id_owner" edge to the Cart entity.
@@ -446,6 +526,35 @@ func (ciuo *CartItemUpdateOne) sqlSave(ctx context.Context) (_node *CartItem, er
 	}
 	if value, ok := ciuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(cartitem.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if ciuo.mutation.CheckoutItemCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   cartitem.CheckoutItemTable,
+			Columns: []string{cartitem.CheckoutItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkoutitem.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ciuo.mutation.CheckoutItemIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   cartitem.CheckoutItemTable,
+			Columns: []string{cartitem.CheckoutItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkoutitem.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if ciuo.mutation.CartIDOwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kx-boutique/ent/generated/cart"
 	"github.com/kx-boutique/ent/generated/cartitem"
+	"github.com/kx-boutique/ent/generated/checkoutitem"
 	"github.com/kx-boutique/ent/generated/product"
 )
 
@@ -38,19 +39,34 @@ type CartItem struct {
 
 // CartItemEdges holds the relations/edges for other nodes in the graph.
 type CartItemEdges struct {
+	// CheckoutItem holds the value of the checkout_item edge.
+	CheckoutItem *CheckoutItem `json:"checkout_item,omitempty"`
 	// CartIDOwner holds the value of the cart_id_owner edge.
 	CartIDOwner *Cart `json:"cart_id_owner,omitempty"`
 	// ProductIDOwner holds the value of the product_id_owner edge.
 	ProductIDOwner *Product `json:"product_id_owner,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
+}
+
+// CheckoutItemOrErr returns the CheckoutItem value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CartItemEdges) CheckoutItemOrErr() (*CheckoutItem, error) {
+	if e.loadedTypes[0] {
+		if e.CheckoutItem == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: checkoutitem.Label}
+		}
+		return e.CheckoutItem, nil
+	}
+	return nil, &NotLoadedError{edge: "checkout_item"}
 }
 
 // CartIDOwnerOrErr returns the CartIDOwner value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CartItemEdges) CartIDOwnerOrErr() (*Cart, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.CartIDOwner == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: cart.Label}
@@ -63,7 +79,7 @@ func (e CartItemEdges) CartIDOwnerOrErr() (*Cart, error) {
 // ProductIDOwnerOrErr returns the ProductIDOwner value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CartItemEdges) ProductIDOwnerOrErr() (*Product, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.ProductIDOwner == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: product.Label}
@@ -146,6 +162,11 @@ func (ci *CartItem) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (ci *CartItem) Value(name string) (ent.Value, error) {
 	return ci.selectValues.Get(name)
+}
+
+// QueryCheckoutItem queries the "checkout_item" edge of the CartItem entity.
+func (ci *CartItem) QueryCheckoutItem() *CheckoutItemQuery {
+	return NewCartItemClient(ci.config).QueryCheckoutItem(ci)
 }
 
 // QueryCartIDOwner queries the "cart_id_owner" edge of the CartItem entity.

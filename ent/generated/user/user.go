@@ -27,6 +27,8 @@ const (
 	EdgeCart = "cart"
 	// EdgeAuth holds the string denoting the auth edge name in mutations.
 	EdgeAuth = "auth"
+	// EdgeCheckout holds the string denoting the checkout edge name in mutations.
+	EdgeCheckout = "checkout"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// CartTable is the table that holds the cart relation/edge.
@@ -43,6 +45,13 @@ const (
 	AuthInverseTable = "auths"
 	// AuthColumn is the table column denoting the auth relation/edge.
 	AuthColumn = "user_id"
+	// CheckoutTable is the table that holds the checkout relation/edge.
+	CheckoutTable = "checkouts"
+	// CheckoutInverseTable is the table name for the Checkout entity.
+	// It exists in this package in order to avoid circular dependency with the "checkout" package.
+	CheckoutInverseTable = "checkouts"
+	// CheckoutColumn is the table column denoting the checkout relation/edge.
+	CheckoutColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -114,6 +123,20 @@ func ByAuthField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newAuthStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByCheckoutCount orders the results by checkout count.
+func ByCheckoutCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCheckoutStep(), opts...)
+	}
+}
+
+// ByCheckout orders the results by checkout terms.
+func ByCheckout(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCheckoutStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCartStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -126,5 +149,12 @@ func newAuthStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AuthInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, AuthTable, AuthColumn),
+	)
+}
+func newCheckoutStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CheckoutInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CheckoutTable, CheckoutColumn),
 	)
 }

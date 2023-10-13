@@ -25,12 +25,21 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// EdgeCheckoutItem holds the string denoting the checkout_item edge name in mutations.
+	EdgeCheckoutItem = "checkout_item"
 	// EdgeCartIDOwner holds the string denoting the cart_id_owner edge name in mutations.
 	EdgeCartIDOwner = "cart_id_owner"
 	// EdgeProductIDOwner holds the string denoting the product_id_owner edge name in mutations.
 	EdgeProductIDOwner = "product_id_owner"
 	// Table holds the table name of the cartitem in the database.
 	Table = "cart_items"
+	// CheckoutItemTable is the table that holds the checkout_item relation/edge.
+	CheckoutItemTable = "checkout_items"
+	// CheckoutItemInverseTable is the table name for the CheckoutItem entity.
+	// It exists in this package in order to avoid circular dependency with the "checkoutitem" package.
+	CheckoutItemInverseTable = "checkout_items"
+	// CheckoutItemColumn is the table column denoting the checkout_item relation/edge.
+	CheckoutItemColumn = "cart_item_id"
 	// CartIDOwnerTable is the table that holds the cart_id_owner relation/edge.
 	CartIDOwnerTable = "cart_items"
 	// CartIDOwnerInverseTable is the table name for the Cart entity.
@@ -109,6 +118,13 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByCheckoutItemField orders the results by checkout_item field.
+func ByCheckoutItemField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCheckoutItemStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByCartIDOwnerField orders the results by cart_id_owner field.
 func ByCartIDOwnerField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -121,6 +137,13 @@ func ByProductIDOwnerField(field string, opts ...sql.OrderTermOption) OrderOptio
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newProductIDOwnerStep(), sql.OrderByField(field, opts...))
 	}
+}
+func newCheckoutItemStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CheckoutItemInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, false, CheckoutItemTable, CheckoutItemColumn),
+	)
 }
 func newCartIDOwnerStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

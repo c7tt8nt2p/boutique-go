@@ -15,6 +15,12 @@ type Cart func(*sql.Selector)
 // CartItem is the predicate function for cartitem builders.
 type CartItem func(*sql.Selector)
 
+// Checkout is the predicate function for checkout builders.
+type Checkout func(*sql.Selector)
+
+// CheckoutItem is the predicate function for checkoutitem builders.
+type CheckoutItem func(*sql.Selector)
+
 // Product is the predicate function for product builders.
 type Product func(*sql.Selector)
 

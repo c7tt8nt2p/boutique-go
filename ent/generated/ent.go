@@ -15,6 +15,8 @@ import (
 	"github.com/kx-boutique/ent/generated/auth"
 	"github.com/kx-boutique/ent/generated/cart"
 	"github.com/kx-boutique/ent/generated/cartitem"
+	"github.com/kx-boutique/ent/generated/checkout"
+	"github.com/kx-boutique/ent/generated/checkoutitem"
 	"github.com/kx-boutique/ent/generated/product"
 	"github.com/kx-boutique/ent/generated/user"
 )
@@ -77,11 +79,13 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			auth.Table:     auth.ValidColumn,
-			cart.Table:     cart.ValidColumn,
-			cartitem.Table: cartitem.ValidColumn,
-			product.Table:  product.ValidColumn,
-			user.Table:     user.ValidColumn,
+			auth.Table:         auth.ValidColumn,
+			cart.Table:         cart.ValidColumn,
+			cartitem.Table:     cartitem.ValidColumn,
+			checkout.Table:     checkout.ValidColumn,
+			checkoutitem.Table: checkoutitem.ValidColumn,
+			product.Table:      product.ValidColumn,
+			user.Table:         user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

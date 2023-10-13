@@ -19,6 +19,8 @@ import (
 	"github.com/kx-boutique/ent/generated/auth"
 	"github.com/kx-boutique/ent/generated/cart"
 	"github.com/kx-boutique/ent/generated/cartitem"
+	"github.com/kx-boutique/ent/generated/checkout"
+	"github.com/kx-boutique/ent/generated/checkoutitem"
 	"github.com/kx-boutique/ent/generated/product"
 	"github.com/kx-boutique/ent/generated/user"
 )
@@ -34,6 +36,10 @@ type Client struct {
 	Cart *CartClient
 	// CartItem is the client for interacting with the CartItem builders.
 	CartItem *CartItemClient
+	// Checkout is the client for interacting with the Checkout builders.
+	Checkout *CheckoutClient
+	// CheckoutItem is the client for interacting with the CheckoutItem builders.
+	CheckoutItem *CheckoutItemClient
 	// Product is the client for interacting with the Product builders.
 	Product *ProductClient
 	// User is the client for interacting with the User builders.
@@ -54,6 +60,8 @@ func (c *Client) init() {
 	c.Auth = NewAuthClient(c.config)
 	c.Cart = NewCartClient(c.config)
 	c.CartItem = NewCartItemClient(c.config)
+	c.Checkout = NewCheckoutClient(c.config)
+	c.CheckoutItem = NewCheckoutItemClient(c.config)
 	c.Product = NewProductClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -139,13 +147,15 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Auth:     NewAuthClient(cfg),
-		Cart:     NewCartClient(cfg),
-		CartItem: NewCartItemClient(cfg),
-		Product:  NewProductClient(cfg),
-		User:     NewUserClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Auth:         NewAuthClient(cfg),
+		Cart:         NewCartClient(cfg),
+		CartItem:     NewCartItemClient(cfg),
+		Checkout:     NewCheckoutClient(cfg),
+		CheckoutItem: NewCheckoutItemClient(cfg),
+		Product:      NewProductClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
@@ -163,13 +173,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Auth:     NewAuthClient(cfg),
-		Cart:     NewCartClient(cfg),
-		CartItem: NewCartItemClient(cfg),
-		Product:  NewProductClient(cfg),
-		User:     NewUserClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		Auth:         NewAuthClient(cfg),
+		Cart:         NewCartClient(cfg),
+		CartItem:     NewCartItemClient(cfg),
+		Checkout:     NewCheckoutClient(cfg),
+		CheckoutItem: NewCheckoutItemClient(cfg),
+		Product:      NewProductClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
@@ -198,21 +210,21 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Auth.Use(hooks...)
-	c.Cart.Use(hooks...)
-	c.CartItem.Use(hooks...)
-	c.Product.Use(hooks...)
-	c.User.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Auth, c.Cart, c.CartItem, c.Checkout, c.CheckoutItem, c.Product, c.User,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Auth.Intercept(interceptors...)
-	c.Cart.Intercept(interceptors...)
-	c.CartItem.Intercept(interceptors...)
-	c.Product.Intercept(interceptors...)
-	c.User.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Auth, c.Cart, c.CartItem, c.Checkout, c.CheckoutItem, c.Product, c.User,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -224,6 +236,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Cart.mutate(ctx, m)
 	case *CartItemMutation:
 		return c.CartItem.mutate(ctx, m)
+	case *CheckoutMutation:
+		return c.Checkout.mutate(ctx, m)
+	case *CheckoutItemMutation:
+		return c.CheckoutItem.mutate(ctx, m)
 	case *ProductMutation:
 		return c.Product.mutate(ctx, m)
 	case *UserMutation:
@@ -655,6 +671,22 @@ func (c *CartItemClient) GetX(ctx context.Context, id uuid.UUID) *CartItem {
 	return obj
 }
 
+// QueryCheckoutItem queries the checkout_item edge of a CartItem.
+func (c *CartItemClient) QueryCheckoutItem(ci *CartItem) *CheckoutItemQuery {
+	query := (&CheckoutItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cartitem.Table, cartitem.FieldID, id),
+			sqlgraph.To(checkoutitem.Table, checkoutitem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, cartitem.CheckoutItemTable, cartitem.CheckoutItemColumn),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryCartIDOwner queries the cart_id_owner edge of a CartItem.
 func (c *CartItemClient) QueryCartIDOwner(ci *CartItem) *CartQuery {
 	query := (&CartClient{config: c.config}).Query()
@@ -709,6 +741,336 @@ func (c *CartItemClient) mutate(ctx context.Context, m *CartItemMutation) (Value
 		return (&CartItemDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("generated: unknown CartItem mutation op: %q", m.Op())
+	}
+}
+
+// CheckoutClient is a client for the Checkout schema.
+type CheckoutClient struct {
+	config
+}
+
+// NewCheckoutClient returns a client for the Checkout from the given config.
+func NewCheckoutClient(c config) *CheckoutClient {
+	return &CheckoutClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `checkout.Hooks(f(g(h())))`.
+func (c *CheckoutClient) Use(hooks ...Hook) {
+	c.hooks.Checkout = append(c.hooks.Checkout, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `checkout.Intercept(f(g(h())))`.
+func (c *CheckoutClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Checkout = append(c.inters.Checkout, interceptors...)
+}
+
+// Create returns a builder for creating a Checkout entity.
+func (c *CheckoutClient) Create() *CheckoutCreate {
+	mutation := newCheckoutMutation(c.config, OpCreate)
+	return &CheckoutCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Checkout entities.
+func (c *CheckoutClient) CreateBulk(builders ...*CheckoutCreate) *CheckoutCreateBulk {
+	return &CheckoutCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CheckoutClient) MapCreateBulk(slice any, setFunc func(*CheckoutCreate, int)) *CheckoutCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CheckoutCreateBulk{err: fmt.Errorf("calling to CheckoutClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CheckoutCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CheckoutCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Checkout.
+func (c *CheckoutClient) Update() *CheckoutUpdate {
+	mutation := newCheckoutMutation(c.config, OpUpdate)
+	return &CheckoutUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CheckoutClient) UpdateOne(ch *Checkout) *CheckoutUpdateOne {
+	mutation := newCheckoutMutation(c.config, OpUpdateOne, withCheckout(ch))
+	return &CheckoutUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CheckoutClient) UpdateOneID(id uuid.UUID) *CheckoutUpdateOne {
+	mutation := newCheckoutMutation(c.config, OpUpdateOne, withCheckoutID(id))
+	return &CheckoutUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Checkout.
+func (c *CheckoutClient) Delete() *CheckoutDelete {
+	mutation := newCheckoutMutation(c.config, OpDelete)
+	return &CheckoutDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CheckoutClient) DeleteOne(ch *Checkout) *CheckoutDeleteOne {
+	return c.DeleteOneID(ch.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CheckoutClient) DeleteOneID(id uuid.UUID) *CheckoutDeleteOne {
+	builder := c.Delete().Where(checkout.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CheckoutDeleteOne{builder}
+}
+
+// Query returns a query builder for Checkout.
+func (c *CheckoutClient) Query() *CheckoutQuery {
+	return &CheckoutQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCheckout},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Checkout entity by its id.
+func (c *CheckoutClient) Get(ctx context.Context, id uuid.UUID) (*Checkout, error) {
+	return c.Query().Where(checkout.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CheckoutClient) GetX(ctx context.Context, id uuid.UUID) *Checkout {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCheckoutItem queries the checkout_item edge of a Checkout.
+func (c *CheckoutClient) QueryCheckoutItem(ch *Checkout) *CheckoutItemQuery {
+	query := (&CheckoutItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ch.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(checkout.Table, checkout.FieldID, id),
+			sqlgraph.To(checkoutitem.Table, checkoutitem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, checkout.CheckoutItemTable, checkout.CheckoutItemColumn),
+		)
+		fromV = sqlgraph.Neighbors(ch.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUserIDOwner queries the user_id_owner edge of a Checkout.
+func (c *CheckoutClient) QueryUserIDOwner(ch *Checkout) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ch.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(checkout.Table, checkout.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, checkout.UserIDOwnerTable, checkout.UserIDOwnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(ch.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CheckoutClient) Hooks() []Hook {
+	return c.hooks.Checkout
+}
+
+// Interceptors returns the client interceptors.
+func (c *CheckoutClient) Interceptors() []Interceptor {
+	return c.inters.Checkout
+}
+
+func (c *CheckoutClient) mutate(ctx context.Context, m *CheckoutMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CheckoutCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CheckoutUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CheckoutUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CheckoutDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("generated: unknown Checkout mutation op: %q", m.Op())
+	}
+}
+
+// CheckoutItemClient is a client for the CheckoutItem schema.
+type CheckoutItemClient struct {
+	config
+}
+
+// NewCheckoutItemClient returns a client for the CheckoutItem from the given config.
+func NewCheckoutItemClient(c config) *CheckoutItemClient {
+	return &CheckoutItemClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `checkoutitem.Hooks(f(g(h())))`.
+func (c *CheckoutItemClient) Use(hooks ...Hook) {
+	c.hooks.CheckoutItem = append(c.hooks.CheckoutItem, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `checkoutitem.Intercept(f(g(h())))`.
+func (c *CheckoutItemClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CheckoutItem = append(c.inters.CheckoutItem, interceptors...)
+}
+
+// Create returns a builder for creating a CheckoutItem entity.
+func (c *CheckoutItemClient) Create() *CheckoutItemCreate {
+	mutation := newCheckoutItemMutation(c.config, OpCreate)
+	return &CheckoutItemCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CheckoutItem entities.
+func (c *CheckoutItemClient) CreateBulk(builders ...*CheckoutItemCreate) *CheckoutItemCreateBulk {
+	return &CheckoutItemCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CheckoutItemClient) MapCreateBulk(slice any, setFunc func(*CheckoutItemCreate, int)) *CheckoutItemCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CheckoutItemCreateBulk{err: fmt.Errorf("calling to CheckoutItemClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CheckoutItemCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CheckoutItemCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CheckoutItem.
+func (c *CheckoutItemClient) Update() *CheckoutItemUpdate {
+	mutation := newCheckoutItemMutation(c.config, OpUpdate)
+	return &CheckoutItemUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CheckoutItemClient) UpdateOne(ci *CheckoutItem) *CheckoutItemUpdateOne {
+	mutation := newCheckoutItemMutation(c.config, OpUpdateOne, withCheckoutItem(ci))
+	return &CheckoutItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CheckoutItemClient) UpdateOneID(id uuid.UUID) *CheckoutItemUpdateOne {
+	mutation := newCheckoutItemMutation(c.config, OpUpdateOne, withCheckoutItemID(id))
+	return &CheckoutItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CheckoutItem.
+func (c *CheckoutItemClient) Delete() *CheckoutItemDelete {
+	mutation := newCheckoutItemMutation(c.config, OpDelete)
+	return &CheckoutItemDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CheckoutItemClient) DeleteOne(ci *CheckoutItem) *CheckoutItemDeleteOne {
+	return c.DeleteOneID(ci.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CheckoutItemClient) DeleteOneID(id uuid.UUID) *CheckoutItemDeleteOne {
+	builder := c.Delete().Where(checkoutitem.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CheckoutItemDeleteOne{builder}
+}
+
+// Query returns a query builder for CheckoutItem.
+func (c *CheckoutItemClient) Query() *CheckoutItemQuery {
+	return &CheckoutItemQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCheckoutItem},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CheckoutItem entity by its id.
+func (c *CheckoutItemClient) Get(ctx context.Context, id uuid.UUID) (*CheckoutItem, error) {
+	return c.Query().Where(checkoutitem.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CheckoutItemClient) GetX(ctx context.Context, id uuid.UUID) *CheckoutItem {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCheckoutIDOwner queries the checkout_id_owner edge of a CheckoutItem.
+func (c *CheckoutItemClient) QueryCheckoutIDOwner(ci *CheckoutItem) *CheckoutQuery {
+	query := (&CheckoutClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(checkoutitem.Table, checkoutitem.FieldID, id),
+			sqlgraph.To(checkout.Table, checkout.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, checkoutitem.CheckoutIDOwnerTable, checkoutitem.CheckoutIDOwnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCartItemIDOwner queries the cart_item_id_owner edge of a CheckoutItem.
+func (c *CheckoutItemClient) QueryCartItemIDOwner(ci *CheckoutItem) *CartItemQuery {
+	query := (&CartItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(checkoutitem.Table, checkoutitem.FieldID, id),
+			sqlgraph.To(cartitem.Table, cartitem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, checkoutitem.CartItemIDOwnerTable, checkoutitem.CartItemIDOwnerColumn),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CheckoutItemClient) Hooks() []Hook {
+	return c.hooks.CheckoutItem
+}
+
+// Interceptors returns the client interceptors.
+func (c *CheckoutItemClient) Interceptors() []Interceptor {
+	return c.inters.CheckoutItem
+}
+
+func (c *CheckoutItemClient) mutate(ctx context.Context, m *CheckoutItemMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CheckoutItemCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CheckoutItemUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CheckoutItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CheckoutItemDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("generated: unknown CheckoutItem mutation op: %q", m.Op())
 	}
 }
 
@@ -1001,6 +1363,22 @@ func (c *UserClient) QueryAuth(u *User) *AuthQuery {
 	return query
 }
 
+// QueryCheckout queries the checkout edge of a User.
+func (c *UserClient) QueryCheckout(u *User) *CheckoutQuery {
+	query := (&CheckoutClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(checkout.Table, checkout.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CheckoutTable, user.CheckoutColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -1029,9 +1407,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Auth, Cart, CartItem, Product, User []ent.Hook
+		Auth, Cart, CartItem, Checkout, CheckoutItem, Product, User []ent.Hook
 	}
 	inters struct {
-		Auth, Cart, CartItem, Product, User []ent.Interceptor
+		Auth, Cart, CartItem, Checkout, CheckoutItem, Product, User []ent.Interceptor
 	}
 )

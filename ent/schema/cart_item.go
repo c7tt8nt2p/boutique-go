@@ -28,6 +28,8 @@ func (CartItem) Fields() []ent.Field {
 
 func (CartItem) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("checkout_item", CheckoutItem.Type).
+			Unique(),
 		edge.From("cart_id_owner", Cart.Type).
 			Ref("cart_item").
 			Field("cart_id").

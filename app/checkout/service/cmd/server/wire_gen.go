@@ -25,13 +25,17 @@ func initApp(confServer *conf.Server, confData *conf.Data, confClient *conf.Clie
 	if err != nil {
 		return nil, nil, err
 	}
+	cartClient, err := client.NewCartClient(confClient)
+	if err != nil {
+		return nil, nil, err
+	}
 	generatedClient := data.NewEntClient(confData, logger)
 	dataData, cleanup, err := data.NewData(generatedClient, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	checkoutRepo := data.NewCheckoutRepo(dataData, logger)
-	checkoutUseCase := biz.NewCheckoutUseCase(checkoutRepo, logger)
+	checkoutUseCase := biz.NewCheckoutUseCase(cartClient, checkoutRepo, logger)
 	checkoutService := service.NewCheckoutService(checkoutUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, logger, authClient, checkoutService)
 	app := newApp(logger, grpcServer)

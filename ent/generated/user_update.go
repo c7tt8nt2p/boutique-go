@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kx-boutique/ent/generated/auth"
 	"github.com/kx-boutique/ent/generated/cart"
+	"github.com/kx-boutique/ent/generated/checkout"
 	"github.com/kx-boutique/ent/generated/predicate"
 	"github.com/kx-boutique/ent/generated/user"
 )
@@ -109,6 +110,21 @@ func (uu *UserUpdate) SetAuth(a *Auth) *UserUpdate {
 	return uu.SetAuthID(a.ID)
 }
 
+// AddCheckoutIDs adds the "checkout" edge to the Checkout entity by IDs.
+func (uu *UserUpdate) AddCheckoutIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.AddCheckoutIDs(ids...)
+	return uu
+}
+
+// AddCheckout adds the "checkout" edges to the Checkout entity.
+func (uu *UserUpdate) AddCheckout(c ...*Checkout) *UserUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uu.AddCheckoutIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -124,6 +140,27 @@ func (uu *UserUpdate) ClearCart() *UserUpdate {
 func (uu *UserUpdate) ClearAuth() *UserUpdate {
 	uu.mutation.ClearAuth()
 	return uu
+}
+
+// ClearCheckout clears all "checkout" edges to the Checkout entity.
+func (uu *UserUpdate) ClearCheckout() *UserUpdate {
+	uu.mutation.ClearCheckout()
+	return uu
+}
+
+// RemoveCheckoutIDs removes the "checkout" edge to Checkout entities by IDs.
+func (uu *UserUpdate) RemoveCheckoutIDs(ids ...uuid.UUID) *UserUpdate {
+	uu.mutation.RemoveCheckoutIDs(ids...)
+	return uu
+}
+
+// RemoveCheckout removes "checkout" edges to Checkout entities.
+func (uu *UserUpdate) RemoveCheckout(c ...*Checkout) *UserUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uu.RemoveCheckoutIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -232,6 +269,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.CheckoutCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CheckoutTable,
+			Columns: []string{user.CheckoutColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkout.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedCheckoutIDs(); len(nodes) > 0 && !uu.mutation.CheckoutCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CheckoutTable,
+			Columns: []string{user.CheckoutColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkout.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.CheckoutIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CheckoutTable,
+			Columns: []string{user.CheckoutColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkout.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -330,6 +412,21 @@ func (uuo *UserUpdateOne) SetAuth(a *Auth) *UserUpdateOne {
 	return uuo.SetAuthID(a.ID)
 }
 
+// AddCheckoutIDs adds the "checkout" edge to the Checkout entity by IDs.
+func (uuo *UserUpdateOne) AddCheckoutIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.AddCheckoutIDs(ids...)
+	return uuo
+}
+
+// AddCheckout adds the "checkout" edges to the Checkout entity.
+func (uuo *UserUpdateOne) AddCheckout(c ...*Checkout) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uuo.AddCheckoutIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -345,6 +442,27 @@ func (uuo *UserUpdateOne) ClearCart() *UserUpdateOne {
 func (uuo *UserUpdateOne) ClearAuth() *UserUpdateOne {
 	uuo.mutation.ClearAuth()
 	return uuo
+}
+
+// ClearCheckout clears all "checkout" edges to the Checkout entity.
+func (uuo *UserUpdateOne) ClearCheckout() *UserUpdateOne {
+	uuo.mutation.ClearCheckout()
+	return uuo
+}
+
+// RemoveCheckoutIDs removes the "checkout" edge to Checkout entities by IDs.
+func (uuo *UserUpdateOne) RemoveCheckoutIDs(ids ...uuid.UUID) *UserUpdateOne {
+	uuo.mutation.RemoveCheckoutIDs(ids...)
+	return uuo
+}
+
+// RemoveCheckout removes "checkout" edges to Checkout entities.
+func (uuo *UserUpdateOne) RemoveCheckout(c ...*Checkout) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uuo.RemoveCheckoutIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -476,6 +594,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(auth.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.CheckoutCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CheckoutTable,
+			Columns: []string{user.CheckoutColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkout.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedCheckoutIDs(); len(nodes) > 0 && !uuo.mutation.CheckoutCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CheckoutTable,
+			Columns: []string{user.CheckoutColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkout.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.CheckoutIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CheckoutTable,
+			Columns: []string{user.CheckoutColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkout.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

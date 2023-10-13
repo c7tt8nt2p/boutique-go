@@ -35,4 +35,5 @@ message Client {
         string url = 1;
     }
     ClientService auth_service = 1;
+    ClientService cart_service = 2;
 }

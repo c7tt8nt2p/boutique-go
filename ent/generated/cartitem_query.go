@@ -4,6 +4,7 @@ package generated
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kx-boutique/ent/generated/cart"
 	"github.com/kx-boutique/ent/generated/cartitem"
+	"github.com/kx-boutique/ent/generated/checkoutitem"
 	"github.com/kx-boutique/ent/generated/predicate"
 	"github.com/kx-boutique/ent/generated/product"
 )
@@ -24,6 +26,7 @@ type CartItemQuery struct {
 	order              []cartitem.OrderOption
 	inters             []Interceptor
 	predicates         []predicate.CartItem
+	withCheckoutItem   *CheckoutItemQuery
 	withCartIDOwner    *CartQuery
 	withProductIDOwner *ProductQuery
 	// intermediate query (i.e. traversal path).
@@ -60,6 +63,28 @@ func (ciq *CartItemQuery) Unique(unique bool) *CartItemQuery {
 func (ciq *CartItemQuery) Order(o ...cartitem.OrderOption) *CartItemQuery {
 	ciq.order = append(ciq.order, o...)
 	return ciq
+}
+
+// QueryCheckoutItem chains the current query on the "checkout_item" edge.
+func (ciq *CartItemQuery) QueryCheckoutItem() *CheckoutItemQuery {
+	query := (&CheckoutItemClient{config: ciq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ciq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ciq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cartitem.Table, cartitem.FieldID, selector),
+			sqlgraph.To(checkoutitem.Table, checkoutitem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, cartitem.CheckoutItemTable, cartitem.CheckoutItemColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ciq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryCartIDOwner chains the current query on the "cart_id_owner" edge.
@@ -298,12 +323,24 @@ func (ciq *CartItemQuery) Clone() *CartItemQuery {
 		order:              append([]cartitem.OrderOption{}, ciq.order...),
 		inters:             append([]Interceptor{}, ciq.inters...),
 		predicates:         append([]predicate.CartItem{}, ciq.predicates...),
+		withCheckoutItem:   ciq.withCheckoutItem.Clone(),
 		withCartIDOwner:    ciq.withCartIDOwner.Clone(),
 		withProductIDOwner: ciq.withProductIDOwner.Clone(),
 		// clone intermediate query.
 		sql:  ciq.sql.Clone(),
 		path: ciq.path,
 	}
+}
+
+// WithCheckoutItem tells the query-builder to eager-load the nodes that are connected to
+// the "checkout_item" edge. The optional arguments are used to configure the query builder of the edge.
+func (ciq *CartItemQuery) WithCheckoutItem(opts ...func(*CheckoutItemQuery)) *CartItemQuery {
+	query := (&CheckoutItemClient{config: ciq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ciq.withCheckoutItem = query
+	return ciq
 }
 
 // WithCartIDOwner tells the query-builder to eager-load the nodes that are connected to
@@ -406,7 +443,8 @@ func (ciq *CartItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ca
 	var (
 		nodes       = []*CartItem{}
 		_spec       = ciq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
+			ciq.withCheckoutItem != nil,
 			ciq.withCartIDOwner != nil,
 			ciq.withProductIDOwner != nil,
 		}
@@ -429,6 +467,12 @@ func (ciq *CartItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ca
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := ciq.withCheckoutItem; query != nil {
+		if err := ciq.loadCheckoutItem(ctx, query, nodes, nil,
+			func(n *CartItem, e *CheckoutItem) { n.Edges.CheckoutItem = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := ciq.withCartIDOwner; query != nil {
 		if err := ciq.loadCartIDOwner(ctx, query, nodes, nil,
 			func(n *CartItem, e *Cart) { n.Edges.CartIDOwner = e }); err != nil {
@@ -444,6 +488,33 @@ func (ciq *CartItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ca
 	return nodes, nil
 }
 
+func (ciq *CartItemQuery) loadCheckoutItem(ctx context.Context, query *CheckoutItemQuery, nodes []*CartItem, init func(*CartItem), assign func(*CartItem, *CheckoutItem)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*CartItem)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(checkoutitem.FieldCartItemID)
+	}
+	query.Where(predicate.CheckoutItem(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(cartitem.CheckoutItemColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.CartItemID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "cart_item_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (ciq *CartItemQuery) loadCartIDOwner(ctx context.Context, query *CartQuery, nodes []*CartItem, init func(*CartItem), assign func(*CartItem, *Cart)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*CartItem)

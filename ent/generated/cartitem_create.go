@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kx-boutique/ent/generated/cart"
 	"github.com/kx-boutique/ent/generated/cartitem"
+	"github.com/kx-boutique/ent/generated/checkoutitem"
 	"github.com/kx-boutique/ent/generated/product"
 )
 
@@ -81,6 +82,25 @@ func (cic *CartItemCreate) SetNillableID(u *uuid.UUID) *CartItemCreate {
 		cic.SetID(*u)
 	}
 	return cic
+}
+
+// SetCheckoutItemID sets the "checkout_item" edge to the CheckoutItem entity by ID.
+func (cic *CartItemCreate) SetCheckoutItemID(id uuid.UUID) *CartItemCreate {
+	cic.mutation.SetCheckoutItemID(id)
+	return cic
+}
+
+// SetNillableCheckoutItemID sets the "checkout_item" edge to the CheckoutItem entity by ID if the given value is not nil.
+func (cic *CartItemCreate) SetNillableCheckoutItemID(id *uuid.UUID) *CartItemCreate {
+	if id != nil {
+		cic = cic.SetCheckoutItemID(*id)
+	}
+	return cic
+}
+
+// SetCheckoutItem sets the "checkout_item" edge to the CheckoutItem entity.
+func (cic *CartItemCreate) SetCheckoutItem(c *CheckoutItem) *CartItemCreate {
+	return cic.SetCheckoutItemID(c.ID)
 }
 
 // SetCartIDOwnerID sets the "cart_id_owner" edge to the Cart entity by ID.
@@ -223,6 +243,22 @@ func (cic *CartItemCreate) createSpec() (*CartItem, *sqlgraph.CreateSpec) {
 	if value, ok := cic.mutation.UpdatedAt(); ok {
 		_spec.SetField(cartitem.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if nodes := cic.mutation.CheckoutItemIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   cartitem.CheckoutItemTable,
+			Columns: []string{cartitem.CheckoutItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(checkoutitem.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cic.mutation.CartIDOwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

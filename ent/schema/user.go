@@ -31,5 +31,6 @@ func (User) Edges() []ent.Edge {
 			Unique(),
 		edge.To("auth", Auth.Type).
 			Unique(),
+		edge.To("checkout", Checkout.Type),
 	}
 }

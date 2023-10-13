@@ -76,6 +76,53 @@ var (
 			},
 		},
 	}
+	// CheckoutsColumns holds the columns for the "checkouts" table.
+	CheckoutsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "total_price", Type: field.TypeFloat64},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeUUID},
+	}
+	// CheckoutsTable holds the schema information for the "checkouts" table.
+	CheckoutsTable = &schema.Table{
+		Name:       "checkouts",
+		Columns:    CheckoutsColumns,
+		PrimaryKey: []*schema.Column{CheckoutsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "checkouts_users_checkout",
+				Columns:    []*schema.Column{CheckoutsColumns[3]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// CheckoutItemsColumns holds the columns for the "checkout_items" table.
+	CheckoutItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "cart_item_id", Type: field.TypeUUID, Unique: true},
+		{Name: "checkout_id", Type: field.TypeUUID},
+	}
+	// CheckoutItemsTable holds the schema information for the "checkout_items" table.
+	CheckoutItemsTable = &schema.Table{
+		Name:       "checkout_items",
+		Columns:    CheckoutItemsColumns,
+		PrimaryKey: []*schema.Column{CheckoutItemsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "checkout_items_cart_items_checkout_item",
+				Columns:    []*schema.Column{CheckoutItemsColumns[1]},
+				RefColumns: []*schema.Column{CartItemsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "checkout_items_checkouts_checkout_item",
+				Columns:    []*schema.Column{CheckoutItemsColumns[2]},
+				RefColumns: []*schema.Column{CheckoutsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// ProductsColumns holds the columns for the "products" table.
 	ProductsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -111,6 +158,8 @@ var (
 		AuthsTable,
 		CartsTable,
 		CartItemsTable,
+		CheckoutsTable,
+		CheckoutItemsTable,
 		ProductsTable,
 		UsersTable,
 	}
@@ -121,4 +170,7 @@ func init() {
 	CartsTable.ForeignKeys[0].RefTable = UsersTable
 	CartItemsTable.ForeignKeys[0].RefTable = CartsTable
 	CartItemsTable.ForeignKeys[1].RefTable = ProductsTable
+	CheckoutsTable.ForeignKeys[0].RefTable = UsersTable
+	CheckoutItemsTable.ForeignKeys[0].RefTable = CartItemsTable
+	CheckoutItemsTable.ForeignKeys[1].RefTable = CheckoutsTable
 }
