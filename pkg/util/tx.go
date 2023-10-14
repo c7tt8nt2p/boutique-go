@@ -4,35 +4,37 @@ import (
 	"context"
 	"fmt"
 	ent "github.com/kx-boutique/ent/generated"
+	"github.com/kx-boutique/pkg/errors"
 )
 
-func WithTx(ctx context.Context, client *ent.Client, fn func(tx *ent.Tx) (any, error)) (any, error) {
+func WithTx(ctx context.Context, client *ent.Client, fn func(tx *ent.Tx) any) any {
 	tx, err := client.Tx(ctx)
 	if err != nil {
-		return nil, err
+		panic(errors.AppInternalErr(fmt.Sprintf("Error initializing tx: %s", err.Error())))
 	}
 
-	data, err := fn(tx)
-
-	// rollback on error
-	if err != nil {
-		if rerr := rollback(tx); rerr != nil {
-			return nil, rerr
+	defer func() {
+		if v := recover(); v != nil {
+			rerr := rollback(tx)
+			if rerr != nil {
+				panic(errors.AppInternalErr(rerr.Error()))
+			}
+			panic(v)
 		}
-		return nil, err
-	}
+	}()
 
-	// otherwise, commit
+	data := fn(tx)
+
 	if cerr := commit(tx); cerr != nil {
-		return nil, cerr
+		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return data, nil
+	return data
 }
 
 func rollback(tx *ent.Tx) error {
 	if err := tx.Rollback(); err != nil {
-		err = fmt.Errorf("rolling back transaction: %w", err)
+		err = fmt.Errorf("error rolling back transaction: %w", err)
 		return err
 	}
 	return nil
@@ -40,7 +42,7 @@ func rollback(tx *ent.Tx) error {
 
 func commit(tx *ent.Tx) error {
 	if err := tx.Commit(); err != nil {
-		err = fmt.Errorf("committing transaction: %w", err)
+		err = fmt.Errorf("error committing transaction: %w", err)
 		return err
 	}
 	return nil

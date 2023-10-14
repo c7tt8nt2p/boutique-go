@@ -27,12 +27,12 @@ func (r *cartItemRepo) GetEntClient() *ent.Client {
 	return r.data.db
 }
 
-func (r *cartItemRepo) Save(ctx context.Context, client *ent.Client, cie *entModel.CartItem) *entModel.CartItem {
+func (r *cartItemRepo) Save(ctx context.Context, client *ent.Client, m *entModel.CartItem) *entModel.CartItem {
 	ci, err := client.CartItem.
 		Create().
-		SetCartID(cie.CartId).
-		SetProductID(cie.ProductId).
-		SetQty(cie.Qty).
+		SetCartID(m.CartId).
+		SetProductID(m.ProductId).
+		SetQty(m.Qty).
 		Save(ctx)
 	if err != nil {
 		panic(errors.AppInternalErr(err.Error()))

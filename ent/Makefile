@@ -1,4 +1,4 @@
-LOCAL_DB = "postgresql://user:1234@localhost:5432/kx_boutique?search_path=public&sslmode=disable"
+TARGET_DB = "postgresql://user:1234@localhost:5432/kx_boutique?search_path=public&sslmode=disable"
 ATLAS_MIGRATION_FOLDER = "file://migrate/migrations"
 
 .PHONY: atlas-new-migration
@@ -21,12 +21,12 @@ atlas-migrate-from-schema:
 .PHONY: atlas-apply-migration-dry-run
 # apply atlas migration files with dry run
 atlas-apply-migration-dry-run:
-	@atlas migrate apply --dir $(ATLAS_MIGRATION_FOLDER) --url $(LOCAL_DB) --dry-run
+	@atlas migrate apply --dir $(ATLAS_MIGRATION_FOLDER) --url $(TARGET_DB) --dry-run
 
 .PHONY: atlas-apply-migration
 # apply atlas migration files
 atlas-apply-migration:
-	@atlas migrate apply --dir $(ATLAS_MIGRATION_FOLDER) --url $(LOCAL_DB)
+	@atlas migrate apply --dir $(ATLAS_MIGRATION_FOLDER) --url $(TARGET_DB)
 
 .PHONY: atlas-linting
 # make sure that changes will not break things
@@ -36,7 +36,7 @@ atlas-linting:
 .PHONY: atlas-migrate-status
 # get atlas migration status
 atlas-migrate-status:
-	@atlas migrate status --dir $(ATLAS_MIGRATION_FOLDER) --url $(LOCAL_DB)
+	@atlas migrate status --dir $(ATLAS_MIGRATION_FOLDER) --url $(TARGET_DB)
 
 .PHONY: atlas-rehash
 # re-hash atlas migration files
@@ -46,4 +46,4 @@ atlas-rehash:
 .PHONY: atlas-clean-db
 # clean database
 atlas-clean-db:
-	@atlas schema clean -u $(LOCAL_DB)
+	@atlas schema clean -u $(TARGET_DB)

@@ -35,7 +35,8 @@ func initApp(confServer *conf.Server, confData *conf.Data, confClient *conf.Clie
 		return nil, nil, err
 	}
 	checkoutRepo := data.NewCheckoutRepo(dataData, logger)
-	checkoutUseCase := biz.NewCheckoutUseCase(cartClient, checkoutRepo, logger)
+	checkoutItemRepo := data.NewCheckoutItemRepo(dataData, logger)
+	checkoutUseCase := biz.NewCheckoutUseCase(cartClient, checkoutRepo, checkoutItemRepo, logger)
 	checkoutService := service.NewCheckoutService(checkoutUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, logger, authClient, checkoutService)
 	app := newApp(logger, grpcServer)
