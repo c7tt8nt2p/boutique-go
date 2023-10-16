@@ -3,7 +3,6 @@ package data
 import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/google/uuid"
 	"github.com/kx-boutique/app/checkout/service/internal/biz"
 	entModel "github.com/kx-boutique/app/checkout/service/internal/biz/model"
 	ent "github.com/kx-boutique/ent/generated"
@@ -26,7 +25,7 @@ func (r *checkoutRepo) GetEntClient() *ent.Client {
 	return r.data.db
 }
 
-func (r *checkoutRepo) Save(ctx context.Context, client *ent.Client, m *entModel.Checkout) uuid.UUID {
+func (r *checkoutRepo) Save(ctx context.Context, client *ent.Client, m *entModel.Checkout) *ent.Checkout {
 	entity, err := client.Checkout.
 		Create().
 		SetUserID(m.UserId).
@@ -37,5 +36,5 @@ func (r *checkoutRepo) Save(ctx context.Context, client *ent.Client, m *entModel
 		panic(errors.AppInternalErr(err.Error()))
 	}
 
-	return entity.ID
+	return entity
 }

@@ -20,7 +20,9 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Product_CreateProduct_FullMethodName              = "/cart.service.v1.Product/CreateProduct"
-	Product_GetProductById_FullMethodName             = "/cart.service.v1.Product/GetProductById"
+	Product_GetProduct_FullMethodName                 = "/cart.service.v1.Product/GetProduct"
+	Product_UpdateProductStock_FullMethodName         = "/cart.service.v1.Product/UpdateProductStock"
+	Product_SubtractProductStock_FullMethodName       = "/cart.service.v1.Product/SubtractProductStock"
 	Product_ValidatePurchasableProduct_FullMethodName = "/cart.service.v1.Product/ValidatePurchasableProduct"
 )
 
@@ -29,7 +31,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProductClient interface {
 	CreateProduct(ctx context.Context, in *CreateProductReq, opts ...grpc.CallOption) (*CreateProductResp, error)
-	GetProductById(ctx context.Context, in *GetProductByIdReq, opts ...grpc.CallOption) (*GetProductByIdResp, error)
+	GetProduct(ctx context.Context, in *GetProductReq, opts ...grpc.CallOption) (*GetProductResp, error)
+	UpdateProductStock(ctx context.Context, in *UpdateProductStockReq, opts ...grpc.CallOption) (*UpdateProductStockResp, error)
+	SubtractProductStock(ctx context.Context, in *SubtractProductStockReq, opts ...grpc.CallOption) (*SubtractProductStockResp, error)
 	ValidatePurchasableProduct(ctx context.Context, in *ValidatePurchasableProductReq, opts ...grpc.CallOption) (*ValidatePurchasableProductResp, error)
 }
 
@@ -50,9 +54,27 @@ func (c *productClient) CreateProduct(ctx context.Context, in *CreateProductReq,
 	return out, nil
 }
 
-func (c *productClient) GetProductById(ctx context.Context, in *GetProductByIdReq, opts ...grpc.CallOption) (*GetProductByIdResp, error) {
-	out := new(GetProductByIdResp)
-	err := c.cc.Invoke(ctx, Product_GetProductById_FullMethodName, in, out, opts...)
+func (c *productClient) GetProduct(ctx context.Context, in *GetProductReq, opts ...grpc.CallOption) (*GetProductResp, error) {
+	out := new(GetProductResp)
+	err := c.cc.Invoke(ctx, Product_GetProduct_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productClient) UpdateProductStock(ctx context.Context, in *UpdateProductStockReq, opts ...grpc.CallOption) (*UpdateProductStockResp, error) {
+	out := new(UpdateProductStockResp)
+	err := c.cc.Invoke(ctx, Product_UpdateProductStock_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *productClient) SubtractProductStock(ctx context.Context, in *SubtractProductStockReq, opts ...grpc.CallOption) (*SubtractProductStockResp, error) {
+	out := new(SubtractProductStockResp)
+	err := c.cc.Invoke(ctx, Product_SubtractProductStock_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +95,9 @@ func (c *productClient) ValidatePurchasableProduct(ctx context.Context, in *Vali
 // for forward compatibility
 type ProductServer interface {
 	CreateProduct(context.Context, *CreateProductReq) (*CreateProductResp, error)
-	GetProductById(context.Context, *GetProductByIdReq) (*GetProductByIdResp, error)
+	GetProduct(context.Context, *GetProductReq) (*GetProductResp, error)
+	UpdateProductStock(context.Context, *UpdateProductStockReq) (*UpdateProductStockResp, error)
+	SubtractProductStock(context.Context, *SubtractProductStockReq) (*SubtractProductStockResp, error)
 	ValidatePurchasableProduct(context.Context, *ValidatePurchasableProductReq) (*ValidatePurchasableProductResp, error)
 	mustEmbedUnimplementedProductServer()
 }
@@ -85,8 +109,14 @@ type UnimplementedProductServer struct {
 func (UnimplementedProductServer) CreateProduct(context.Context, *CreateProductReq) (*CreateProductResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
 }
-func (UnimplementedProductServer) GetProductById(context.Context, *GetProductByIdReq) (*GetProductByIdResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetProductById not implemented")
+func (UnimplementedProductServer) GetProduct(context.Context, *GetProductReq) (*GetProductResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
+}
+func (UnimplementedProductServer) UpdateProductStock(context.Context, *UpdateProductStockReq) (*UpdateProductStockResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProductStock not implemented")
+}
+func (UnimplementedProductServer) SubtractProductStock(context.Context, *SubtractProductStockReq) (*SubtractProductStockResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubtractProductStock not implemented")
 }
 func (UnimplementedProductServer) ValidatePurchasableProduct(context.Context, *ValidatePurchasableProductReq) (*ValidatePurchasableProductResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ValidatePurchasableProduct not implemented")
@@ -122,20 +152,56 @@ func _Product_CreateProduct_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Product_GetProductById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetProductByIdReq)
+func _Product_GetProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProductReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServer).GetProductById(ctx, in)
+		return srv.(ProductServer).GetProduct(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Product_GetProductById_FullMethodName,
+		FullMethod: Product_GetProduct_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServer).GetProductById(ctx, req.(*GetProductByIdReq))
+		return srv.(ProductServer).GetProduct(ctx, req.(*GetProductReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Product_UpdateProductStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateProductStockReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServer).UpdateProductStock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Product_UpdateProductStock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServer).UpdateProductStock(ctx, req.(*UpdateProductStockReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Product_SubtractProductStock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubtractProductStockReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServer).SubtractProductStock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Product_SubtractProductStock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServer).SubtractProductStock(ctx, req.(*SubtractProductStockReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -170,8 +236,16 @@ var Product_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Product_CreateProduct_Handler,
 		},
 		{
-			MethodName: "GetProductById",
-			Handler:    _Product_GetProductById_Handler,
+			MethodName: "GetProduct",
+			Handler:    _Product_GetProduct_Handler,
+		},
+		{
+			MethodName: "UpdateProductStock",
+			Handler:    _Product_UpdateProductStock_Handler,
+		},
+		{
+			MethodName: "SubtractProductStock",
+			Handler:    _Product_SubtractProductStock_Handler,
 		},
 		{
 			MethodName: "ValidatePurchasableProduct",

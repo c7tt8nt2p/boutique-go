@@ -6,6 +6,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	authv1 "github.com/kx-boutique/api/auth/service/v1"
 	cartv1 "github.com/kx-boutique/api/cart/service/v1"
+	v1 "github.com/kx-boutique/api/product/service/v1"
 	"github.com/kx-boutique/app/checkout/service/internal/conf"
 )
 
@@ -35,6 +36,21 @@ func NewCartClient(conf *conf.Client) (cartv1.CartClient, error) {
 	}
 
 	c := cartv1.NewCartClient(conn)
+
+	return c, nil
+}
+
+func NewProductClient(conf *conf.Client) (v1.ProductClient, error) {
+	conn, err := grpc.DialInsecure(
+		context.Background(),
+		grpc.WithMiddleware(metadata.Client()),
+		grpc.WithEndpoint(conf.ProductService.Url),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	c := v1.NewProductClient(conn)
 
 	return c, nil
 }

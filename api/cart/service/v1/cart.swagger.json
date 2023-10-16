@@ -23,6 +23,9 @@
         "id": {
           "type": "string"
         },
+        "productId": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
@@ -30,7 +33,7 @@
           "type": "number",
           "format": "double"
         },
-        "quantity": {
+        "qty": {
           "type": "integer",
           "format": "int32"
         }
@@ -97,6 +100,10 @@
       "properties": {
         "cartId": {
           "type": "string"
+        },
+        "totalPrice": {
+          "type": "number",
+          "format": "double"
         },
         "items": {
           "type": "array",

@@ -5,6 +5,8 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	pb "github.com/kx-boutique/api/checkout/service/v1"
 	"github.com/kx-boutique/app/checkout/service/internal/biz"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type CheckoutService struct {
@@ -21,8 +23,12 @@ func NewCheckoutService(uc *biz.CheckoutUseCase, logger log.Logger) *CheckoutSer
 	}
 }
 
-func (s *CheckoutService) Checkout(ctx context.Context, req *pb.CheckoutReq) (*pb.CheckoutResp, error) {
-	s.uc.Checkout(ctx, req)
+func (s *CheckoutService) Checkout(ctx context.Context, _ *emptypb.Empty) (*pb.CheckoutResp, error) {
+	co := s.uc.Checkout(ctx, &emptypb.Empty{})
 
-	return &pb.CheckoutResp{}, nil
+	return &pb.CheckoutResp{
+		Id:         co.ID.String(),
+		TotalPrice: co.TotalPrice,
+		CreatedAt:  timestamppb.New(co.CreatedAt),
+	}, nil
 }

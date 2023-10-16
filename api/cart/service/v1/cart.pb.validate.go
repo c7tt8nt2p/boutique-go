@@ -745,6 +745,8 @@ func (m *ViewCartResp) validate(all bool) error {
 
 	// no validation rules for CartId
 
+	// no validation rules for TotalPrice
+
 	for idx, item := range m.GetItems() {
 		_, _ = idx, item
 
@@ -880,11 +882,13 @@ func (m *ViewCartResp_Item) validate(all bool) error {
 
 	// no validation rules for Id
 
+	// no validation rules for ProductId
+
 	// no validation rules for Name
 
 	// no validation rules for Price
 
-	// no validation rules for Quantity
+	// no validation rules for Qty
 
 	if len(errors) > 0 {
 		return ViewCartResp_ItemMultiError(errors)

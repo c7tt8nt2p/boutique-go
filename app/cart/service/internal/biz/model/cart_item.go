@@ -20,8 +20,9 @@ type CartWithProducts struct {
 }
 
 type CartProduct struct {
-	Id    uuid.UUID
-	Name  string
-	Price float64
-	Qty   int32
+	Id        uuid.UUID
+	ProductId uuid.UUID
+	Name      string
+	Price     float64
+	Qty       int32
 }

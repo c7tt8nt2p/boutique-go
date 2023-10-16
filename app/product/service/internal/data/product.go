@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/kx-boutique/app/product/service/internal/biz"
 	entModel "github.com/kx-boutique/app/product/service/internal/biz/model"
+	ent "github.com/kx-boutique/ent/generated"
 	"github.com/kx-boutique/ent/generated/product"
 	"github.com/kx-boutique/pkg/errors"
 )
@@ -22,8 +23,12 @@ func NewProductRepo(data *Data, logger log.Logger) biz.ProductRepo {
 	}
 }
 
-func (r *productRepo) Save(ctx context.Context, p *entModel.Product) *entModel.Product {
-	saved, err := r.data.db.Product.
+func (r *productRepo) GetEntClient() *ent.Client {
+	return r.data.db
+}
+
+func (r *productRepo) Save(ctx context.Context, client *ent.Client, p *entModel.Product) *entModel.Product {
+	saved, err := client.Product.
 		Create().
 		SetName(p.Name).
 		SetDescription(p.Description).
@@ -45,8 +50,8 @@ func (r *productRepo) Save(ctx context.Context, p *entModel.Product) *entModel.P
 	}
 }
 
-func (r *productRepo) FindById(ctx context.Context, id uuid.UUID) *entModel.Product {
-	p, err := r.data.db.Product.Get(ctx, id)
+func (r *productRepo) FindById(ctx context.Context, client *ent.Client, id uuid.UUID) *entModel.Product {
+	p, err := client.Product.Get(ctx, id)
 	if err != nil {
 		panic(errors.AppInternalErr("Product not found"))
 	}
@@ -62,8 +67,50 @@ func (r *productRepo) FindById(ctx context.Context, id uuid.UUID) *entModel.Prod
 	}
 }
 
-func (r *productRepo) IsPurchasable(ctx context.Context, id uuid.UUID, purchaseQty int32) bool {
-	ok, err := r.data.db.Product.
+func (r *productRepo) UpdateStockById(ctx context.Context, client *ent.Client, id uuid.UUID, toStock int32) *entModel.Product {
+	p, err := client.Product.
+		UpdateOneID(id).
+		SetStock(toStock).
+		Save(ctx)
+
+	if err != nil {
+		panic(errors.AppInternalErr("Product not found"))
+	}
+
+	return &entModel.Product{
+		Id:          p.ID,
+		Name:        p.Name,
+		Description: p.Description,
+		Stock:       p.Stock,
+		UnitPrice:   p.UnitPrice,
+		CreatedAt:   p.CreatedAt,
+		UpdatedAt:   p.UpdatedAt,
+	}
+}
+
+func (r *productRepo) SubtractStockById(ctx context.Context, client *ent.Client, id uuid.UUID, toStock int32) *entModel.Product {
+	p, err := client.Product.
+		UpdateOneID(id).
+		AddStock(-toStock).
+		Save(ctx)
+
+	if err != nil {
+		panic(errors.AppInternalErr("Product not found"))
+	}
+
+	return &entModel.Product{
+		Id:          p.ID,
+		Name:        p.Name,
+		Description: p.Description,
+		Stock:       p.Stock,
+		UnitPrice:   p.UnitPrice,
+		CreatedAt:   p.CreatedAt,
+		UpdatedAt:   p.UpdatedAt,
+	}
+}
+
+func (r *productRepo) IsPurchasable(ctx context.Context, client *ent.Client, id uuid.UUID, purchaseQty int32) bool {
+	ok, err := client.Product.
 		Query().
 		Where(
 			product.And(

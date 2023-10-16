@@ -66,10 +66,11 @@ func (r *cartItemRepo) FindByCartId(ctx context.Context, client *ent.Client, car
 	for _, ci := range cis {
 		p := ci.Edges.ProductIDOwner
 		cp = append(cp, &entModel.CartProduct{
-			Id:    ci.ID,
-			Name:  p.Name,
-			Price: p.UnitPrice,
-			Qty:   ci.Qty,
+			Id:        ci.ID,
+			ProductId: ci.ProductID,
+			Name:      p.Name,
+			Price:     p.UnitPrice,
+			Qty:       ci.Qty,
 		})
 	}
 

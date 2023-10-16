@@ -4,13 +4,16 @@ package cart.service.v1;
 
 option go_package = "github.com/kx-boutique/api/checkout/service/v1;v1";
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
-import "validate/validate.proto";
 
 service Checkout {
-  rpc Checkout (CheckoutReq) returns (CheckoutResp) {}
+  rpc Checkout (google.protobuf.Empty) returns (CheckoutResp) {}
 }
 
-message CheckoutReq {}
-message CheckoutResp {}
+message CheckoutResp {
+  string id = 1;;
+  double total_price = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
 

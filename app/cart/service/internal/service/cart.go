@@ -5,6 +5,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	pb "github.com/kx-boutique/api/cart/service/v1"
 	"github.com/kx-boutique/app/cart/service/internal/biz"
+	"github.com/shopspring/decimal"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -49,17 +50,23 @@ func (s *CartService) RemoveItemFromCart(ctx context.Context, req *pb.RemoveItem
 func (s *CartService) ViewCart(ctx context.Context, _ *emptypb.Empty) (*pb.ViewCartResp, error) {
 	var items []*pb.ViewCartResp_Item
 
+	totalPrice := decimal.NewFromFloat(0.0)
 	c := s.uc.ViewCart(ctx)
 	for _, e := range c.Product {
+		totalPriceThisItem := decimal.NewFromFloat(e.Price).Mul(decimal.NewFromInt32(e.Qty))
+		totalPrice = totalPrice.Add(totalPriceThisItem)
+
 		items = append(items, &pb.ViewCartResp_Item{
-			Id:       e.Id.String(),
-			Name:     e.Name,
-			Price:    e.Price,
-			Quantity: e.Qty,
+			Id:        e.Id.String(),
+			ProductId: e.ProductId.String(),
+			Name:      e.Name,
+			Price:     e.Price,
+			Qty:       e.Qty,
 		})
 	}
 	return &pb.ViewCartResp{
-		CartId: c.CartId.String(),
-		Items:  items,
+		CartId:     c.CartId.String(),
+		TotalPrice: totalPrice.InexactFloat64(),
+		Items:      items,
 	}, nil
 }

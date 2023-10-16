@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -26,7 +27,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CheckoutClient interface {
-	Checkout(ctx context.Context, in *CheckoutReq, opts ...grpc.CallOption) (*CheckoutResp, error)
+	Checkout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CheckoutResp, error)
 }
 
 type checkoutClient struct {
@@ -37,7 +38,7 @@ func NewCheckoutClient(cc grpc.ClientConnInterface) CheckoutClient {
 	return &checkoutClient{cc}
 }
 
-func (c *checkoutClient) Checkout(ctx context.Context, in *CheckoutReq, opts ...grpc.CallOption) (*CheckoutResp, error) {
+func (c *checkoutClient) Checkout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CheckoutResp, error) {
 	out := new(CheckoutResp)
 	err := c.cc.Invoke(ctx, Checkout_Checkout_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -50,7 +51,7 @@ func (c *checkoutClient) Checkout(ctx context.Context, in *CheckoutReq, opts ...
 // All implementations must embed UnimplementedCheckoutServer
 // for forward compatibility
 type CheckoutServer interface {
-	Checkout(context.Context, *CheckoutReq) (*CheckoutResp, error)
+	Checkout(context.Context, *emptypb.Empty) (*CheckoutResp, error)
 	mustEmbedUnimplementedCheckoutServer()
 }
 
@@ -58,7 +59,7 @@ type CheckoutServer interface {
 type UnimplementedCheckoutServer struct {
 }
 
-func (UnimplementedCheckoutServer) Checkout(context.Context, *CheckoutReq) (*CheckoutResp, error) {
+func (UnimplementedCheckoutServer) Checkout(context.Context, *emptypb.Empty) (*CheckoutResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Checkout not implemented")
 }
 func (UnimplementedCheckoutServer) mustEmbedUnimplementedCheckoutServer() {}
@@ -75,7 +76,7 @@ func RegisterCheckoutServer(s grpc.ServiceRegistrar, srv CheckoutServer) {
 }
 
 func _Checkout_Checkout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckoutReq)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -87,7 +88,7 @@ func _Checkout_Checkout_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: Checkout_Checkout_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CheckoutServer).Checkout(ctx, req.(*CheckoutReq))
+		return srv.(CheckoutServer).Checkout(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

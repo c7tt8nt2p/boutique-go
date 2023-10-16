@@ -34,10 +34,10 @@ func (s *ProductService) CreateProduct(ctx context.Context, req *pb.CreateProduc
 	}, nil
 }
 
-func (s *ProductService) GetProductById(ctx context.Context, req *pb.GetProductByIdReq) (*pb.GetProductByIdResp, error) {
+func (s *ProductService) GetProduct(ctx context.Context, req *pb.GetProductReq) (*pb.GetProductResp, error) {
 	p := s.uc.GetProductById(ctx, req)
 
-	return &pb.GetProductByIdResp{
+	return &pb.GetProductResp{
 		Id:          p.Id.String(),
 		Name:        p.Name,
 		Description: p.Description,
@@ -45,6 +45,24 @@ func (s *ProductService) GetProductById(ctx context.Context, req *pb.GetProductB
 		UnitPrice:   p.UnitPrice,
 		CreatedAt:   timestamppb.New(p.CreatedAt),
 		UpdatedAt:   timestamppb.New(p.UpdatedAt),
+	}, nil
+}
+
+func (s *ProductService) UpdateProductStock(ctx context.Context, req *pb.UpdateProductStockReq) (*pb.UpdateProductStockResp, error) {
+	p := s.uc.UpdateProductStock(ctx, req)
+
+	return &pb.UpdateProductStockResp{
+		Id:    p.Id.String(),
+		Stock: p.Stock,
+	}, nil
+}
+
+func (s *ProductService) SubtractProductStock(ctx context.Context, req *pb.SubtractProductStockReq) (*pb.SubtractProductStockResp, error) {
+	p := s.uc.SubtractProductStock(ctx, req)
+
+	return &pb.SubtractProductStockResp{
+		Id:    p.Id.String(),
+		Stock: p.Stock,
 	}, nil
 }
 

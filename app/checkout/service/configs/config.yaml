@@ -15,3 +15,6 @@ client:
     url: localhost:8999
   cart_service:
     url: localhost:9002
+  product_service:
+    url: localhost:9001
+

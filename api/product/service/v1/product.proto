@@ -9,7 +9,9 @@ import "validate/validate.proto";
 
 service Product {
   rpc CreateProduct (CreateProductReq) returns (CreateProductResp) {}
-  rpc GetProductById (GetProductByIdReq) returns (GetProductByIdResp) {}
+  rpc GetProduct (GetProductReq) returns (GetProductResp) {}
+  rpc UpdateProductStock (UpdateProductStockReq) returns (UpdateProductStockResp) {}
+  rpc SubtractProductStock (SubtractProductStockReq) returns (SubtractProductStockResp) {}
   rpc ValidatePurchasableProduct (ValidatePurchasableProductReq) returns (ValidatePurchasableProductResp) {}
 }
 
@@ -28,11 +30,11 @@ message CreateProductResp {
   double unit_price = 5;
 }
 
-message GetProductByIdReq {
+message GetProductReq {
   string id = 1 [(validate.rules).string.uuid = true];
 }
 
-message GetProductByIdResp {
+message GetProductResp {
   string id = 1;
   string name = 2;
   string description = 3;
@@ -40,6 +42,30 @@ message GetProductByIdResp {
   double unit_price = 5;
   google.protobuf.Timestamp created_at = 6;
   google.protobuf.Timestamp updated_at = 7;
+}
+
+message UpdateProductStockReq {
+  string id = 1 [(validate.rules).string.uuid = true];
+  int32 stock = 2 [(validate.rules).int32 = {gt: 0}];
+}
+
+message UpdateProductStockResp {
+  string id = 1;
+  int32 stock = 2;
+}
+
+message SubtractProductStockReq {
+  string id = 1 [(validate.rules).string.uuid = true];
+  int32 subtract_stock = 2 [(validate.rules).int32 = {gt: 0}];
+}
+
+message SubtractProductStockResp {
+  string id = 1;
+  int32 stock = 2;
+}
+
+message UpdateProductReq {
+  string id = 1 [(validate.rules).string.uuid = true];
 }
 
 message ValidatePurchasableProductReq {

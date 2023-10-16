@@ -67,7 +67,7 @@
         }
       }
     },
-    "v1GetProductByIdResp": {
+    "v1GetProductResp": {
       "type": "object",
       "properties": {
         "id": {
@@ -94,6 +94,30 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1SubtractProductStockResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "stock": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1UpdateProductStockResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "stock": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

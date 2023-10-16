@@ -35,105 +35,6 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on CheckoutReq with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *CheckoutReq) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on CheckoutReq with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in CheckoutReqMultiError, or
-// nil if none found.
-func (m *CheckoutReq) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *CheckoutReq) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if len(errors) > 0 {
-		return CheckoutReqMultiError(errors)
-	}
-
-	return nil
-}
-
-// CheckoutReqMultiError is an error wrapping multiple validation errors
-// returned by CheckoutReq.ValidateAll() if the designated constraints aren't met.
-type CheckoutReqMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m CheckoutReqMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m CheckoutReqMultiError) AllErrors() []error { return m }
-
-// CheckoutReqValidationError is the validation error returned by
-// CheckoutReq.Validate if the designated constraints aren't met.
-type CheckoutReqValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e CheckoutReqValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e CheckoutReqValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e CheckoutReqValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e CheckoutReqValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e CheckoutReqValidationError) ErrorName() string { return "CheckoutReqValidationError" }
-
-// Error satisfies the builtin error interface
-func (e CheckoutReqValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sCheckoutReq.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = CheckoutReqValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = CheckoutReqValidationError{}
-
 // Validate checks the field values on CheckoutResp with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -155,6 +56,39 @@ func (m *CheckoutResp) validate(all bool) error {
 	}
 
 	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for TotalPrice
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CheckoutRespValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CheckoutRespValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CheckoutRespValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return CheckoutRespMultiError(errors)
