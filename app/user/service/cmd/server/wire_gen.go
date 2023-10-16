@@ -17,6 +17,10 @@ import (
 	"github.com/kx-boutique/app/user/service/internal/service"
 )
 
+import (
+	_ "github.com/kx-boutique/pkg/codec"
+)
+
 // Injectors from wire.go:
 
 // initApp init kratos application.

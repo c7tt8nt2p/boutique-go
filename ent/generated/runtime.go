@@ -34,12 +34,16 @@ func init() {
 	cart.DefaultID = cartDescID.Default.(func() uuid.UUID)
 	cartitemFields := schema.CartItem{}.Fields()
 	_ = cartitemFields
+	// cartitemDescCheckedOut is the schema descriptor for checked_out field.
+	cartitemDescCheckedOut := cartitemFields[4].Descriptor()
+	// cartitem.DefaultCheckedOut holds the default value on creation for the checked_out field.
+	cartitem.DefaultCheckedOut = cartitemDescCheckedOut.Default.(bool)
 	// cartitemDescCreatedAt is the schema descriptor for created_at field.
-	cartitemDescCreatedAt := cartitemFields[4].Descriptor()
+	cartitemDescCreatedAt := cartitemFields[5].Descriptor()
 	// cartitem.DefaultCreatedAt holds the default value on creation for the created_at field.
 	cartitem.DefaultCreatedAt = cartitemDescCreatedAt.Default.(func() time.Time)
 	// cartitemDescUpdatedAt is the schema descriptor for updated_at field.
-	cartitemDescUpdatedAt := cartitemFields[5].Descriptor()
+	cartitemDescUpdatedAt := cartitemFields[6].Descriptor()
 	// cartitem.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	cartitem.DefaultUpdatedAt = cartitemDescUpdatedAt.Default.(func() time.Time)
 	// cartitemDescID is the schema descriptor for id field.

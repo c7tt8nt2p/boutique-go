@@ -27,6 +27,8 @@ type CartItem struct {
 	ProductID uuid.UUID `json:"product_id,omitempty"`
 	// Qty holds the value of the "qty" field.
 	Qty int32 `json:"qty,omitempty"`
+	// CheckedOut holds the value of the "checked_out" field.
+	CheckedOut bool `json:"checked_out,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -94,6 +96,8 @@ func (*CartItem) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case cartitem.FieldCheckedOut:
+			values[i] = new(sql.NullBool)
 		case cartitem.FieldQty:
 			values[i] = new(sql.NullInt64)
 		case cartitem.FieldCreatedAt, cartitem.FieldUpdatedAt:
@@ -138,6 +142,12 @@ func (ci *CartItem) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field qty", values[i])
 			} else if value.Valid {
 				ci.Qty = int32(value.Int64)
+			}
+		case cartitem.FieldCheckedOut:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field checked_out", values[i])
+			} else if value.Valid {
+				ci.CheckedOut = value.Bool
 			}
 		case cartitem.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -210,6 +220,9 @@ func (ci *CartItem) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("qty=")
 	builder.WriteString(fmt.Sprintf("%v", ci.Qty))
+	builder.WriteString(", ")
+	builder.WriteString("checked_out=")
+	builder.WriteString(fmt.Sprintf("%v", ci.CheckedOut))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ci.CreatedAt.Format(time.ANSIC))

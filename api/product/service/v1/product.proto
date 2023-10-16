@@ -64,10 +64,6 @@ message SubtractProductStockResp {
   int32 stock = 2;
 }
 
-message UpdateProductReq {
-  string id = 1 [(validate.rules).string.uuid = true];
-}
-
 message ValidatePurchasableProductReq {
   string id = 1 [(validate.rules).string.uuid = true];
   int32 qty = 2 [(validate.rules).int32.gt = 0];

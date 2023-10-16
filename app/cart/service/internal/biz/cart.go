@@ -21,9 +21,10 @@ type CartRepo interface {
 type CartItemRepo interface {
 	GetEntClient() *ent.Client
 	Save(ctx context.Context, client *ent.Client, cie *entModel.CartItem) *entModel.CartItem
-	FindByCartId(ctx context.Context, client *ent.Client, cartId uuid.UUID) *entModel.CartWithProducts
-	ExistsByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) bool
-	DeleteByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) uuid.UUID
+	FindByCartIdAndCheckedOutIsFalse(ctx context.Context, client *ent.Client, cartId uuid.UUID) *entModel.CartWithProducts
+	ExistsByCartIdAndProductIdAndCheckedOutIsFalse(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) bool
+	UpdateCheckedOutTrueByIdsIn(ctx context.Context, client *ent.Client, ids []uuid.UUID) []uuid.UUID
+	DeleteByCartIdAndProductIdAndCheckedOutIsFalse(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) uuid.UUID
 }
 
 type CartUseCase struct {
@@ -72,13 +73,6 @@ func (uc *CartUseCase) AddItemToCart(ctx context.Context, req *pb.AddItemToCartR
 		})
 }
 
-func (uc *CartUseCase) RemoveItemFromCart(ctx context.Context, req *pb.RemoveItemFromCartReq) uuid.UUID {
-	cartId := findMyCartId(ctx, uc)
-	productId := util.ParseUUID(req.ProductId)
-
-	return uc.cartItemRepo.DeleteByCartIdAndProductId(ctx, uc.cartItemRepo.GetEntClient(), cartId, productId)
-}
-
 func validateAddItemToCart(ctx context.Context, uc *CartUseCase, req *pb.AddItemToCartReq) {
 	v, err := uc.productClient.ValidatePurchasableProduct(ctx, &v1.ValidatePurchasableProductReq{
 		Id:  req.ProductId,
@@ -93,18 +87,33 @@ func validateAddItemToCart(ctx context.Context, uc *CartUseCase, req *pb.AddItem
 }
 
 func validateItemAlreadyInCart(ctx context.Context, uc *CartUseCase, cartId uuid.UUID, productId uuid.UUID) {
-	exist := uc.cartItemRepo.ExistsByCartIdAndProductId(ctx, uc.cartItemRepo.GetEntClient(), cartId, productId)
+	exist := uc.cartItemRepo.ExistsByCartIdAndProductIdAndCheckedOutIsFalse(ctx, uc.cartItemRepo.GetEntClient(), cartId, productId)
 	if exist {
 		panic(errors.AppValidationErr("Item already exists in the cart"))
 	}
 }
 
-func (uc *CartUseCase) ViewCart(ctx context.Context) *entModel.CartWithProducts {
+func (uc *CartUseCase) RemoveItemFromCart(ctx context.Context, req *pb.RemoveItemFromCartReq) uuid.UUID {
+	cartId := findMyCartId(ctx, uc)
+	productId := util.ParseUUID(req.ProductId)
+
+	return uc.cartItemRepo.DeleteByCartIdAndProductIdAndCheckedOutIsFalse(ctx, uc.cartItemRepo.GetEntClient(), cartId, productId)
+}
+
+func (uc *CartUseCase) CheckOutCartItem(ctx context.Context, req *pb.CheckOutCartItemReq) []uuid.UUID {
+	uuids := make([]uuid.UUID, len(req.Ids))
+	for i, id := range req.Ids {
+		uuids[i] = util.ParseUUID(id)
+	}
+	return uc.cartItemRepo.UpdateCheckedOutTrueByIdsIn(ctx, uc.cartItemRepo.GetEntClient(), uuids)
+}
+
+func (uc *CartUseCase) ViewMyCart(ctx context.Context) *entModel.CartWithProducts {
 	myself := util.Me(ctx)
 	userId := util.ParseUUID(myself.UserId)
 
 	cartId := uc.cartRepo.FindIdByUserId(ctx, uc.cartRepo.GetEntClient(), userId)
-	result := uc.cartItemRepo.FindByCartId(ctx, uc.cartItemRepo.GetEntClient(), cartId)
+	result := uc.cartItemRepo.FindByCartIdAndCheckedOutIsFalse(ctx, uc.cartItemRepo.GetEntClient(), cartId)
 
 	return result
 }

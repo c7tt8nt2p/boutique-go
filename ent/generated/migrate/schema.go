@@ -51,6 +51,7 @@ var (
 	CartItemsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "qty", Type: field.TypeInt32},
+		{Name: "checked_out", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "cart_id", Type: field.TypeUUID},
@@ -64,13 +65,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cart_items_carts_cart_item",
-				Columns:    []*schema.Column{CartItemsColumns[4]},
+				Columns:    []*schema.Column{CartItemsColumns[5]},
 				RefColumns: []*schema.Column{CartsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "cart_items_products_cart_item",
-				Columns:    []*schema.Column{CartItemsColumns[5]},
+				Columns:    []*schema.Column{CartItemsColumns[6]},
 				RefColumns: []*schema.Column{ProductsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

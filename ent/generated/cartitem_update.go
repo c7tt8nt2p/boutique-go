@@ -57,6 +57,20 @@ func (ciu *CartItemUpdate) AddQty(i int32) *CartItemUpdate {
 	return ciu
 }
 
+// SetCheckedOut sets the "checked_out" field.
+func (ciu *CartItemUpdate) SetCheckedOut(b bool) *CartItemUpdate {
+	ciu.mutation.SetCheckedOut(b)
+	return ciu
+}
+
+// SetNillableCheckedOut sets the "checked_out" field if the given value is not nil.
+func (ciu *CartItemUpdate) SetNillableCheckedOut(b *bool) *CartItemUpdate {
+	if b != nil {
+		ciu.SetCheckedOut(*b)
+	}
+	return ciu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ciu *CartItemUpdate) SetCreatedAt(t time.Time) *CartItemUpdate {
 	ciu.mutation.SetCreatedAt(t)
@@ -205,6 +219,9 @@ func (ciu *CartItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ciu.mutation.AddedQty(); ok {
 		_spec.AddField(cartitem.FieldQty, field.TypeInt32, value)
 	}
+	if value, ok := ciu.mutation.CheckedOut(); ok {
+		_spec.SetField(cartitem.FieldCheckedOut, field.TypeBool, value)
+	}
 	if value, ok := ciu.mutation.CreatedAt(); ok {
 		_spec.SetField(cartitem.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -340,6 +357,20 @@ func (ciuo *CartItemUpdateOne) SetQty(i int32) *CartItemUpdateOne {
 // AddQty adds i to the "qty" field.
 func (ciuo *CartItemUpdateOne) AddQty(i int32) *CartItemUpdateOne {
 	ciuo.mutation.AddQty(i)
+	return ciuo
+}
+
+// SetCheckedOut sets the "checked_out" field.
+func (ciuo *CartItemUpdateOne) SetCheckedOut(b bool) *CartItemUpdateOne {
+	ciuo.mutation.SetCheckedOut(b)
+	return ciuo
+}
+
+// SetNillableCheckedOut sets the "checked_out" field if the given value is not nil.
+func (ciuo *CartItemUpdateOne) SetNillableCheckedOut(b *bool) *CartItemUpdateOne {
+	if b != nil {
+		ciuo.SetCheckedOut(*b)
+	}
 	return ciuo
 }
 
@@ -520,6 +551,9 @@ func (ciuo *CartItemUpdateOne) sqlSave(ctx context.Context) (_node *CartItem, er
 	}
 	if value, ok := ciuo.mutation.AddedQty(); ok {
 		_spec.AddField(cartitem.FieldQty, field.TypeInt32, value)
+	}
+	if value, ok := ciuo.mutation.CheckedOut(); ok {
+		_spec.SetField(cartitem.FieldCheckedOut, field.TypeBool, value)
 	}
 	if value, ok := ciuo.mutation.CreatedAt(); ok {
 		_spec.SetField(cartitem.FieldCreatedAt, field.TypeTime, value)

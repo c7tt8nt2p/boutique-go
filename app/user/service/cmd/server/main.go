@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	_ "github.com/kx-boutique/pkg/codec"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"

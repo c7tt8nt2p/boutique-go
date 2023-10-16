@@ -721,22 +721,251 @@ var _ interface {
 	ErrorName() string
 } = RemoveItemFromCartRespValidationError{}
 
-// Validate checks the field values on ViewCartResp with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *ViewCartResp) Validate() error {
+// Validate checks the field values on CheckOutCartItemReq with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CheckOutCartItemReq) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ViewCartResp with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in ViewCartRespMultiError, or
-// nil if none found.
-func (m *ViewCartResp) ValidateAll() error {
+// ValidateAll checks the field values on CheckOutCartItemReq with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CheckOutCartItemReqMultiError, or nil if none found.
+func (m *CheckOutCartItemReq) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ViewCartResp) validate(all bool) error {
+func (m *CheckOutCartItemReq) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetIds() {
+		_, _ = idx, item
+
+		if err := m._validateUuid(item); err != nil {
+			err = CheckOutCartItemReqValidationError{
+				field:  fmt.Sprintf("Ids[%v]", idx),
+				reason: "value must be a valid UUID",
+				cause:  err,
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return CheckOutCartItemReqMultiError(errors)
+	}
+
+	return nil
+}
+
+func (m *CheckOutCartItemReq) _validateUuid(uuid string) error {
+	if matched := _cart_uuidPattern.MatchString(uuid); !matched {
+		return errors.New("invalid uuid format")
+	}
+
+	return nil
+}
+
+// CheckOutCartItemReqMultiError is an error wrapping multiple validation
+// errors returned by CheckOutCartItemReq.ValidateAll() if the designated
+// constraints aren't met.
+type CheckOutCartItemReqMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CheckOutCartItemReqMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CheckOutCartItemReqMultiError) AllErrors() []error { return m }
+
+// CheckOutCartItemReqValidationError is the validation error returned by
+// CheckOutCartItemReq.Validate if the designated constraints aren't met.
+type CheckOutCartItemReqValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CheckOutCartItemReqValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CheckOutCartItemReqValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CheckOutCartItemReqValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CheckOutCartItemReqValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CheckOutCartItemReqValidationError) ErrorName() string {
+	return "CheckOutCartItemReqValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CheckOutCartItemReqValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCheckOutCartItemReq.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CheckOutCartItemReqValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CheckOutCartItemReqValidationError{}
+
+// Validate checks the field values on CheckOutCartItemResp with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CheckOutCartItemResp) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CheckOutCartItemResp with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CheckOutCartItemRespMultiError, or nil if none found.
+func (m *CheckOutCartItemResp) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CheckOutCartItemResp) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return CheckOutCartItemRespMultiError(errors)
+	}
+
+	return nil
+}
+
+// CheckOutCartItemRespMultiError is an error wrapping multiple validation
+// errors returned by CheckOutCartItemResp.ValidateAll() if the designated
+// constraints aren't met.
+type CheckOutCartItemRespMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CheckOutCartItemRespMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CheckOutCartItemRespMultiError) AllErrors() []error { return m }
+
+// CheckOutCartItemRespValidationError is the validation error returned by
+// CheckOutCartItemResp.Validate if the designated constraints aren't met.
+type CheckOutCartItemRespValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CheckOutCartItemRespValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CheckOutCartItemRespValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CheckOutCartItemRespValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CheckOutCartItemRespValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CheckOutCartItemRespValidationError) ErrorName() string {
+	return "CheckOutCartItemRespValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CheckOutCartItemRespValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCheckOutCartItemResp.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CheckOutCartItemRespValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CheckOutCartItemRespValidationError{}
+
+// Validate checks the field values on ViewMyCartResp with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ViewMyCartResp) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ViewMyCartResp with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ViewMyCartRespMultiError,
+// or nil if none found.
+func (m *ViewMyCartResp) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ViewMyCartResp) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -754,7 +983,7 @@ func (m *ViewCartResp) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ViewCartRespValidationError{
+					errors = append(errors, ViewMyCartRespValidationError{
 						field:  fmt.Sprintf("Items[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -762,7 +991,7 @@ func (m *ViewCartResp) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, ViewCartRespValidationError{
+					errors = append(errors, ViewMyCartRespValidationError{
 						field:  fmt.Sprintf("Items[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -771,7 +1000,7 @@ func (m *ViewCartResp) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ViewCartRespValidationError{
+				return ViewMyCartRespValidationError{
 					field:  fmt.Sprintf("Items[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -782,18 +1011,19 @@ func (m *ViewCartResp) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return ViewCartRespMultiError(errors)
+		return ViewMyCartRespMultiError(errors)
 	}
 
 	return nil
 }
 
-// ViewCartRespMultiError is an error wrapping multiple validation errors
-// returned by ViewCartResp.ValidateAll() if the designated constraints aren't met.
-type ViewCartRespMultiError []error
+// ViewMyCartRespMultiError is an error wrapping multiple validation errors
+// returned by ViewMyCartResp.ValidateAll() if the designated constraints
+// aren't met.
+type ViewMyCartRespMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ViewCartRespMultiError) Error() string {
+func (m ViewMyCartRespMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -802,11 +1032,11 @@ func (m ViewCartRespMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ViewCartRespMultiError) AllErrors() []error { return m }
+func (m ViewMyCartRespMultiError) AllErrors() []error { return m }
 
-// ViewCartRespValidationError is the validation error returned by
-// ViewCartResp.Validate if the designated constraints aren't met.
-type ViewCartRespValidationError struct {
+// ViewMyCartRespValidationError is the validation error returned by
+// ViewMyCartResp.Validate if the designated constraints aren't met.
+type ViewMyCartRespValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -814,22 +1044,22 @@ type ViewCartRespValidationError struct {
 }
 
 // Field function returns field value.
-func (e ViewCartRespValidationError) Field() string { return e.field }
+func (e ViewMyCartRespValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ViewCartRespValidationError) Reason() string { return e.reason }
+func (e ViewMyCartRespValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ViewCartRespValidationError) Cause() error { return e.cause }
+func (e ViewMyCartRespValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ViewCartRespValidationError) Key() bool { return e.key }
+func (e ViewMyCartRespValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ViewCartRespValidationError) ErrorName() string { return "ViewCartRespValidationError" }
+func (e ViewMyCartRespValidationError) ErrorName() string { return "ViewMyCartRespValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ViewCartRespValidationError) Error() string {
+func (e ViewMyCartRespValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -841,14 +1071,14 @@ func (e ViewCartRespValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sViewCartResp.%s: %s%s",
+		"invalid %sViewMyCartResp.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ViewCartRespValidationError{}
+var _ error = ViewMyCartRespValidationError{}
 
 var _ interface {
 	Field() string
@@ -856,24 +1086,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ViewCartRespValidationError{}
+} = ViewMyCartRespValidationError{}
 
-// Validate checks the field values on ViewCartResp_Item with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *ViewCartResp_Item) Validate() error {
+// Validate checks the field values on ViewMyCartResp_Item with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ViewMyCartResp_Item) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ViewCartResp_Item with the rules
+// ValidateAll checks the field values on ViewMyCartResp_Item with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// ViewCartResp_ItemMultiError, or nil if none found.
-func (m *ViewCartResp_Item) ValidateAll() error {
+// ViewMyCartResp_ItemMultiError, or nil if none found.
+func (m *ViewMyCartResp_Item) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ViewCartResp_Item) validate(all bool) error {
+func (m *ViewMyCartResp_Item) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -891,19 +1121,19 @@ func (m *ViewCartResp_Item) validate(all bool) error {
 	// no validation rules for Qty
 
 	if len(errors) > 0 {
-		return ViewCartResp_ItemMultiError(errors)
+		return ViewMyCartResp_ItemMultiError(errors)
 	}
 
 	return nil
 }
 
-// ViewCartResp_ItemMultiError is an error wrapping multiple validation errors
-// returned by ViewCartResp_Item.ValidateAll() if the designated constraints
-// aren't met.
-type ViewCartResp_ItemMultiError []error
+// ViewMyCartResp_ItemMultiError is an error wrapping multiple validation
+// errors returned by ViewMyCartResp_Item.ValidateAll() if the designated
+// constraints aren't met.
+type ViewMyCartResp_ItemMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ViewCartResp_ItemMultiError) Error() string {
+func (m ViewMyCartResp_ItemMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -912,11 +1142,11 @@ func (m ViewCartResp_ItemMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ViewCartResp_ItemMultiError) AllErrors() []error { return m }
+func (m ViewMyCartResp_ItemMultiError) AllErrors() []error { return m }
 
-// ViewCartResp_ItemValidationError is the validation error returned by
-// ViewCartResp_Item.Validate if the designated constraints aren't met.
-type ViewCartResp_ItemValidationError struct {
+// ViewMyCartResp_ItemValidationError is the validation error returned by
+// ViewMyCartResp_Item.Validate if the designated constraints aren't met.
+type ViewMyCartResp_ItemValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -924,24 +1154,24 @@ type ViewCartResp_ItemValidationError struct {
 }
 
 // Field function returns field value.
-func (e ViewCartResp_ItemValidationError) Field() string { return e.field }
+func (e ViewMyCartResp_ItemValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ViewCartResp_ItemValidationError) Reason() string { return e.reason }
+func (e ViewMyCartResp_ItemValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ViewCartResp_ItemValidationError) Cause() error { return e.cause }
+func (e ViewMyCartResp_ItemValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ViewCartResp_ItemValidationError) Key() bool { return e.key }
+func (e ViewMyCartResp_ItemValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ViewCartResp_ItemValidationError) ErrorName() string {
-	return "ViewCartResp_ItemValidationError"
+func (e ViewMyCartResp_ItemValidationError) ErrorName() string {
+	return "ViewMyCartResp_ItemValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ViewCartResp_ItemValidationError) Error() string {
+func (e ViewMyCartResp_ItemValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -953,14 +1183,14 @@ func (e ViewCartResp_ItemValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sViewCartResp_Item.%s: %s%s",
+		"invalid %sViewMyCartResp_Item.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ViewCartResp_ItemValidationError{}
+var _ error = ViewMyCartResp_ItemValidationError{}
 
 var _ interface {
 	Field() string
@@ -968,4 +1198,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ViewCartResp_ItemValidationError{}
+} = ViewMyCartResp_ItemValidationError{}

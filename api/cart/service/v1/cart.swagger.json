@@ -17,7 +17,7 @@
   ],
   "paths": {},
   "definitions": {
-    "ViewCartRespItem": {
+    "ViewMyCartRespItem": {
       "type": "object",
       "properties": {
         "id": {
@@ -79,6 +79,17 @@
         }
       }
     },
+    "v1CheckOutCartItemResp": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "v1NewCartResp": {
       "type": "object",
       "properties": {
@@ -95,7 +106,7 @@
         }
       }
     },
-    "v1ViewCartResp": {
+    "v1ViewMyCartResp": {
       "type": "object",
       "properties": {
         "cartId": {
@@ -109,7 +120,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/ViewCartRespItem"
+            "$ref": "#/definitions/ViewMyCartRespItem"
           }
         }
       }

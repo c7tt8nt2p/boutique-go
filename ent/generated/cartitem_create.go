@@ -42,6 +42,20 @@ func (cic *CartItemCreate) SetQty(i int32) *CartItemCreate {
 	return cic
 }
 
+// SetCheckedOut sets the "checked_out" field.
+func (cic *CartItemCreate) SetCheckedOut(b bool) *CartItemCreate {
+	cic.mutation.SetCheckedOut(b)
+	return cic
+}
+
+// SetNillableCheckedOut sets the "checked_out" field if the given value is not nil.
+func (cic *CartItemCreate) SetNillableCheckedOut(b *bool) *CartItemCreate {
+	if b != nil {
+		cic.SetCheckedOut(*b)
+	}
+	return cic
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cic *CartItemCreate) SetCreatedAt(t time.Time) *CartItemCreate {
 	cic.mutation.SetCreatedAt(t)
@@ -160,6 +174,10 @@ func (cic *CartItemCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (cic *CartItemCreate) defaults() {
+	if _, ok := cic.mutation.CheckedOut(); !ok {
+		v := cartitem.DefaultCheckedOut
+		cic.mutation.SetCheckedOut(v)
+	}
 	if _, ok := cic.mutation.CreatedAt(); !ok {
 		v := cartitem.DefaultCreatedAt()
 		cic.mutation.SetCreatedAt(v)
@@ -184,6 +202,9 @@ func (cic *CartItemCreate) check() error {
 	}
 	if _, ok := cic.mutation.Qty(); !ok {
 		return &ValidationError{Name: "qty", err: errors.New(`generated: missing required field "CartItem.qty"`)}
+	}
+	if _, ok := cic.mutation.CheckedOut(); !ok {
+		return &ValidationError{Name: "checked_out", err: errors.New(`generated: missing required field "CartItem.checked_out"`)}
 	}
 	if _, ok := cic.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "CartItem.created_at"`)}
@@ -235,6 +256,10 @@ func (cic *CartItemCreate) createSpec() (*CartItem, *sqlgraph.CreateSpec) {
 	if value, ok := cic.mutation.Qty(); ok {
 		_spec.SetField(cartitem.FieldQty, field.TypeInt32, value)
 		_node.Qty = value
+	}
+	if value, ok := cic.mutation.CheckedOut(); ok {
+		_spec.SetField(cartitem.FieldCheckedOut, field.TypeBool, value)
+		_node.CheckedOut = value
 	}
 	if value, ok := cic.mutation.CreatedAt(); ok {
 		_spec.SetField(cartitem.FieldCreatedAt, field.TypeTime, value)

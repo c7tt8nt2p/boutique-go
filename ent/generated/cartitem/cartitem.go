@@ -21,6 +21,8 @@ const (
 	FieldProductID = "product_id"
 	// FieldQty holds the string denoting the qty field in the database.
 	FieldQty = "qty"
+	// FieldCheckedOut holds the string denoting the checked_out field in the database.
+	FieldCheckedOut = "checked_out"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -62,6 +64,7 @@ var Columns = []string{
 	FieldCartID,
 	FieldProductID,
 	FieldQty,
+	FieldCheckedOut,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -77,6 +80,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultCheckedOut holds the default value on creation for the "checked_out" field.
+	DefaultCheckedOut bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -106,6 +111,11 @@ func ByProductID(opts ...sql.OrderTermOption) OrderOption {
 // ByQty orders the results by the qty field.
 func ByQty(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldQty, opts...).ToFunc()
+}
+
+// ByCheckedOut orders the results by the checked_out field.
+func ByCheckedOut(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCheckedOut, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

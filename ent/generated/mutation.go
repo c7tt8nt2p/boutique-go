@@ -985,6 +985,7 @@ type CartItemMutation struct {
 	id                      *uuid.UUID
 	qty                     *int32
 	addqty                  *int32
+	checked_out             *bool
 	created_at              *time.Time
 	updated_at              *time.Time
 	clearedFields           map[string]struct{}
@@ -1231,6 +1232,42 @@ func (m *CartItemMutation) ResetQty() {
 	m.addqty = nil
 }
 
+// SetCheckedOut sets the "checked_out" field.
+func (m *CartItemMutation) SetCheckedOut(b bool) {
+	m.checked_out = &b
+}
+
+// CheckedOut returns the value of the "checked_out" field in the mutation.
+func (m *CartItemMutation) CheckedOut() (r bool, exists bool) {
+	v := m.checked_out
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCheckedOut returns the old "checked_out" field's value of the CartItem entity.
+// If the CartItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CartItemMutation) OldCheckedOut(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCheckedOut is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCheckedOut requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCheckedOut: %w", err)
+	}
+	return oldValue.CheckedOut, nil
+}
+
+// ResetCheckedOut resets all changes to the "checked_out" field.
+func (m *CartItemMutation) ResetCheckedOut() {
+	m.checked_out = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *CartItemMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -1456,7 +1493,7 @@ func (m *CartItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CartItemMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.cart_id_owner != nil {
 		fields = append(fields, cartitem.FieldCartID)
 	}
@@ -1465,6 +1502,9 @@ func (m *CartItemMutation) Fields() []string {
 	}
 	if m.qty != nil {
 		fields = append(fields, cartitem.FieldQty)
+	}
+	if m.checked_out != nil {
+		fields = append(fields, cartitem.FieldCheckedOut)
 	}
 	if m.created_at != nil {
 		fields = append(fields, cartitem.FieldCreatedAt)
@@ -1486,6 +1526,8 @@ func (m *CartItemMutation) Field(name string) (ent.Value, bool) {
 		return m.ProductID()
 	case cartitem.FieldQty:
 		return m.Qty()
+	case cartitem.FieldCheckedOut:
+		return m.CheckedOut()
 	case cartitem.FieldCreatedAt:
 		return m.CreatedAt()
 	case cartitem.FieldUpdatedAt:
@@ -1505,6 +1547,8 @@ func (m *CartItemMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldProductID(ctx)
 	case cartitem.FieldQty:
 		return m.OldQty(ctx)
+	case cartitem.FieldCheckedOut:
+		return m.OldCheckedOut(ctx)
 	case cartitem.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case cartitem.FieldUpdatedAt:
@@ -1538,6 +1582,13 @@ func (m *CartItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetQty(v)
+		return nil
+	case cartitem.FieldCheckedOut:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCheckedOut(v)
 		return nil
 	case cartitem.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1625,6 +1676,9 @@ func (m *CartItemMutation) ResetField(name string) error {
 		return nil
 	case cartitem.FieldQty:
 		m.ResetQty()
+		return nil
+	case cartitem.FieldCheckedOut:
+		m.ResetCheckedOut()
 		return nil
 	case cartitem.FieldCreatedAt:
 		m.ResetCreatedAt()

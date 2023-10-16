@@ -11,7 +11,7 @@ atlas-new-migration:
 # create atlas migration files from ent schema
 # it loads current states by executing migration files in $ATLAS_MIGRATION_FOLDER into
 # docker test db and compares states against ent schema to generate a new migration plan
-MIGRATION_NAME = "add_checkout"
+MIGRATION_NAME = "add_cart_items_checked_out"
 atlas-migrate-from-schema:
 	@atlas migrate diff $(MIGRATION_NAME) \
       --dir "$(ATLAS_MIGRATION_FOLDER)" \

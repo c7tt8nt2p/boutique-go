@@ -6,12 +6,13 @@ import (
 )
 
 type CartItem struct {
-	Id        uuid.UUID
-	CartId    uuid.UUID
-	ProductId uuid.UUID
-	Qty       int32
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Id         uuid.UUID
+	CartId     uuid.UUID
+	ProductId  uuid.UUID
+	Qty        int32
+	CheckedOut bool
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 type CartWithProducts struct {

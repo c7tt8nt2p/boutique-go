@@ -71,6 +71,11 @@ func Qty(v int32) predicate.CartItem {
 	return predicate.CartItem(sql.FieldEQ(FieldQty, v))
 }
 
+// CheckedOut applies equality check predicate on the "checked_out" field. It's identical to CheckedOutEQ.
+func CheckedOut(v bool) predicate.CartItem {
+	return predicate.CartItem(sql.FieldEQ(FieldCheckedOut, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.CartItem {
 	return predicate.CartItem(sql.FieldEQ(FieldCreatedAt, v))
@@ -159,6 +164,16 @@ func QtyLT(v int32) predicate.CartItem {
 // QtyLTE applies the LTE predicate on the "qty" field.
 func QtyLTE(v int32) predicate.CartItem {
 	return predicate.CartItem(sql.FieldLTE(FieldQty, v))
+}
+
+// CheckedOutEQ applies the EQ predicate on the "checked_out" field.
+func CheckedOutEQ(v bool) predicate.CartItem {
+	return predicate.CartItem(sql.FieldEQ(FieldCheckedOut, v))
+}
+
+// CheckedOutNEQ applies the NEQ predicate on the "checked_out" field.
+func CheckedOutNEQ(v bool) predicate.CartItem {
+	return predicate.CartItem(sql.FieldNEQ(FieldCheckedOut, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

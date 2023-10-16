@@ -47,16 +47,23 @@ func (s *CartService) RemoveItemFromCart(ctx context.Context, req *pb.RemoveItem
 	}, nil
 }
 
-func (s *CartService) ViewCart(ctx context.Context, _ *emptypb.Empty) (*pb.ViewCartResp, error) {
-	var items []*pb.ViewCartResp_Item
+func (s *CartService) CheckOutCartItem(ctx context.Context, req *pb.CheckOutCartItemReq) (*pb.CheckOutCartItemResp, error) {
+	s.uc.CheckOutCartItem(ctx, req)
+	return &pb.CheckOutCartItemResp{
+		Ids: req.Ids,
+	}, nil
+}
+
+func (s *CartService) ViewMyCart(ctx context.Context, _ *emptypb.Empty) (*pb.ViewMyCartResp, error) {
+	var items []*pb.ViewMyCartResp_Item
 
 	totalPrice := decimal.NewFromFloat(0.0)
-	c := s.uc.ViewCart(ctx)
+	c := s.uc.ViewMyCart(ctx)
 	for _, e := range c.Product {
 		totalPriceThisItem := decimal.NewFromFloat(e.Price).Mul(decimal.NewFromInt32(e.Qty))
 		totalPrice = totalPrice.Add(totalPriceThisItem)
 
-		items = append(items, &pb.ViewCartResp_Item{
+		items = append(items, &pb.ViewMyCartResp_Item{
 			Id:        e.Id.String(),
 			ProductId: e.ProductId.String(),
 			Name:      e.Name,
@@ -64,7 +71,7 @@ func (s *CartService) ViewCart(ctx context.Context, _ *emptypb.Empty) (*pb.ViewC
 			Qty:       e.Qty,
 		})
 	}
-	return &pb.ViewCartResp{
+	return &pb.ViewMyCartResp{
 		CartId:     c.CartId.String(),
 		TotalPrice: totalPrice.InexactFloat64(),
 		Items:      items,

@@ -48,13 +48,14 @@ func (r *cartItemRepo) Save(ctx context.Context, client *ent.Client, m *entModel
 	}
 }
 
-func (r *cartItemRepo) FindByCartId(ctx context.Context, client *ent.Client, cartId uuid.UUID) *entModel.CartWithProducts {
+func (r *cartItemRepo) FindByCartIdAndCheckedOutIsFalse(ctx context.Context, client *ent.Client, cartId uuid.UUID) *entModel.CartWithProducts {
 	cis, err := client.Debug().CartItem.
 		Query().
 		WithProductIDOwner().
 		Where(
 			cartitem.And(
 				cartitem.CartID(cartId),
+				cartitem.CheckedOut(false),
 			),
 		).
 		All(ctx)
@@ -80,13 +81,14 @@ func (r *cartItemRepo) FindByCartId(ctx context.Context, client *ent.Client, car
 	}
 }
 
-func (r *cartItemRepo) ExistsByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) bool {
+func (r *cartItemRepo) ExistsByCartIdAndProductIdAndCheckedOutIsFalse(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) bool {
 	ok, err := client.CartItem.
 		Query().
 		Where(
 			cartitem.And(
 				cartitem.CartID(cartId),
 				cartitem.ProductID(productId),
+				cartitem.CheckedOut(false),
 			),
 		).
 		Exist(ctx)
@@ -97,13 +99,29 @@ func (r *cartItemRepo) ExistsByCartIdAndProductId(ctx context.Context, client *e
 	return ok
 }
 
-func (r *cartItemRepo) DeleteByCartIdAndProductId(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) uuid.UUID {
+func (r *cartItemRepo) UpdateCheckedOutTrueByIdsIn(ctx context.Context, client *ent.Client, ids []uuid.UUID) []uuid.UUID {
+	_, err := client.CartItem.
+		Update().
+		SetCheckedOut(true).
+		Where(
+			cartitem.IDIn(ids...),
+		).
+		Save(ctx)
+	if err != nil {
+		panic(errors.AppInternalErr(err.Error()))
+	}
+
+	return ids
+}
+
+func (r *cartItemRepo) DeleteByCartIdAndProductIdAndCheckedOutIsFalse(ctx context.Context, client *ent.Client, cartId uuid.UUID, productId uuid.UUID) uuid.UUID {
 	_, err := client.CartItem.
 		Delete().
 		Where(
 			cartitem.And(
 				cartitem.CartID(cartId),
 				cartitem.ProductID(productId),
+				cartitem.CheckedOut(false),
 			),
 		).Exec(ctx)
 	if err != nil {

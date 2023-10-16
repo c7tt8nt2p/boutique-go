@@ -11,7 +11,8 @@ service Cart {
   rpc NewCart (NewCartReq) returns (NewCartResp) {}
   rpc AddItemToCart (AddItemToCartReq) returns (AddItemToCartResp) {}
   rpc RemoveItemFromCart (RemoveItemFromCartReq) returns (RemoveItemFromCartResp) {}
-  rpc ViewCart (google.protobuf.Empty) returns (ViewCartResp) {}
+  rpc CheckOutCartItem (CheckOutCartItemReq) returns (CheckOutCartItemResp) {}
+  rpc ViewMyCart (google.protobuf.Empty) returns (ViewMyCartResp) {}
 }
 
 message NewCartReq {
@@ -40,7 +41,15 @@ message RemoveItemFromCartResp {
   string product_id = 1;
 }
 
-message ViewCartResp {
+message CheckOutCartItemReq {
+  repeated string ids = 1 [(validate.rules).repeated.items.string.uuid = true];
+}
+
+message CheckOutCartItemResp {
+  repeated string ids = 1;
+}
+
+message ViewMyCartResp {
   message Item {
     string id = 1;
     string product_id = 2;

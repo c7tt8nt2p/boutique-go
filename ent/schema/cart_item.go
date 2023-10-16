@@ -19,6 +19,8 @@ func (CartItem) Fields() []ent.Field {
 		field.UUID("cart_id", uuid.UUID{}),
 		field.UUID("product_id", uuid.UUID{}),
 		field.Int32("qty"),
+		field.Bool("checked_out").
+			Default(false),
 		field.Time("created_at").
 			Default(time.Now),
 		field.Time("updated_at").

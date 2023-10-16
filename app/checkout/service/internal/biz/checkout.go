@@ -46,13 +46,16 @@ func NewCheckoutUseCase(cartClient cartv1.CartClient, productClient productv1.Pr
 }
 
 func (uc *CheckoutUseCase) Checkout(ctx context.Context, _ *emptypb.Empty) *ent.Checkout {
-	cart, err := uc.cartClient.ViewCart(ctx, &empty.Empty{})
+	cart, err := uc.cartClient.ViewMyCart(ctx, &empty.Empty{})
 	if err != nil {
 		panic(errors.AppInternalErr(err.Error()))
 	}
 
+	cartItemIds := make([]string, len(cart.Items))
 	// validate if products in the cart are still purchasable
-	for _, ci := range cart.Items {
+	for i, ci := range cart.Items {
+		cartItemIds[i] = ci.Id
+
 		resp, err := uc.productClient.ValidatePurchasableProduct(ctx, &productv1.ValidatePurchasableProductReq{
 			Id:  ci.ProductId,
 			Qty: ci.Qty,
@@ -82,12 +85,21 @@ func (uc *CheckoutUseCase) Checkout(ctx context.Context, _ *emptypb.Empty) *ent.
 				panic(errors.AppInternalErr(err.Error()))
 			}
 		}
+
+		// set checked out to true
+		_, checkOutErr := uc.cartClient.CheckOutCartItem(ctx, &cartv1.CheckOutCartItemReq{
+			Ids: cartItemIds,
+		})
+		if checkOutErr != nil {
+			panic(errors.AppInternalErr(checkOutErr.Error()))
+		}
+
 		return com
 	}
 	return util.WithTx(ctx, uc.checkoutRepo.GetEntClient(), txFunc).(*ent.Checkout)
 }
 
-func calculateCheckout(ctx context.Context, cart *cartv1.ViewCartResp) *entModel.Checkout {
+func calculateCheckout(ctx context.Context, cart *cartv1.ViewMyCartResp) *entModel.Checkout {
 	totalPrice := decimal.NewFromFloat(0.0)
 	for _, e := range cart.Items {
 		totalPriceThisItem := decimal.NewFromFloat(e.Price).Mul(decimal.NewFromInt32(e.Qty))
@@ -101,7 +113,7 @@ func calculateCheckout(ctx context.Context, cart *cartv1.ViewCartResp) *entModel
 	}
 }
 
-func calculateCheckoutItem(cart *cartv1.ViewCartResp, checkoutId uuid.UUID) []*entModel.CheckoutItem {
+func calculateCheckoutItem(cart *cartv1.ViewMyCartResp, checkoutId uuid.UUID) []*entModel.CheckoutItem {
 	var checkoutItems []*entModel.CheckoutItem
 	for _, e := range cart.Items {
 		id := util.ParseUUID(e.Id)
