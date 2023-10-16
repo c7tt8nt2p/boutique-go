@@ -1,0 +1,16 @@
+version: '3'
+services:
+  db-test:
+    image: postgres:latest
+    container_name: db-test
+    hostname: db-test
+    environment:
+      POSTGRES_DB: kx_boutique_test
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5678:5432"
+    volumes:
+      - postgres-data-test:/var/lib/postgresql/data-test
+volumes:
+  postgres-data-test:
